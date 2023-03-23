@@ -31,7 +31,7 @@ Player::Player(float x, float y, SDL_Texture *mTexture, SDL_Texture *mFireAttack
     isAttacking = false;
     isDashing = false;
     cntWalkFrames = cntIdleFrames = cntJumpFrames = cntFallFrames = cntAttackFrames = cntDashFrames = 0;
-    for (int i = 0, x = 0; i < TOTAL_PLAYER_WALK_SPRITES; i++, x += 480)
+    for (int i = 0, x = 0; i < TOTAL_PLAYER_IDLE_SPRITES; i++, x += 480)
         gPlayerIdleClips[i] = {x, 0, PLAYER_TEXTURE_WIDTH, PLAYER_TEXTURE_HEIGHT};
     for (int i = 0, x = 0; i < TOTAL_PLAYER_WALK_SPRITES; i++, x += 480)
         gPlayerWalkClips[i] = {x, 320, PLAYER_TEXTURE_WIDTH, PLAYER_TEXTURE_HEIGHT};

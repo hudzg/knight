@@ -13,6 +13,7 @@
 #include "constants.h"
 #include "player.h"
 #include "utils.h"
+#include "skeleton.h"
 
 class Game
 {
@@ -24,11 +25,13 @@ private:
     SDL_Rect camera;
     bool running;
     Player player;
+    SkeletonFamily skeletonFamily;
 
 public:
     bool init();
     bool setTiles(Tile *tiles);
     bool setPlayer();
+    bool setSkeleton();
     bool loadMedia();
     bool isRunning();
     void handleEvent(SDL_Event &event);
