@@ -151,6 +151,7 @@ void Player::move(Tile *tiles, double timeStep)
         if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles))
         {
             mPosX -= mDashVelX * timeStep;
+            mBox.x = mPosX;
         }
     }
     else
@@ -160,6 +161,7 @@ void Player::move(Tile *tiles, double timeStep)
         if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles))
         {
             mPosX -= mVelX * timeStep;
+            mBox.x = mPosX;
         }
     }
 

@@ -49,7 +49,7 @@ bool Game::setTiles(Tile *tiles)
     if(!success) return false;
 
     int x = 0, y = 0;
-    std::ifstream map("images/map/map.map");
+    std::ifstream map("images/map/map2.map");
     if (map.fail())
     {
         printf("Failed to load map \n");
@@ -61,9 +61,10 @@ bool Game::setTiles(Tile *tiles)
         {
             int tileType = -1;
             map >> tileType;
+            // printf("%d\n", tileType);
             if (map.fail())
             {
-                printf("Failed to load map tile %d\n", i);
+                printf("Failed to load map atile %d\n", i);
                 success = false;
                 break;
             }
@@ -96,21 +97,6 @@ bool Game::setTiles(Tile *tiles)
                 y += TILE_TEXTURE_HEIGHT;
             }
         }
-        // gTileClips[TILE_RED] = {0, 0, TILE_WIDTH, TILE_HEIGHT};
-        // gTileClips[TILE_GREEN] = {0, 80, TILE_WIDTH, TILE_HEIGHT};
-        // gTileClips[TILE_BLUE] = {0, 160, TILE_WIDTH, TILE_HEIGHT};
-
-        // gTileClips[TILE_TOPLEFT] = {80, 0, TILE_WIDTH, TILE_HEIGHT};
-        // gTileClips[TILE_LEFT] = {80, 80, TILE_WIDTH, TILE_HEIGHT};
-        // gTileClips[TILE_BOTTOMLEFT] = {80, 160, TILE_WIDTH, TILE_HEIGHT};
-
-        // gTileClips[TILE_TOP] = {160, 0, TILE_WIDTH, TILE_HEIGHT};
-        // gTileClips[TILE_CENTER] = {160, 80, TILE_WIDTH, TILE_HEIGHT};
-        // gTileClips[TILE_BOTTOM] = {160, 160, TILE_WIDTH, TILE_HEIGHT};
-
-        // gTileClips[TILE_TOPRIGHT] = {240, 0, TILE_WIDTH, TILE_HEIGHT};
-        // gTileClips[TILE_RIGHT] = {240, 80, TILE_WIDTH, TILE_HEIGHT};
-        // gTileClips[TILE_BOTTOMRIGHT] = {240, 160, TILE_WIDTH, TILE_HEIGHT};
     }
     map.close();
     return success;
@@ -118,7 +104,7 @@ bool Game::setTiles(Tile *tiles)
 
 bool Game::setPlayer()
 {
-    player = Player(100.0, 0.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE]);
+    player = Player(200.0, 0.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE]);
     return true;
 }
 

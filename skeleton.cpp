@@ -22,15 +22,20 @@ bool Skeleton::checkCollisionWall(SDL_Rect &a, Tile *b)
 
 Skeleton::Skeleton(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mTexture)
 {
+    initialX = x;
+    initialY = y;
     direction = 1;
-    mVelX = 0;
-    mVelY = SKELETON_VEL;
+    mVelX = SKELETON_VEL;
+    mVelY = SKELETON_VEL * 4;
     mBox = {(int)x, (int)y, SKELETON_WIDTH, SKELETON_HEIGHT};
     isWalking = false;
-    cntIdleFrames = 0;
+    cntIdleFrames = cntWalkFrames = 0;
     for (int i = 0, x = 0; i < TOTAL_SKELETON_IDLE_SPRITES; i++, x += 240)
         gSkeletonIdleClips[i] = {x, 0, SKELETON_TEXTURE_WIDTH, SKELETON_TEXTURE_HEIGHT};
+    for (int i = 0, x = 0; i < TOTAL_SKELETON_WALK_SPRITES; i++, x += 220)
+        gSkeletonWalkClips[i] = {x, 1650, 220, 330};
     flip = SDL_FLIP_NONE;
+    cntIdle = 0;
 }
 
 void Skeleton::move(Tile *tiles, double timeStep)
@@ -53,9 +58,11 @@ void Skeleton::move(Tile *tiles, double timeStep)
         isWalking = false;
     mPosX += mVelX * timeStep;
     mBox.x = mPosX;
-    if (mPosX < 0 || mPosX + SKELETON_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles))
+    if (mPosX < 0 || mPosX + SKELETON_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || mPosX < initialX - MAX_WALK_WIDTH || mPosX > initialX + MAX_WALK_WIDTH)
     {
         mPosX -= mVelX * timeStep;
+        mVelX = 0;
+        direction *= -1;
     }
 
     mPosY += mVelY * timeStep;
@@ -65,7 +72,7 @@ void Skeleton::move(Tile *tiles, double timeStep)
         mPosY -= mVelY * timeStep;
     }
     else
-    mBox.x = mPosX;
+        mBox.x = mPosX;
     mBox.y = mPosY;
 }
 
@@ -73,10 +80,28 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
 {
     if (!checkCollision(mBox, camera))
         return;
+    if (isWalking)
+    {
+        window.renderPlayer(getTexture(), mBox.x - camera.x, mBox.y - camera.y, mBox, &gSkeletonWalkClips[cntWalkFrames / 4], 0.0, NULL, flip);
+        cntWalkFrames++;
+        if (cntWalkFrames >= TOTAL_SKELETON_WALK_SPRITES * 4)
+            cntWalkFrames = 0;
+        cntIdleFrames = 0;
+        return;
+    }
     window.renderPlayer(getTexture(), mBox.x - camera.x, mBox.y - camera.y, mBox, &gSkeletonIdleClips[cntIdleFrames / 4], 0.0, NULL, flip);
     cntIdleFrames++;
     if (cntIdleFrames >= TOTAL_SKELETON_IDLE_SPRITES * 4)
+    {
         cntIdleFrames = 0;
+        cntIdle++;
+        if(cntIdle >= MAX_IDLE_FRAMES)
+        {
+            cntIdle = 0;
+            mVelX = direction * SKELETON_VEL;
+        }
+    }
+    cntWalkFrames = 0;
 }
 
 int Skeleton::getPosX()
@@ -91,18 +116,18 @@ int Skeleton::getPosY()
 
 SkeletonFamily::SkeletonFamily(SDL_Texture *mTexture)
 {
-    for(int i = 0; i < TOTAL_SKELETON; i++)
+    for (int i = 0; i < TOTAL_SKELETON; i++)
         skeleton[i] = Skeleton(rand() % LEVEL_WIDTH, 0, mTexture);
 }
 
 void SkeletonFamily::move(Tile *tiles)
 {
-    for(int i = 0; i < TOTAL_SKELETON; i++)
+    for (int i = 0; i < TOTAL_SKELETON; i++)
         skeleton[i].move(tiles);
 }
 
 void SkeletonFamily::render(RenderWindow &window, SDL_Rect &camera)
 {
-    for(int i = 0; i < TOTAL_SKELETON; i++)
+    for (int i = 0; i < TOTAL_SKELETON; i++)
         skeleton[i].render(window, camera);
 }
