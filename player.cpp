@@ -178,7 +178,7 @@ void Player::move(Tile *tiles, double timeStep)
     mBox.y = mPosY;
 }
 
-void Player::render(RenderWindow &window, SDL_Rect &camera)
+void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily)
 {
     if (isDashing)
     {
@@ -204,6 +204,10 @@ void Player::render(RenderWindow &window, SDL_Rect &camera)
             value = -PLAYER_WIDTH / 2;
         window.renderPlayer(getTexture(), mPosX - camera.x + value, mPosY - camera.y, tmpBox, &gPlayerAttackClips[cntAttackFrames / 6], 0.0, NULL, flip);
         fireAttackAnimation.attack(window, mPosX - camera.x - PLAYER_WIDTH + (direction == -1 ? value : 0), mPosY - camera.y, mBox, flip);
+        tmpBox.x += - PLAYER_WIDTH;
+        tmpBox.w = FireAttack::FIRE_ATTACK_TEXTURE_WIDTH;
+        tmpBox.h = FireAttack::FIRE_ATTACK_TEXTURE_HEIGHT;
+        if(cntAttackFrames == 0) skeletonFamily.attack(tmpBox);
         cntAttackFrames++;
         if (cntAttackFrames >= TOTAL_PLAYER_ATTACK_SPRITES * 6)
         {

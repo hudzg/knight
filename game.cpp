@@ -177,10 +177,10 @@ void Game::renderGame()
     for (int i = 0; i < TOTAL_TILES; i++)
         tiles[i].render(window, camera, &gTileClips[tiles[i].getType()]);
 
-    skeletonFamily.move(tiles);
+    skeletonFamily.move(tiles, player.getBox());
     skeletonFamily.render(window, camera);
 
-    player.render(window, camera);
+    player.render(window, camera, skeletonFamily);
     
     window.renderPresent();
 }

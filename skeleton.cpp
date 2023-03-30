@@ -28,18 +28,42 @@ Skeleton::Skeleton(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mText
     mVelX = SKELETON_VEL;
     mVelY = SKELETON_VEL * 4;
     mBox = {(int)x, (int)y, SKELETON_WIDTH, SKELETON_HEIGHT};
-    isWalking = false;
-    cntIdleFrames = cntWalkFrames = 0;
+    isWalking = isAttacking = isTakeHit = false;
+    cntIdleFrames = cntWalkFrames = cntAttackFrames = cntTakeHitFrames = 0;
     for (int i = 0, x = 0; i < TOTAL_SKELETON_IDLE_SPRITES; i++, x += 240)
         gSkeletonIdleClips[i] = {x, 0, SKELETON_TEXTURE_WIDTH, SKELETON_TEXTURE_HEIGHT};
+    for (int i = 0, x = 0; i < TOTAL_SKELETON_ATTACK_SPRITES; i++, x += 430)
+        gSkeletonAttackClips[i] = {x, 320, 430, 370};
     for (int i = 0, x = 0; i < TOTAL_SKELETON_WALK_SPRITES; i++, x += 220)
         gSkeletonWalkClips[i] = {x, 1650, 220, 330};
+    for (int i = 0, x = 0; i < TOTAL_SKELETON_TAKE_HIT_SPRITES; i++, x += 300)
+        gSkeletonTakeHitClips[i] = {x, 1010, 300, 320};
     flip = SDL_FLIP_NONE;
     cntIdle = 0;
 }
 
-void Skeleton::move(Tile *tiles, double timeStep)
+void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
 {
+    // if (mPosX - MAX_ATTACK_WIDTH <= playerBox.x && playerBox.x <= mPosX + MAX_ATTACK_WIDTH)
+    // {
+    //     isAttacking = true;
+    // }
+    // else
+    // {
+    //     if (initialX - MAX_CHASE_WIDTH <= playerBox.x && playerBox.x <= initialX + MAX_CHASE_WIDTH)
+    //     {
+    //         isChasing = true;
+    //         if (playerBox.x >= mPosX)
+    //             mVelX = 2 * SKELETON_VEL;
+    //         else
+    //             mVelX = -2 * SKELETON_VEL;
+    //     }
+    //     else
+    //     {
+    //         // mVelX = SKELETON_VEL;
+    //         isChasing = false;
+    //     }
+    // }
     if (mVelX != 0)
     {
         isWalking = true;
@@ -56,6 +80,9 @@ void Skeleton::move(Tile *tiles, double timeStep)
     }
     else
         isWalking = false;
+
+    if(isTakeHit) return;
+
     mPosX += mVelX * timeStep;
     mBox.x = mPosX;
     if (mPosX < 0 || mPosX + SKELETON_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || mPosX < initialX - MAX_WALK_WIDTH || mPosX > initialX + MAX_WALK_WIDTH)
@@ -80,13 +107,39 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
 {
     if (!checkCollision(mBox, camera))
         return;
+    if (isTakeHit)
+    {
+        SDL_Rect tmpBox = {mBox.x, mBox.y, mBox.w * 1.25, mBox.h};
+        window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gSkeletonTakeHitClips[cntTakeHitFrames / 8], 0.0, NULL, flip);
+        cntTakeHitFrames++;
+        if (cntTakeHitFrames >= TOTAL_SKELETON_TAKE_HIT_SPRITES * 8)
+        {
+            isTakeHit = false;
+            cntTakeHitFrames = 0;
+        }
+        cntIdleFrames = cntWalkFrames = cntAttackFrames = 0;
+        return;
+    }
+    if (isAttacking)
+    {
+        SDL_Rect tmpBox = {mBox.x, mBox.y - mBox.h * 0.12, mBox.w * 1.8, mBox.h * 1.12};
+        window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gSkeletonAttackClips[cntAttackFrames / 8], 0.0, NULL, flip);
+        cntAttackFrames++;
+        if (cntAttackFrames >= TOTAL_SKELETON_ATTACK_SPRITES * 8)
+        {
+            isAttacking = false;
+            cntAttackFrames = 0;
+        }
+        cntIdleFrames = cntWalkFrames = cntTakeHitFrames = 0;
+        return;
+    }
     if (isWalking)
     {
         window.renderPlayer(getTexture(), mBox.x - camera.x, mBox.y - camera.y, mBox, &gSkeletonWalkClips[cntWalkFrames / 4], 0.0, NULL, flip);
         cntWalkFrames++;
         if (cntWalkFrames >= TOTAL_SKELETON_WALK_SPRITES * 4)
             cntWalkFrames = 0;
-        cntIdleFrames = 0;
+        cntIdleFrames = cntAttackFrames = cntTakeHitFrames = 0;
         return;
     }
     window.renderPlayer(getTexture(), mBox.x - camera.x, mBox.y - camera.y, mBox, &gSkeletonIdleClips[cntIdleFrames / 4], 0.0, NULL, flip);
@@ -95,13 +148,24 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
     {
         cntIdleFrames = 0;
         cntIdle++;
-        if(cntIdle >= MAX_IDLE_FRAMES)
+        if (cntIdle >= MAX_IDLE_FRAMES)
         {
             cntIdle = 0;
             mVelX = direction * SKELETON_VEL;
         }
     }
-    cntWalkFrames = 0;
+    cntWalkFrames = cntAttackFrames = cntTakeHitFrames = 0;
+}
+
+void Skeleton::attack(const SDL_Rect &playerAttackRect)
+{
+    if(checkCollision(mBox, playerAttackRect)) 
+    {
+        isTakeHit = true;
+        if((playerAttackRect.x * 2 + playerAttackRect.w) / 2 >= (mBox.x * 2 + mBox.w) / 2)
+            mVelX = SKELETON_VEL;
+        else mVelX = -SKELETON_VEL;
+    }
 }
 
 int Skeleton::getPosX()
@@ -120,14 +184,20 @@ SkeletonFamily::SkeletonFamily(SDL_Texture *mTexture)
         skeleton[i] = Skeleton(rand() % LEVEL_WIDTH, 0, mTexture);
 }
 
-void SkeletonFamily::move(Tile *tiles)
+void SkeletonFamily::move(Tile *tiles, const SDL_Rect &playerBox)
 {
     for (int i = 0; i < TOTAL_SKELETON; i++)
-        skeleton[i].move(tiles);
+        skeleton[i].move(tiles, playerBox);
 }
 
 void SkeletonFamily::render(RenderWindow &window, SDL_Rect &camera)
 {
     for (int i = 0; i < TOTAL_SKELETON; i++)
         skeleton[i].render(window, camera);
+}
+
+void SkeletonFamily::attack(const SDL_Rect &playerAttackRect)
+{
+    for (int i = 0; i < TOTAL_SKELETON; i++)
+        skeleton[i].attack(playerAttackRect);
 }

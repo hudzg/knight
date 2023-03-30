@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "entity.h"
 #include "utils.h"
+#include "skeleton.h"
 
 using namespace std;
 
@@ -65,10 +66,11 @@ public:
     bool checkCollisionWall(SDL_Rect &a, Tile *b);
     void handleEvent(SDL_Event &e);
     void move(Tile *tiles = NULL, double timeStep = 1.0 / 60);
-    void render(RenderWindow &window, SDL_Rect &camera);
+    void render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily);
     void setCamera(SDL_Rect &camera);
     int getPosX();
     int getPosY();
+    SDL_Rect getBox();
 };
 
 #endif // DOT_H
