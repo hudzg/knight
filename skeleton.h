@@ -14,18 +14,22 @@ private:
     static const int TOTAL_SKELETON_WALK_SPRITES = 13;
     static const int TOTAL_SKELETON_ATTACK_SPRITES = 13;
     static const int TOTAL_SKELETON_TAKE_HIT_SPRITES = 8;
+    static const int TOTAL_SKELETON_DEATH_SPRITES = 15;
     double mVelX, mVelY;
     float initialX, initialY;
     SDL_Rect mBox;
-    bool isWalking, isAttacking, isChasing, isTakeHit;
-    int cntIdleFrames, cntWalkFrames, cntAttackFrames, cntTakeHitFrames;
+    bool isWalking, isAttacking, isChasing, isTakeHit, isDeath;
+    int cntIdleFrames, cntWalkFrames, cntAttackFrames, cntTakeHitFrames, cntDeathFrames;
     int direction;
     SDL_Rect gSkeletonIdleClips[TOTAL_SKELETON_IDLE_SPRITES];
     SDL_Rect gSkeletonWalkClips[TOTAL_SKELETON_WALK_SPRITES];
     SDL_Rect gSkeletonAttackClips[TOTAL_SKELETON_ATTACK_SPRITES];
     SDL_Rect gSkeletonTakeHitClips[TOTAL_SKELETON_TAKE_HIT_SPRITES];
+    SDL_Rect gSkeletonDeathClips[TOTAL_SKELETON_DEATH_SPRITES];
     SDL_RendererFlip flip;
     int cntIdle;
+    int HP;
+    bool isDied;
 
 public:
     static const int SKELETON_WIDTH = 96;
@@ -38,6 +42,8 @@ public:
     static const int MAX_CHASE_WIDTH = 320;
     static const int MAX_IDLE_FRAMES = 4;
     static const int MAX_ATTACK_WIDTH = 32;
+
+    static const int SKELETON_INITIAL_HP = 4;
 
     Skeleton(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL);
     bool checkCollision(SDL_Rect &a, const SDL_Rect &b);

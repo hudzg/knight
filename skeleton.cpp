@@ -28,8 +28,8 @@ Skeleton::Skeleton(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mText
     mVelX = SKELETON_VEL;
     mVelY = SKELETON_VEL * 4;
     mBox = {(int)x, (int)y, SKELETON_WIDTH, SKELETON_HEIGHT};
-    isWalking = isAttacking = isTakeHit = false;
-    cntIdleFrames = cntWalkFrames = cntAttackFrames = cntTakeHitFrames = 0;
+    isWalking = isAttacking = isTakeHit = isDeath = false;
+    cntIdleFrames = cntWalkFrames = cntAttackFrames = cntTakeHitFrames = cntDeathFrames = 0;
     for (int i = 0, x = 0; i < TOTAL_SKELETON_IDLE_SPRITES; i++, x += 240)
         gSkeletonIdleClips[i] = {x, 0, SKELETON_TEXTURE_WIDTH, SKELETON_TEXTURE_HEIGHT};
     for (int i = 0, x = 0; i < TOTAL_SKELETON_ATTACK_SPRITES; i++, x += 430)
@@ -38,12 +38,17 @@ Skeleton::Skeleton(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mText
         gSkeletonWalkClips[i] = {x, 1650, 220, 330};
     for (int i = 0, x = 0; i < TOTAL_SKELETON_TAKE_HIT_SPRITES; i++, x += 300)
         gSkeletonTakeHitClips[i] = {x, 1010, 300, 320};
+    for (int i = 0, x = 0; i < TOTAL_SKELETON_DEATH_SPRITES; i++, x += 330)
+        gSkeletonDeathClips[i] = {x, 690, 330, 320};
     flip = SDL_FLIP_NONE;
     cntIdle = 0;
+    HP = SKELETON_INITIAL_HP;
+    isDied = false;
 }
 
 void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
 {
+    if(isDied || isDeath) return;
     // if (mPosX - MAX_ATTACK_WIDTH <= playerBox.x && playerBox.x <= mPosX + MAX_ATTACK_WIDTH)
     // {
     //     isAttacking = true;
@@ -105,8 +110,19 @@ void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
 
 void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
 {
-    if (!checkCollision(mBox, camera))
+    if (isDied || !checkCollision(mBox, camera))
         return;
+    if(isDeath)
+    {
+        SDL_Rect tmpBox = {mBox.x, mBox.y, 1.0 * mBox.w * 330 / 240, 1.0 * mBox.h * 320 / 330};
+        window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gSkeletonDeathClips[cntDeathFrames / 8], 0.0, NULL, flip);
+        cntDeathFrames++;
+        if (cntDeathFrames >= TOTAL_SKELETON_DEATH_SPRITES * 8)
+        {
+            isDied = true;
+        }
+        return;
+    }
     if (isTakeHit)
     {
         SDL_Rect tmpBox = {mBox.x, mBox.y, mBox.w * 1.25, mBox.h};
@@ -159,8 +175,14 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
 
 void Skeleton::attack(const SDL_Rect &playerAttackRect)
 {
+    if(isDeath || isDied) return;
     if(checkCollision(mBox, playerAttackRect)) 
     {
+        HP--;
+        if(HP == 0)
+        {
+            isDeath = true;
+        }
         isTakeHit = true;
         if((playerAttackRect.x * 2 + playerAttackRect.w) / 2 >= (mBox.x * 2 + mBox.w) / 2)
             mVelX = SKELETON_VEL;
