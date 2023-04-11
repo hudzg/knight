@@ -48,27 +48,44 @@ Skeleton::Skeleton(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mText
 
 void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
 {
-    if(isDied || isDeath) return;
+    if(isDied || isDeath || isAttacking) return;
+    SDL_Rect attackBox = {mPosX - MAX_ATTACK_WIDTH, mPosY, MAX_ATTACK_WIDTH * 2 + SKELETON_WIDTH, SKELETON_HEIGHT};
     // if (mPosX - MAX_ATTACK_WIDTH <= playerBox.x && playerBox.x <= mPosX + MAX_ATTACK_WIDTH)
-    // {
-    //     isAttacking = true;
-    // }
-    // else
-    // {
-    //     if (initialX - MAX_CHASE_WIDTH <= playerBox.x && playerBox.x <= initialX + MAX_CHASE_WIDTH)
-    //     {
-    //         isChasing = true;
-    //         if (playerBox.x >= mPosX)
-    //             mVelX = 2 * SKELETON_VEL;
-    //         else
-    //             mVelX = -2 * SKELETON_VEL;
-    //     }
-    //     else
-    //     {
-    //         // mVelX = SKELETON_VEL;
-    //         isChasing = false;
-    //     }
-    // }
+    if(checkCollision(attackBox, playerBox))
+    {
+        if (playerBox.x < mPosX)
+        {
+            direction = -1;
+            flip = SDL_FLIP_HORIZONTAL;
+        }
+        else
+        {
+            direction = 1;
+            flip = SDL_FLIP_NONE;
+        }
+        isAttacking = true;
+    }
+    else
+    {
+        SDL_Rect chasingBox = {mPosX - MAX_CHASE_WIDTH, mPosY, MAX_CHASE_WIDTH * 2 + SKELETON_WIDTH, SKELETON_HEIGHT};
+        // if (initialX - MAX_CHASE_WIDTH <= playerBox.x && playerBox.x <= initialX + MAX_CHASE_WIDTH)
+        if(checkCollision(chasingBox, playerBox))
+        {
+            isChasing = true;
+            if (playerBox.x >= mPosX)
+                mVelX = 1.5 * SKELETON_VEL;
+            else
+                mVelX = -1.5 * SKELETON_VEL;
+        }
+        else
+        {
+            // mVelX = SKELETON_VEL;
+            isChasing = false;
+        }
+    }
+
+    if(isAttacking) return;
+
     if (mVelX != 0)
     {
         isWalking = true;
@@ -139,6 +156,7 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
     if (isAttacking)
     {
         SDL_Rect tmpBox = {mBox.x, mBox.y - mBox.h * 0.12, mBox.w * 1.8, mBox.h * 1.12};
+        if(flip != SDL_FLIP_NONE) tmpBox.x -= mBox.w * 0.8;
         window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gSkeletonAttackClips[cntAttackFrames / 8], 0.0, NULL, flip);
         cntAttackFrames++;
         if (cntAttackFrames >= TOTAL_SKELETON_ATTACK_SPRITES * 8)

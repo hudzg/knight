@@ -41,7 +41,7 @@ public:
     static const int MAX_WALK_WIDTH = 240;
     static const int MAX_CHASE_WIDTH = 320;
     static const int MAX_IDLE_FRAMES = 4;
-    static const int MAX_ATTACK_WIDTH = 32;
+    static const int MAX_ATTACK_WIDTH = 16;
 
     static const int SKELETON_INITIAL_HP = 4;
 

@@ -160,6 +160,7 @@ void Player::move(Tile *tiles, double timeStep)
         mBox.x = mPosX;
         if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles))
         {
+            // printf("h\n");
             mPosX -= mVelX * timeStep;
             mBox.x = mPosX;
         }
@@ -207,7 +208,8 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
         tmpBox.x += - PLAYER_WIDTH;
         tmpBox.w = FireAttack::FIRE_ATTACK_TEXTURE_WIDTH;
         tmpBox.h = FireAttack::FIRE_ATTACK_TEXTURE_HEIGHT;
-        if(cntAttackFrames == 0) skeletonFamily.attack(tmpBox);
+        if(cntAttackFrames == 0) 
+            skeletonFamily.attack(tmpBox);
         cntAttackFrames++;
         if (cntAttackFrames >= TOTAL_PLAYER_ATTACK_SPRITES * 6)
         {
