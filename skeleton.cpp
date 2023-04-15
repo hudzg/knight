@@ -193,7 +193,7 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
 
 int Skeleton::getAttack(SDL_Rect playerBox)
 {
-    if (isDied || !isAttacking || cntAttackFrames != 56)
+    if (isDied || !isAttacking || cntAttackFrames != 60)
         return 0;
     SDL_Rect attackBox = {mBox.x + mBox.w, mBox.y - mBox.h * 0.12, mBox.w * 0.8, mBox.h * 1.12};
     if(flip != SDL_FLIP_NONE) attackBox.x = mBox.x -mBox.w * 0.8;

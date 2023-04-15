@@ -57,11 +57,12 @@ private:
     static const int TOTAL_PLAYER_FALL_SPRITES = 5;
     static const int TOTAL_PLAYER_ATTACK_SPRITES = 8;
     static const int TOTAL_PLAYER_DASH_SPRITES = 5;
+    static const int TOTAL_PLAYER_TAKE_HIT_SPRITES = 4;
     double mVelX, mVelY;
     SDL_Rect mBox;
-    bool onGround, isWalking, isJumping, isAttacking, isDashing;
+    bool onGround, isWalking, isJumping, isAttacking, isDashing, isTakeHit;
     int cntJump;
-    int cntWalkFrames, cntIdleFrames, cntJumpFrames, cntFallFrames, cntAttackFrames, cntDashFrames;
+    int cntWalkFrames, cntIdleFrames, cntJumpFrames, cntFallFrames, cntAttackFrames, cntDashFrames, cntTakeHitFrames;
     int direction;
     SDL_Rect gPlayerIdleClips[TOTAL_PLAYER_IDLE_SPRITES];
     SDL_Rect gPlayerWalkClips[TOTAL_PLAYER_WALK_SPRITES];
@@ -69,6 +70,7 @@ private:
     SDL_Rect gPlayerFallClips[TOTAL_PLAYER_FALL_SPRITES];
     SDL_Rect gPlayerAttackClips[TOTAL_PLAYER_ATTACK_SPRITES];
     SDL_Rect gPlayerDashClips[TOTAL_PLAYER_DASH_SPRITES];
+    SDL_Rect gPlayerTakeHitClips[TOTAL_PLAYER_TAKE_HIT_SPRITES];
     SDL_RendererFlip flip;
     FireAttack fireAttackAnimation;
     HealthPoint HP;

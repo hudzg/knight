@@ -50,7 +50,8 @@ Player::Player(float x, float y, SDL_Texture *mTexture, SDL_Texture *mFireAttack
     isJumping = false;
     isAttacking = false;
     isDashing = false;
-    cntWalkFrames = cntIdleFrames = cntJumpFrames = cntFallFrames = cntAttackFrames = cntDashFrames = 0;
+    isTakeHit = false;
+    cntWalkFrames = cntIdleFrames = cntJumpFrames = cntFallFrames = cntAttackFrames = cntDashFrames = cntTakeHitFrames = 0;
     for (int i = 0, x = 0; i < TOTAL_PLAYER_WALK_SPRITES; i++, x += 480)
         gPlayerIdleClips[i] = {x, 0, PLAYER_TEXTURE_WIDTH, PLAYER_TEXTURE_HEIGHT};
     for (int i = 0, x = 0; i < TOTAL_PLAYER_WALK_SPRITES; i++, x += 480)
@@ -63,6 +64,8 @@ Player::Player(float x, float y, SDL_Texture *mTexture, SDL_Texture *mFireAttack
         gPlayerAttackClips[i] = {x, 1280, (int)(PLAYER_TEXTURE_WIDTH * 1.5), PLAYER_TEXTURE_HEIGHT};
     for (int i = 0, x = 0; i < TOTAL_PLAYER_DASH_SPRITES; i++, x += 480)
         gPlayerDashClips[i] = {x, 1600, (int)(PLAYER_TEXTURE_WIDTH * 1.5), PLAYER_TEXTURE_HEIGHT};
+    for (int i = 0, x = 0; i < TOTAL_PLAYER_TAKE_HIT_SPRITES; i++, x += 480)
+        gPlayerTakeHitClips[i] = {x, 1920, PLAYER_TEXTURE_WIDTH, PLAYER_TEXTURE_HEIGHT};
     flip = SDL_FLIP_NONE;
 }
 
@@ -204,7 +207,18 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
     // render HP
     HP.render(window);
 
-
+    if(isTakeHit)
+    {
+        window.renderPlayer(getTexture(), mPosX - camera.x, mPosY - camera.y, mBox, &gPlayerTakeHitClips[cntTakeHitFrames / 4], 0.0, NULL, flip);
+        cntTakeHitFrames++;
+        if (cntTakeHitFrames >= TOTAL_PLAYER_TAKE_HIT_SPRITES * 4)
+        {
+            isTakeHit = false;
+            cntTakeHitFrames = 0;
+        }
+        cntIdleFrames = cntJumpFrames = cntWalkFrames = cntFallFrames = cntAttackFrames = cntDashFrames = 0;
+        return;
+    }
     if (isDashing)
     {
         SDL_Rect tmpBox = {mBox.x, mBox.y, mBox.w * 1.5, mBox.h};
@@ -218,7 +232,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
             isDashing = false;
             cntDashFrames = 0;
         }
-        cntIdleFrames = cntWalkFrames = cntJumpFrames = cntFallFrames = cntAttackFrames = 0;
+        cntIdleFrames = cntWalkFrames = cntJumpFrames = cntFallFrames = cntAttackFrames = cntTakeHitFrames = 0;
         return;
     }
     if (isAttacking)
@@ -240,7 +254,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
             isAttacking = false;
             cntAttackFrames = 0;
         }
-        cntIdleFrames = cntWalkFrames = cntJumpFrames = cntFallFrames = cntDashFrames = 0;
+        cntIdleFrames = cntWalkFrames = cntJumpFrames = cntFallFrames = cntDashFrames = cntTakeHitFrames = 0;
         return;
     }
     if (isJumping)
@@ -249,7 +263,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
         cntJumpFrames++;
         if (cntJumpFrames >= TOTAL_PLAYER_JUMP_SPRITES * 4)
             cntJumpFrames = 0;
-        cntIdleFrames = cntWalkFrames = cntFallFrames = cntAttackFrames = cntDashFrames = 0;
+        cntIdleFrames = cntWalkFrames = cntFallFrames = cntAttackFrames = cntDashFrames = cntTakeHitFrames = 0;
         return;
     }
     if (!onGround)
@@ -258,7 +272,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
         cntFallFrames++;
         if (cntFallFrames >= TOTAL_PLAYER_FALL_SPRITES * 4)
             cntFallFrames = 0;
-        cntIdleFrames = cntWalkFrames = cntJumpFrames = cntAttackFrames = cntDashFrames = 0;
+        cntIdleFrames = cntWalkFrames = cntJumpFrames = cntAttackFrames = cntDashFrames = cntTakeHitFrames = 0;
         return;
     }
     if (!isWalking)
@@ -267,7 +281,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
         cntIdleFrames++;
         if (cntIdleFrames >= TOTAL_PLAYER_IDLE_SPRITES * 8)
             cntIdleFrames = 0;
-        cntJumpFrames = cntWalkFrames = cntFallFrames = cntAttackFrames = cntDashFrames = 0;
+        cntJumpFrames = cntWalkFrames = cntFallFrames = cntAttackFrames = cntDashFrames = cntTakeHitFrames = 0;
     }
     else
     {
@@ -275,13 +289,18 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
         cntWalkFrames++;
         if (cntWalkFrames >= TOTAL_PLAYER_WALK_SPRITES * 6)
             cntWalkFrames = 0;
-        cntJumpFrames = cntIdleFrames = cntFallFrames = cntAttackFrames = cntDashFrames = 0;
+        cntJumpFrames = cntIdleFrames = cntFallFrames = cntAttackFrames = cntDashFrames = cntTakeHitFrames = 0;
     }
 }
 
 void Player::attacked(int value)
 {
     HP.addHP(-value);
+    if(value > 0) 
+    {
+        cntTakeHitFrames = 0;
+        isTakeHit = true;
+    }
 }
 
 void Player::setCamera(SDL_Rect &camera)
