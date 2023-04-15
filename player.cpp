@@ -17,9 +17,29 @@ void FireAttack::attack(RenderWindow &window, int x, int y, SDL_Rect mBox, SDL_R
         cntFrames = 0;
 }
 
-Player::Player(float x, float y, SDL_Texture *mTexture, SDL_Texture *mFireAttackTexture) : Entity(x, y, mTexture)
+HealthPoint::HealthPoint(SDL_Texture *mTexture) : Entity(0, 0, mTexture)
+{
+    HP = TOTAL_HP;
+    for (int i = 0, x = 0; i < TOTAL_HP_SPRITES; i++, x += HP_TEXTURE_WIDTH)
+        gClips[i] = {x, 0, HP_TEXTURE_WIDTH, HP_TEXTURE_HEIGHT};
+    mBox = {0, 0, HP_WIDTH, HP_HEIGHT};
+}
+
+void HealthPoint::render(RenderWindow &window)
+{
+    for(int i = 0, x = HP_POS_X; i < TOTAL_HP; i++, x += HP_WIDTH)
+        window.renderPlayer(getTexture(), x, HP_POS_Y, mBox, &gClips[i >= HP]);
+}
+
+void HealthPoint::addHP(int value)
+{
+    HP = max(0, HP + value);
+}
+
+Player::Player(float x, float y, SDL_Texture *mTexture, SDL_Texture *mFireAttackTexture, SDL_Texture *mHPTexture) : Entity(x, y, mTexture)
 {
     fireAttackAnimation = FireAttack(x, y, mFireAttackTexture);
+    HP = HealthPoint(mHPTexture);
     direction = 1;
     cntJump = 0;
     mVelX = 0;
@@ -181,6 +201,10 @@ void Player::move(Tile *tiles, double timeStep)
 
 void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily)
 {
+    // render HP
+    HP.render(window);
+
+
     if (isDashing)
     {
         SDL_Rect tmpBox = {mBox.x, mBox.y, mBox.w * 1.5, mBox.h};
@@ -209,7 +233,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
         tmpBox.w = FireAttack::FIRE_ATTACK_TEXTURE_WIDTH;
         tmpBox.h = FireAttack::FIRE_ATTACK_TEXTURE_HEIGHT;
         if(cntAttackFrames == 0) 
-            skeletonFamily.attack(tmpBox);
+            skeletonFamily.attacked(tmpBox);
         cntAttackFrames++;
         if (cntAttackFrames >= TOTAL_PLAYER_ATTACK_SPRITES * 6)
         {
@@ -253,6 +277,11 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
             cntWalkFrames = 0;
         cntJumpFrames = cntIdleFrames = cntFallFrames = cntAttackFrames = cntDashFrames = 0;
     }
+}
+
+void Player::attacked(int value)
+{
+    HP.addHP(-value);
 }
 
 void Player::setCamera(SDL_Rect &camera)

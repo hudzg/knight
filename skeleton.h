@@ -41,7 +41,7 @@ public:
     static const int MAX_WALK_WIDTH = 240;
     static const int MAX_CHASE_WIDTH = 320;
     static const int MAX_IDLE_FRAMES = 4;
-    static const int MAX_ATTACK_WIDTH = 16;
+    static const int MAX_ATTACK_WIDTH = 8;
 
     static const int SKELETON_INITIAL_HP = 4;
 
@@ -50,7 +50,8 @@ public:
     bool checkCollisionWall(SDL_Rect &a, Tile *b);
     void move(Tile *tiles, const SDL_Rect &playerBox, double timeStep = 1.0 / 60);
     void render(RenderWindow &window, SDL_Rect &camera);
-    void attack(const SDL_Rect &playerAttackRect);
+    void attacked(const SDL_Rect &playerAttackRect);
+    int getAttack(SDL_Rect playerBox);
     int getPosX();
     int getPosY();
 };
@@ -64,7 +65,8 @@ class SkeletonFamily
     SkeletonFamily(SDL_Texture *mTexture = NULL);
     void move(Tile *tiles, const SDL_Rect &playerBox);
     void render(RenderWindow &window, SDL_Rect &camera);
-    void attack(const SDL_Rect &playerAttackRect);
+    void attacked(const SDL_Rect &playerAttackRect);
+    int getCountAttack(SDL_Rect playerBox);
 };
 
 #endif

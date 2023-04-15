@@ -104,7 +104,7 @@ bool Game::setTiles(Tile *tiles)
 
 bool Game::setPlayer()
 {
-    player = Player(200.0, 0.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE]);
+    player = Player(200.0, 0.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE]);
     return true;
 }
 
@@ -137,6 +137,17 @@ bool Game::loadMedia()
         success = false;
     }
     gTexture[SKELETON_TEXTURE] = window.loadFromFile("images/skeleton/skeleton.png");
+    if (gTexture[SKELETON_TEXTURE] == NULL)
+    {
+        printf("Failed to load fire skeleton texture\n");
+        success = false;
+    }
+    gTexture[HP_TEXTURE] = window.loadFromFile("images/hp/hp.png");
+    if (gTexture[HP_TEXTURE] == NULL)
+    {
+        printf("Failed to load fire hp texture\n");
+        success = false;
+    }
     if (!setTiles(tiles))
     {
         printf("Failed to load tile set\n");
@@ -144,7 +155,7 @@ bool Game::loadMedia()
     }
     if (!setPlayer())
     {
-        printf("Failed to set dot\n");
+        printf("Failed to set player\n");
         success = false;
     }
     if(!setSkeleton())
@@ -180,6 +191,7 @@ void Game::renderGame()
     skeletonFamily.move(tiles, player.getBox());
     skeletonFamily.render(window, camera);
 
+    player.attacked(skeletonFamily.getCountAttack(player.getBox()));
     player.render(window, camera, skeletonFamily);
     
     window.renderPresent();

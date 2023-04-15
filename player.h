@@ -26,6 +26,28 @@ public:
     void attack(RenderWindow &window, int x, int y, SDL_Rect mBox, SDL_RendererFlip flip);
 };
 
+class HealthPoint : public Entity
+{
+private:
+    static const int TOTAL_HP_SPRITES = 2;
+    SDL_Rect gClips[TOTAL_HP_SPRITES];
+    int HP;
+    SDL_Rect mBox;
+
+public:
+    static const int HP_WIDTH = 80;
+    static const int HP_HEIGHT = 80;
+    static const int HP_TEXTURE_WIDTH = 160;
+    static const int HP_TEXTURE_HEIGHT = 160;
+
+    static const int TOTAL_HP = 4;
+    static const int HP_POS_X = 80;
+    static const int HP_POS_Y = 40;
+    HealthPoint(SDL_Texture *mTexture = NULL);
+    void render(RenderWindow &window);
+    void addHP(int value);
+};
+
 class Player : public Entity
 {
 private:
@@ -49,6 +71,7 @@ private:
     SDL_Rect gPlayerDashClips[TOTAL_PLAYER_DASH_SPRITES];
     SDL_RendererFlip flip;
     FireAttack fireAttackAnimation;
+    HealthPoint HP;
 
 public:
     static const int PLAYER_WIDTH = 128;
@@ -60,13 +83,13 @@ public:
     static const int PLAYER_DASH_VEL_LEVEL = 2;
     static const int PLAYER_JUMP_VEL_LEVEL = 2;
 
-    // void shiftColliders();
-    Player(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL, SDL_Texture *mFireAttackTexture = NULL);
+    Player(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL, SDL_Texture *mFireAttackTexture = NULL, SDL_Texture *mHPTexture = NULL);
     bool checkCollision(SDL_Rect &a, const SDL_Rect &b);
     bool checkCollisionWall(SDL_Rect &a, Tile *b);
     void handleEvent(SDL_Event &e);
     void move(Tile *tiles = NULL, double timeStep = 1.0 / 60);
     void render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily);
+    void attacked(int value);
     void setCamera(SDL_Rect &camera);
     int getPosX();
     int getPosY();

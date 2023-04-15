@@ -191,7 +191,17 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
     cntWalkFrames = cntAttackFrames = cntTakeHitFrames = 0;
 }
 
-void Skeleton::attack(const SDL_Rect &playerAttackRect)
+int Skeleton::getAttack(SDL_Rect playerBox)
+{
+    if (isDied || !isAttacking || cntAttackFrames != 56)
+        return 0;
+    SDL_Rect attackBox = {mBox.x + mBox.w, mBox.y - mBox.h * 0.12, mBox.w * 0.8, mBox.h * 1.12};
+    if(flip != SDL_FLIP_NONE) attackBox.x = mBox.x -mBox.w * 0.8;
+    if(checkCollision(attackBox, playerBox)) return 1;
+    return 0;
+}
+
+void Skeleton::attacked(const SDL_Rect &playerAttackRect)
 {
     if(isDeath || isDied) return;
     if(checkCollision(mBox, playerAttackRect)) 
@@ -222,6 +232,7 @@ SkeletonFamily::SkeletonFamily(SDL_Texture *mTexture)
 {
     for (int i = 0; i < TOTAL_SKELETON; i++)
         skeleton[i] = Skeleton(rand() % LEVEL_WIDTH, 0, mTexture);
+    skeleton[0] = Skeleton(500, 200, mTexture);
 }
 
 void SkeletonFamily::move(Tile *tiles, const SDL_Rect &playerBox)
@@ -236,8 +247,16 @@ void SkeletonFamily::render(RenderWindow &window, SDL_Rect &camera)
         skeleton[i].render(window, camera);
 }
 
-void SkeletonFamily::attack(const SDL_Rect &playerAttackRect)
+void SkeletonFamily::attacked(const SDL_Rect &playerAttackRect)
 {
     for (int i = 0; i < TOTAL_SKELETON; i++)
-        skeleton[i].attack(playerAttackRect);
+        skeleton[i].attacked(playerAttackRect);
+}
+
+int SkeletonFamily::getCountAttack(SDL_Rect playerBox)
+{
+    int result = 0;
+    for (int i = 0; i < TOTAL_SKELETON; i++)
+        result += skeleton[i].getAttack(playerBox);
+    return result;
 }
