@@ -22,6 +22,8 @@ public:
     static const int FIRE_ATTACK_HEIGHT = 168;
     static const int FIRE_ATTACK_TEXTURE_WIDTH = 302;
     static const int FIRE_ATTACK_TEXTURE_HEIGHT = 112;
+    static const int FIRE_ATTACK_REAL_WIDTH = 300;
+    static const int FIRE_ATTACK_REAL_HEIGHT = 112;
     FireAttack(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL);
     void attack(RenderWindow &window, int x, int y, SDL_Rect mBox, SDL_RendererFlip flip);
 };

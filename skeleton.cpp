@@ -48,10 +48,37 @@ Skeleton::Skeleton(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mText
 
 void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
 {
-    if(isDied || isDeath || isAttacking) return;
+    if (isDied)
+        return;
+
+    if (isTakeHit)
+    {
+        if (mVelX != 0)
+        {
+            isWalking = true;
+            if (mVelX < 0)
+            {
+                direction = -1;
+                flip = SDL_FLIP_HORIZONTAL;
+            }
+            else
+            {
+                direction = 1;
+                flip = SDL_FLIP_NONE;
+            }
+        }
+        else
+            isWalking = false;
+        return;
+    }
+
+    if (isAttacking || isDeath)
+        return;
+
     SDL_Rect attackBox = {mPosX - MAX_ATTACK_WIDTH, mPosY, MAX_ATTACK_WIDTH * 2 + SKELETON_WIDTH, SKELETON_HEIGHT};
     // if (mPosX - MAX_ATTACK_WIDTH <= playerBox.x && playerBox.x <= mPosX + MAX_ATTACK_WIDTH)
-    if(checkCollision(attackBox, playerBox))
+
+    if (checkCollision(attackBox, playerBox))
     {
         if (playerBox.x < mPosX)
         {
@@ -67,9 +94,9 @@ void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
     }
     else
     {
-        SDL_Rect chasingBox = {mPosX - MAX_CHASE_WIDTH, mPosY, MAX_CHASE_WIDTH * 2 + SKELETON_WIDTH, SKELETON_HEIGHT};
+        SDL_Rect chasingBox = {initialX - MAX_CHASE_WIDTH, mPosY, MAX_CHASE_WIDTH * 2 + SKELETON_WIDTH, SKELETON_HEIGHT};
         // if (initialX - MAX_CHASE_WIDTH <= playerBox.x && playerBox.x <= initialX + MAX_CHASE_WIDTH)
-        if(checkCollision(chasingBox, playerBox))
+        if (checkCollision(chasingBox, playerBox))
         {
             isChasing = true;
             if (playerBox.x >= mPosX)
@@ -84,7 +111,8 @@ void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
         }
     }
 
-    if(isAttacking) return;
+    if (isAttacking)
+        return;
 
     if (mVelX != 0)
     {
@@ -103,7 +131,8 @@ void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
     else
         isWalking = false;
 
-    if(isTakeHit) return;
+    if (isTakeHit)
+        return;
 
     mPosX += mVelX * timeStep;
     mBox.x = mPosX;
@@ -129,7 +158,7 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
 {
     if (isDied || !checkCollision(mBox, camera))
         return;
-    if(isDeath)
+    if (isDeath)
     {
         SDL_Rect tmpBox = {mBox.x, mBox.y, 1.0 * mBox.w * 330 / 240, 1.0 * mBox.h * 320 / 330};
         window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gSkeletonDeathClips[cntDeathFrames / 8], 0.0, NULL, flip);
@@ -151,12 +180,14 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
             cntTakeHitFrames = 0;
         }
         cntIdleFrames = cntWalkFrames = cntAttackFrames = 0;
+        isAttacking = false;
         return;
     }
     if (isAttacking)
     {
         SDL_Rect tmpBox = {mBox.x, mBox.y - mBox.h * 0.12, mBox.w * 1.8, mBox.h * 1.12};
-        if(flip != SDL_FLIP_NONE) tmpBox.x -= mBox.w * 0.8;
+        if (flip != SDL_FLIP_NONE)
+            tmpBox.x -= mBox.w * 0.8;
         window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gSkeletonAttackClips[cntAttackFrames / 8], 0.0, NULL, flip);
         cntAttackFrames++;
         if (cntAttackFrames >= TOTAL_SKELETON_ATTACK_SPRITES * 8)
@@ -196,25 +227,29 @@ int Skeleton::getAttack(SDL_Rect playerBox)
     if (isDied || !isAttacking || cntAttackFrames != 60)
         return 0;
     SDL_Rect attackBox = {mBox.x + mBox.w, mBox.y - mBox.h * 0.12, mBox.w * 0.8, mBox.h * 1.12};
-    if(flip != SDL_FLIP_NONE) attackBox.x = mBox.x -mBox.w * 0.8;
-    if(checkCollision(attackBox, playerBox)) return 1;
+    if (flip != SDL_FLIP_NONE)
+        attackBox.x = mBox.x - mBox.w * 0.8;
+    if (checkCollision(attackBox, playerBox))
+        return 1;
     return 0;
 }
 
 void Skeleton::attacked(const SDL_Rect &playerAttackRect)
 {
-    if(isDeath || isDied) return;
-    if(checkCollision(mBox, playerAttackRect)) 
+    if (isDeath || isDied)
+        return;
+    if (checkCollision(mBox, playerAttackRect))
     {
         HP--;
-        if(HP == 0)
+        if (HP == 0)
         {
             isDeath = true;
         }
         isTakeHit = true;
-        if((playerAttackRect.x * 2 + playerAttackRect.w) / 2 >= (mBox.x * 2 + mBox.w) / 2)
+        if ((playerAttackRect.x * 2 + playerAttackRect.w) / 2 >= (mBox.x * 2 + mBox.w) / 2)
             mVelX = SKELETON_VEL;
-        else mVelX = -SKELETON_VEL;
+        else
+            mVelX = -SKELETON_VEL;
     }
 }
 

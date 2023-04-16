@@ -11,6 +11,8 @@ void FireAttack::attack(RenderWindow &window, int x, int y, SDL_Rect mBox, SDL_R
 {
     mBox.w = FIRE_ATTACK_WIDTH;
     mBox.h = FIRE_ATTACK_HEIGHT;
+    // mBox.w = FIRE_ATTACK_TEXTURE_WIDTH;
+    // mBox.h = FIRE_ATTACK_TEXTURE_HEIGHT;
     window.renderPlayer(getTexture(), x, y, mBox, &gClips[cntFrames / 2], 0.0, NULL, flip);
     cntFrames++;
     if (cntFrames >= TOTAL_ATTACK_SPRITES * 2)
@@ -27,7 +29,7 @@ HealthPoint::HealthPoint(SDL_Texture *mTexture) : Entity(0, 0, mTexture)
 
 void HealthPoint::render(RenderWindow &window)
 {
-    for(int i = 0, x = HP_POS_X; i < TOTAL_HP; i++, x += HP_WIDTH)
+    for (int i = 0, x = HP_POS_X; i < TOTAL_HP; i++, x += HP_WIDTH)
         window.renderPlayer(getTexture(), x, HP_POS_Y, mBox, &gClips[i >= HP]);
 }
 
@@ -207,11 +209,11 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
     // render HP
     HP.render(window);
 
-    if(isTakeHit)
+    if (isTakeHit)
     {
-        window.renderPlayer(getTexture(), mPosX - camera.x, mPosY - camera.y, mBox, &gPlayerTakeHitClips[cntTakeHitFrames / 4], 0.0, NULL, flip);
+        window.renderPlayer(getTexture(), mPosX - camera.x, mPosY - camera.y, mBox, &gPlayerTakeHitClips[cntTakeHitFrames / 8], 0.0, NULL, flip);
         cntTakeHitFrames++;
-        if (cntTakeHitFrames >= TOTAL_PLAYER_TAKE_HIT_SPRITES * 4)
+        if (cntTakeHitFrames >= TOTAL_PLAYER_TAKE_HIT_SPRITES * 8)
         {
             isTakeHit = false;
             cntTakeHitFrames = 0;
@@ -243,10 +245,13 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
             value = -PLAYER_WIDTH / 2;
         window.renderPlayer(getTexture(), mPosX - camera.x + value, mPosY - camera.y, tmpBox, &gPlayerAttackClips[cntAttackFrames / 6], 0.0, NULL, flip);
         fireAttackAnimation.attack(window, mPosX - camera.x - PLAYER_WIDTH + (direction == -1 ? value : 0), mPosY - camera.y, mBox, flip);
-        tmpBox.x += - PLAYER_WIDTH;
-        tmpBox.w = FireAttack::FIRE_ATTACK_TEXTURE_WIDTH;
-        tmpBox.h = FireAttack::FIRE_ATTACK_TEXTURE_HEIGHT;
-        if(cntAttackFrames == 0) 
+        tmpBox.x += - PLAYER_WIDTH + (direction == -1 ? value : 0);
+        tmpBox.x += (FireAttack::FIRE_ATTACK_WIDTH - FireAttack::FIRE_ATTACK_REAL_WIDTH) / 2;
+        tmpBox.w = FireAttack::FIRE_ATTACK_REAL_WIDTH;
+        tmpBox.h = FireAttack::FIRE_ATTACK_REAL_HEIGHT;
+        // SDL_Rect tmpBox2 = {tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox.w, tmpBox.h};
+        // window.renderBox(tmpBox2);
+        if (cntAttackFrames == 0)
             skeletonFamily.attacked(tmpBox);
         cntAttackFrames++;
         if (cntAttackFrames >= TOTAL_PLAYER_ATTACK_SPRITES * 6)
@@ -296,7 +301,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
 void Player::attacked(int value)
 {
     HP.addHP(-value);
-    if(value > 0) 
+    if (value > 0)
     {
         cntTakeHitFrames = 0;
         isTakeHit = true;

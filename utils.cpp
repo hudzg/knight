@@ -81,7 +81,7 @@ void RenderWindow::close()
     Mix_Quit();
 }
 
-SDL_Texture* RenderWindow::loadFromFile(std::string path)
+SDL_Texture *RenderWindow::loadFromFile(std::string path)
 {
     SDL_Texture *newTexture = NULL;
     SDL_Surface *loadedSurface = IMG_Load(path.c_str());
@@ -98,7 +98,7 @@ SDL_Texture* RenderWindow::loadFromFile(std::string path)
     return newTexture;
 }
 
-void RenderWindow::renderTile(SDL_Texture* mTexture, int x, int y, SDL_Rect rect, SDL_Rect *clip, double angle, SDL_Point *center, SDL_RendererFlip flip)
+void RenderWindow::renderTile(SDL_Texture *mTexture, int x, int y, SDL_Rect rect, SDL_Rect *clip, double angle, SDL_Point *center, SDL_RendererFlip flip)
 {
     SDL_Rect renderQuad = {x, y, rect.w, rect.h};
     // if (clip != NULL)
@@ -109,7 +109,7 @@ void RenderWindow::renderTile(SDL_Texture* mTexture, int x, int y, SDL_Rect rect
     SDL_RenderCopyEx(gRenderer, mTexture, clip, &renderQuad, angle, center, flip);
 }
 
-void RenderWindow::renderPlayer(SDL_Texture* mTexture, int x, int y, SDL_Rect rect, SDL_Rect *clip, double angle, SDL_Point *center, SDL_RendererFlip flip)
+void RenderWindow::renderPlayer(SDL_Texture *mTexture, int x, int y, SDL_Rect rect, SDL_Rect *clip, double angle, SDL_Point *center, SDL_RendererFlip flip)
 {
     SDL_Rect renderQuad = {x, y, rect.w, rect.h};
     // if (clip != NULL)
@@ -118,4 +118,23 @@ void RenderWindow::renderPlayer(SDL_Texture* mTexture, int x, int y, SDL_Rect re
     //     renderQuad.h = clip->h;
     // }
     SDL_RenderCopyEx(gRenderer, mTexture, clip, &renderQuad, angle, center, flip);
+}
+
+void RenderWindow::renderHitbox(SDL_Texture *mTexture, int x, int y, SDL_Rect rect, SDL_Rect *clip, double angle, SDL_Point *center, SDL_RendererFlip flip)
+{
+    SDL_Rect renderQuad = {x, y, rect.w, rect.h};
+    // if (clip != NULL)
+    // {
+    //     renderQuad.w = clip->w;
+    //     renderQuad.h = clip->h;
+    // }
+    SDL_RenderCopyEx(gRenderer, mTexture, clip, &renderQuad, angle, center, flip);
+    SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0x00, 0xFF);
+    SDL_RenderDrawRect(gRenderer, &renderQuad);
+}
+
+void RenderWindow::renderBox(SDL_Rect rect)
+{
+    SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0x00, 0xFF);
+    SDL_RenderDrawRect(gRenderer, &rect);
 }

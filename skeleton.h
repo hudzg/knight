@@ -38,7 +38,7 @@ public:
     static const int SKELETON_TEXTURE_HEIGHT = 330;
     static const int SKELETON_VEL = 150;
 
-    static const int MAX_WALK_WIDTH = 240;
+    static const int MAX_WALK_WIDTH = 320;
     static const int MAX_CHASE_WIDTH = 320;
     static const int MAX_IDLE_FRAMES = 4;
     static const int MAX_ATTACK_WIDTH = 8;
