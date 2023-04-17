@@ -93,7 +93,7 @@ public:
     void handleEvent(SDL_Event &e);
     void move(Tile *tiles = NULL, double timeStep = 1.0 / 60);
     void render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily);
-    void attacked(int value);
+    void attacked(std::pair <int, int> value);
     void setCamera(SDL_Rect &camera);
     int getPosX();
     int getPosY();

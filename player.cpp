@@ -93,6 +93,8 @@ bool Player::checkCollisionWall(SDL_Rect &a, Tile *b)
 
 void Player::handleEvent(SDL_Event &e)
 {
+    // if (isTakeHit)
+    //     return;
     if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
     {
         switch (e.key.keysym.sym)
@@ -101,7 +103,7 @@ void Player::handleEvent(SDL_Event &e)
             isDashing = true;
             break;
         case SDLK_SPACE:
-            if (onGround)
+            if (onGround && !isTakeHit)
             {
                 mVelY = -PLAYER_VEL * PLAYER_JUMP_VEL_LEVEL;
                 onGround = false;
@@ -129,7 +131,7 @@ void Player::handleEvent(SDL_Event &e)
     }
     else if (e.type == SDL_MOUSEBUTTONDOWN && e.key.repeat == 0)
     {
-        if (e.button.button == SDL_BUTTON_LEFT)
+        if (e.button.button == SDL_BUTTON_LEFT && !isTakeHit)
         {
             isAttacking = true;
         }
@@ -151,43 +153,57 @@ void Player::move(Tile *tiles, double timeStep)
     else
         isJumping = false;
 
-    if (mVelX != 0)
+    if (isTakeHit)
     {
-        isWalking = true;
-        if (mVelX < 0)
+        // printf()
+        mPosX += 0.5 * direction * PLAYER_VEL * timeStep;
+        mBox.x = mPosX;
+        if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles))
         {
-            direction = -1;
-            flip = SDL_FLIP_HORIZONTAL;
+            mPosX -= direction * PLAYER_VEL * timeStep;
+            mBox.x = mPosX;
+        }
+    }
+    else
+    {
+        if (mVelX != 0)
+        {
+            isWalking = true;
+            if (mVelX < 0)
+            {
+                direction = -1;
+                flip = SDL_FLIP_HORIZONTAL;
+            }
+            else
+            {
+                direction = 1;
+                flip = SDL_FLIP_NONE;
+            }
+        }
+        else
+            isWalking = false;
+
+        if (isDashing)
+        {
+            int mDashVelX = PLAYER_DASH_VEL_LEVEL * direction * PLAYER_VEL;
+            mPosX += mDashVelX * timeStep;
+            mBox.x = mPosX;
+            if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles))
+            {
+                mPosX -= mDashVelX * timeStep;
+                mBox.x = mPosX;
+            }
         }
         else
         {
-            direction = 1;
-            flip = SDL_FLIP_NONE;
-        }
-    }
-    else
-        isWalking = false;
-
-    if (isDashing)
-    {
-        int mDashVelX = PLAYER_DASH_VEL_LEVEL * direction * PLAYER_VEL;
-        mPosX += mDashVelX * timeStep;
-        mBox.x = mPosX;
-        if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles))
-        {
-            mPosX -= mDashVelX * timeStep;
+            mPosX += mVelX * timeStep;
             mBox.x = mPosX;
-        }
-    }
-    else
-    {
-        mPosX += mVelX * timeStep;
-        mBox.x = mPosX;
-        if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles))
-        {
-            // printf("h\n");
-            mPosX -= mVelX * timeStep;
-            mBox.x = mPosX;
+            if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles))
+            {
+                // printf("h\n");
+                mPosX -= mVelX * timeStep;
+                mBox.x = mPosX;
+            }
         }
     }
 
@@ -245,7 +261,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
             value = -PLAYER_WIDTH / 2;
         window.renderPlayer(getTexture(), mPosX - camera.x + value, mPosY - camera.y, tmpBox, &gPlayerAttackClips[cntAttackFrames / 6], 0.0, NULL, flip);
         fireAttackAnimation.attack(window, mPosX - camera.x - PLAYER_WIDTH + (direction == -1 ? value : 0), mPosY - camera.y, mBox, flip);
-        tmpBox.x += - PLAYER_WIDTH + (direction == -1 ? value : 0);
+        tmpBox.x += -PLAYER_WIDTH + (direction == -1 ? value : 0);
         tmpBox.x += (FireAttack::FIRE_ATTACK_WIDTH - FireAttack::FIRE_ATTACK_REAL_WIDTH) / 2;
         tmpBox.w = FireAttack::FIRE_ATTACK_REAL_WIDTH;
         tmpBox.h = FireAttack::FIRE_ATTACK_REAL_HEIGHT;
@@ -298,13 +314,24 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
     }
 }
 
-void Player::attacked(int value)
+void Player::attacked(std::pair<int, int> value)
 {
-    HP.addHP(-value);
-    if (value > 0)
+    HP.addHP(-value.first);
+    if (value.first > 0)
     {
+        // printf("h\n");
         cntTakeHitFrames = 0;
         isTakeHit = true;
+        if (value.second == 1)
+        {
+            direction = 1;
+            flip = SDL_FLIP_HORIZONTAL;
+        }
+        else
+        {
+            direction = -1;
+            flip = SDL_FLIP_NONE;
+        }
     }
 }
 

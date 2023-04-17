@@ -51,7 +51,7 @@ public:
     void move(Tile *tiles, const SDL_Rect &playerBox, double timeStep = 1.0 / 60);
     void render(RenderWindow &window, SDL_Rect &camera);
     void attacked(const SDL_Rect &playerAttackRect);
-    int getAttack(SDL_Rect playerBox);
+    std::pair <int, int> getAttack(SDL_Rect playerBox);
     int getPosX();
     int getPosY();
 };
@@ -59,14 +59,14 @@ public:
 class SkeletonFamily
 {
     private:
-    static const int TOTAL_SKELETON = 8;
+    static const int TOTAL_SKELETON = 1;
     Skeleton skeleton[TOTAL_SKELETON];
     public:
     SkeletonFamily(SDL_Texture *mTexture = NULL);
     void move(Tile *tiles, const SDL_Rect &playerBox);
     void render(RenderWindow &window, SDL_Rect &camera);
     void attacked(const SDL_Rect &playerAttackRect);
-    int getCountAttack(SDL_Rect playerBox);
+    std::pair <int, int> getCountAttack(SDL_Rect playerBox);
 };
 
 #endif

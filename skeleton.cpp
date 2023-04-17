@@ -48,6 +48,7 @@ Skeleton::Skeleton(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mText
 
 void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
 {
+    // printf("%f %f\n", mPosX, mPosY);
     if (isDied)
         return;
 
@@ -74,12 +75,13 @@ void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
 
     if (isAttacking || isDeath)
         return;
+    // if(isDeath) return;
 
     SDL_Rect attackBox = {mPosX - MAX_ATTACK_WIDTH, mPosY, MAX_ATTACK_WIDTH * 2 + SKELETON_WIDTH, SKELETON_HEIGHT};
-    // if (mPosX - MAX_ATTACK_WIDTH <= playerBox.x && playerBox.x <= mPosX + MAX_ATTACK_WIDTH)
 
     if (checkCollision(attackBox, playerBox))
     {
+        // printf("%d %f\n", playerBox.x, mPosX);
         if (playerBox.x < mPosX)
         {
             direction = -1;
@@ -87,6 +89,7 @@ void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
         }
         else
         {
+            // printf("h\n");
             direction = 1;
             flip = SDL_FLIP_NONE;
         }
@@ -222,16 +225,17 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
     cntWalkFrames = cntAttackFrames = cntTakeHitFrames = 0;
 }
 
-int Skeleton::getAttack(SDL_Rect playerBox)
+std::pair <int, int> Skeleton::getAttack(SDL_Rect playerBox)
 {
+    // printf("%d\n", direction);
     if (isDied || !isAttacking || cntAttackFrames != 60)
-        return 0;
+        return make_pair(0, 0);
     SDL_Rect attackBox = {mBox.x + mBox.w, mBox.y - mBox.h * 0.12, mBox.w * 0.8, mBox.h * 1.12};
     if (flip != SDL_FLIP_NONE)
         attackBox.x = mBox.x - mBox.w * 0.8;
     if (checkCollision(attackBox, playerBox))
-        return 1;
-    return 0;
+        return make_pair(1, direction);
+    return make_pair(0, 0);
 }
 
 void Skeleton::attacked(const SDL_Rect &playerAttackRect)
@@ -288,10 +292,15 @@ void SkeletonFamily::attacked(const SDL_Rect &playerAttackRect)
         skeleton[i].attacked(playerAttackRect);
 }
 
-int SkeletonFamily::getCountAttack(SDL_Rect playerBox)
+std::pair <int, int> SkeletonFamily::getCountAttack(SDL_Rect playerBox)
 {
-    int result = 0;
+    std::pair <int, int> result = make_pair(0, 0);
     for (int i = 0; i < TOTAL_SKELETON; i++)
-        result += skeleton[i].getAttack(playerBox);
+    {
+        std::pair <int, int> tmp = skeleton[i].getAttack(playerBox);
+        result.first += tmp.first;
+        if(tmp.first > 0) result.second = tmp.second;
+    }
+    // printf("%d\n", result.second);
     return result;
 }
