@@ -47,6 +47,7 @@ Boss::Boss(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mTexture)
 
     notTakeHit = false;
     cntAttacked = cntNotTakeHit = 0;
+    cntJump = 0;
 }
 
 void Boss::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
@@ -54,16 +55,28 @@ void Boss::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
     // printf("%f %f\n", mPosX, mPosY);
     if (isDied)
         return;
-    
-    if(notTakeHit)
+
+    if (notTakeHit)
     {
         cntNotTakeHit++;
-        if(cntNotTakeHit == MAX_BOSS_NOT_TAKE_HIT)
+        if (cntNotTakeHit == MAX_BOSS_NOT_TAKE_HIT)
         {
             cntNotTakeHit = 0;
             notTakeHit = false;
         }
     }
+
+    mVelY += GRAVITY_SPEED;
+    if (mVelY >= MAX_FALL_SPEED)
+        mVelY = MAX_FALL_SPEED;
+
+    mPosY += mVelY * timeStep;
+    mBox.y = mPosY;
+    if (mPosY < 0 || mPosY + BOSS_HEIGHT > LEVEL_HEIGHT || checkCollisionWall(mBox, tiles))
+    {
+        mPosY -= mVelY * timeStep;
+    }
+    mBox.y = mPosY;
 
     if (isTakeHit)
     {
@@ -107,6 +120,12 @@ void Boss::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
             flip = SDL_FLIP_HORIZONTAL;
         }
         isAttacking = true;
+        cntJump++;
+        if (cntJump == MAX_BOSS_JUMP)
+        {
+            cntJump = 0;
+            mVelY = -BOSS_VEL * 6;
+        }
     }
     else
     {
@@ -159,20 +178,19 @@ void Boss::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
         direction *= -1;
     }
 
-    mPosY += mVelY * timeStep;
-    mBox.y = mPosY;
-    if (mPosY < 0 || mPosY + BOSS_HEIGHT > LEVEL_HEIGHT || checkCollisionWall(mBox, tiles))
-    {
-        mPosY -= mVelY * timeStep;
-    }
-    else
-        mBox.x = mPosX;
-    mBox.y = mPosY;
+    // mPosY += mVelY * timeStep;
+    // mBox.y = mPosY;
+    // if (mPosY < 0 || mPosY + BOSS_HEIGHT > LEVEL_HEIGHT || checkCollisionWall(mBox, tiles))
+    // {
+    //     mPosY -= mVelY * timeStep;
+    // }
+    mBox.x = mPosX;
+    // mBox.y = mPosY;
 }
 
 void Boss::render(RenderWindow &window, SDL_Rect &camera)
 {
-    if (isDied || !checkCollision(mBox, camera))
+    if (isDied)
         return;
     SDL_Rect tmpBox = {mBox.x + mBox.w / 2 - BOSS_RENDER_WIDTH / 2, mBox.y - BOSS_RENDER_HEIGHT + BOSS_HEIGHT, BOSS_RENDER_WIDTH, BOSS_RENDER_HEIGHT};
     SDL_Rect tmpBox2 = tmpBox;
@@ -182,7 +200,8 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
     if (isDeath)
     {
         // SDL_Rect tmpBox = {mBox.x + mBox.w / 2 - BOSS_TEXTURE_WIDTH, mBox.y, BOSS_TEXTURE_WIDTH * 2, BOSS_TEXTURE_HEIGHT * 2};
-        window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossDeathClips[cntDeathFrames / 8], 0.0, NULL, flip);
+        if (checkCollision(mBox, camera))
+            window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossDeathClips[cntDeathFrames / 8], 0.0, NULL, flip);
         cntDeathFrames++;
         if (cntDeathFrames >= TOTAL_BOSS_DEATH_SPRITES * 8)
         {
@@ -193,7 +212,8 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
     if (isTakeHit)
     {
         // SDL_Rect tmpBox = {mBox.x + mBox.w / 2 - BOSS_TEXTURE_WIDTH, mBox.y, BOSS_TEXTURE_WIDTH * 2, BOSS_TEXTURE_HEIGHT * 2};
-        window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossTakeHitClips[cntTakeHitFrames / 6], 0.0, NULL, flip);
+        if (checkCollision(mBox, camera))
+            window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossTakeHitClips[cntTakeHitFrames / 6], 0.0, NULL, flip);
         cntTakeHitFrames++;
         if (cntTakeHitFrames >= TOTAL_BOSS_TAKE_HIT_SPRITES * 6)
         {
@@ -210,8 +230,19 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
         // if (flip != SDL_FLIP_NONE)
         //     tmpBox.x -= mBox.w * 0.8;
         // SDL_Rect tmpBox = {mBox.x + mBox.w / 2 - BOSS_TEXTURE_WIDTH, mBox.y, BOSS_TEXTURE_WIDTH * 2, BOSS_TEXTURE_HEIGHT * 2};
-        window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossAttackClips[cntAttackFrames / 6], 0.0, NULL, flip);
+        if (checkCollision(mBox, camera))
+            window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossAttackClips[cntAttackFrames / 6], 0.0, NULL, flip);
         cntAttackFrames++;
+        // printf("%d\n", cntAttackFrames);
+        if (55 <= cntAttackFrames && cntAttackFrames <= 60)
+        {
+            SDL_Rect attackBox = {mBox.x + 0.5 * mBox.w, mBox.y, mBox.w * 1.16, mBox.h};
+            if (flip == SDL_FLIP_NONE)
+                attackBox.x -= mBox.w * 1.16;
+            attackBox.x -= camera.x;
+            attackBox.y -= camera.y;
+            window.renderBox(attackBox);
+        }
         if (cntAttackFrames >= TOTAL_BOSS_ATTACK_SPRITES * 6)
         {
             isAttacking = false;
@@ -223,7 +254,8 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
     if (isWalking)
     {
         // SDL_Rect tmpBox = {mBox.x + mBox.w / 2 - BOSS_TEXTURE_WIDTH, mBox.y, BOSS_TEXTURE_WIDTH * 2, BOSS_TEXTURE_HEIGHT * 2};
-        window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossWalkClips[cntWalkFrames / 4], 0.0, NULL, flip);
+        if (checkCollision(mBox, camera))
+            window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossWalkClips[cntWalkFrames / 4], 0.0, NULL, flip);
         cntWalkFrames++;
         if (cntWalkFrames >= TOTAL_BOSS_WALK_SPRITES * 4)
             cntWalkFrames = 0;
@@ -231,7 +263,8 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
         return;
     }
     // SDL_Rect tmpBox = {mBox.x + mBox.w / 2 - BOSS_TEXTURE_WIDTH, mBox.y, BOSS_TEXTURE_WIDTH * 2, BOSS_TEXTURE_HEIGHT * 2};
-    window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossIdleClips[cntIdleFrames / 8], 0.0, NULL, flip);
+    if (checkCollision(mBox, camera))
+        window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossIdleClips[cntIdleFrames / 8], 0.0, NULL, flip);
     cntIdleFrames++;
     if (cntIdleFrames >= TOTAL_BOSS_IDLE_SPRITES * 8)
     {
@@ -246,14 +279,14 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
     cntWalkFrames = cntAttackFrames = cntTakeHitFrames = 0;
 }
 
-std::pair <int, int> Boss::getAttack(SDL_Rect playerBox)
+std::pair<int, int> Boss::getAttack(SDL_Rect playerBox)
 {
     // printf("%d\n", direction);
     if (isDied || !isAttacking || cntAttackFrames != 60)
         return make_pair(0, 0);
-    SDL_Rect attackBox = {mBox.x + mBox.w, mBox.y - mBox.h * 0.12, mBox.w * 0.8, mBox.h * 1.12};
-    if (flip != SDL_FLIP_NONE)
-        attackBox.x = mBox.x - mBox.w * 0.8;
+    SDL_Rect attackBox = {mBox.x + 0.5 * mBox.w, mBox.y, mBox.w * 1.16, mBox.h};
+    if (flip == SDL_FLIP_NONE)
+        attackBox.x -= mBox.w * 1.16;
     if (checkCollision(attackBox, playerBox))
         return make_pair(1, direction);
     return make_pair(0, 0);
@@ -267,7 +300,7 @@ void Boss::attacked(const SDL_Rect &playerAttackRect)
     {
         HP--;
         cntAttacked++;
-        if(cntAttacked >= MAX_BOSS_ATTACKED)
+        if (cntAttacked >= MAX_BOSS_ATTACKED)
         {
             cntAttacked = 0;
             notTakeHit = true;

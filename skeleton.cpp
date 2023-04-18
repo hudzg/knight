@@ -159,12 +159,13 @@ void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
 
 void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
 {
-    if (isDied || !checkCollision(mBox, camera))
+    if (isDied)
         return;
     if (isDeath)
     {
         SDL_Rect tmpBox = {mBox.x, mBox.y, 1.0 * mBox.w * 330 / 240, 1.0 * mBox.h * 320 / 330};
-        window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gSkeletonDeathClips[cntDeathFrames / 8], 0.0, NULL, flip);
+        if(checkCollision(mBox, camera))
+            window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gSkeletonDeathClips[cntDeathFrames / 8], 0.0, NULL, flip);
         cntDeathFrames++;
         if (cntDeathFrames >= TOTAL_SKELETON_DEATH_SPRITES * 8)
         {
@@ -175,7 +176,8 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
     if (isTakeHit)
     {
         SDL_Rect tmpBox = {mBox.x, mBox.y, mBox.w * 1.25, mBox.h};
-        window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gSkeletonTakeHitClips[cntTakeHitFrames / 8], 0.0, NULL, flip);
+        if(checkCollision(mBox, camera))
+            window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gSkeletonTakeHitClips[cntTakeHitFrames / 8], 0.0, NULL, flip);
         cntTakeHitFrames++;
         if (cntTakeHitFrames >= TOTAL_SKELETON_TAKE_HIT_SPRITES * 8)
         {
@@ -191,7 +193,8 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
         SDL_Rect tmpBox = {mBox.x, mBox.y - mBox.h * 0.12, mBox.w * 1.8, mBox.h * 1.12};
         if (flip != SDL_FLIP_NONE)
             tmpBox.x -= mBox.w * 0.8;
-        window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gSkeletonAttackClips[cntAttackFrames / 8], 0.0, NULL, flip);
+        if(checkCollision(mBox, camera))
+            window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gSkeletonAttackClips[cntAttackFrames / 8], 0.0, NULL, flip);
         cntAttackFrames++;
         if (cntAttackFrames >= TOTAL_SKELETON_ATTACK_SPRITES * 8)
         {
@@ -203,14 +206,16 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
     }
     if (isWalking)
     {
-        window.renderPlayer(getTexture(), mBox.x - camera.x, mBox.y - camera.y, mBox, &gSkeletonWalkClips[cntWalkFrames / 4], 0.0, NULL, flip);
+        if(checkCollision(mBox, camera))
+            window.renderPlayer(getTexture(), mBox.x - camera.x, mBox.y - camera.y, mBox, &gSkeletonWalkClips[cntWalkFrames / 4], 0.0, NULL, flip);
         cntWalkFrames++;
         if (cntWalkFrames >= TOTAL_SKELETON_WALK_SPRITES * 4)
             cntWalkFrames = 0;
         cntIdleFrames = cntAttackFrames = cntTakeHitFrames = 0;
         return;
     }
-    window.renderPlayer(getTexture(), mBox.x - camera.x, mBox.y - camera.y, mBox, &gSkeletonIdleClips[cntIdleFrames / 4], 0.0, NULL, flip);
+    if(checkCollision(mBox, camera))
+        window.renderPlayer(getTexture(), mBox.x - camera.x, mBox.y - camera.y, mBox, &gSkeletonIdleClips[cntIdleFrames / 4], 0.0, NULL, flip);
     cntIdleFrames++;
     if (cntIdleFrames >= TOTAL_SKELETON_IDLE_SPRITES * 4)
     {

@@ -212,6 +212,7 @@ void Game::renderGame()
     boss.render(window, camera);
 
     player.attacked(skeletonFamily.getCountAttack(player.getBox()));
+    player.attacked(boss.getAttack(player.getBox()));
     player.render(window, camera, skeletonFamily, boss);
     
     window.renderPresent();

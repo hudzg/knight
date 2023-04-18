@@ -100,7 +100,8 @@ void Player::handleEvent(SDL_Event &e)
         switch (e.key.keysym.sym)
         {
         case SDLK_LSHIFT:
-            isDashing = true;
+            if (!isTakeHit)
+                isDashing = true;
             break;
         case SDLK_SPACE:
             if (onGround && !isTakeHit)
@@ -153,9 +154,12 @@ void Player::move(Tile *tiles, double timeStep)
     // else
     //     isJumping = false;
     mVelY += GRAVITY_SPEED;
-    if(mVelY >= MAX_FALL_SPEED) mVelY = MAX_FALL_SPEED;
-    if(mVelY < 0) isJumping = true;
-    else isJumping = false;
+    if (mVelY >= MAX_FALL_SPEED)
+        mVelY = MAX_FALL_SPEED;
+    if (mVelY < 0)
+        isJumping = true;
+    else
+        isJumping = false;
 
     if (isTakeHit)
     {

@@ -32,13 +32,18 @@ private:
     bool isDied;
 
     static const int MAX_BOSS_ATTACKED = 2;
-    static const int MAX_BOSS_NOT_TAKE_HIT = 240;
+    static const int MAX_BOSS_NOT_TAKE_HIT = 120;
+    static const int MAX_BOSS_JUMP = 4;
     bool notTakeHit;
     int cntNotTakeHit, cntAttacked;
+    int cntJump;
 
 public:
-    static const int BOSS_WIDTH = 192;
-    static const int BOSS_HEIGHT = 224;
+    // static const int BOSS_WIDTH = 192;
+    // static const int BOSS_HEIGHT = 224;
+    static const int BOSS_WIDTH = 288;
+    static const int BOSS_HEIGHT = 336;
+
     static const int BOSS_TEXTURE_WIDTH = 576;
     static const int BOSS_TEXTURE_HEIGHT = 320;
     static const int BOSS_RENDER_WIDTH = 864;
@@ -52,13 +57,16 @@ public:
 
     static const int BOSS_INITIAL_HP = 40;
 
+    static const int GRAVITY_SPEED = 30;
+    static const int MAX_FALL_SPEED = 1200;
+
     Boss(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL);
     bool checkCollision(SDL_Rect &a, const SDL_Rect &b);
     bool checkCollisionWall(SDL_Rect &a, Tile *b);
     void move(Tile *tiles, const SDL_Rect &playerBox, double timeStep = 1.0 / 60);
     void render(RenderWindow &window, SDL_Rect &camera);
     void attacked(const SDL_Rect &playerAttackRect);
-    std::pair <int, int> getAttack(SDL_Rect playerBox);
+    std::pair<int, int> getAttack(SDL_Rect playerBox);
     int getPosX();
     int getPosY();
 };
