@@ -7,6 +7,7 @@
 #include "entity.h"
 #include "utils.h"
 #include "skeleton.h"
+#include "boss.h"
 
 using namespace std;
 
@@ -85,14 +86,16 @@ public:
     static const int PLAYER_VEL = 600;
     static const int PLAYER_MAX_CNT_JUMP = 20;
     static const int PLAYER_DASH_VEL_LEVEL = 2;
-    static const int PLAYER_JUMP_VEL_LEVEL = 2;
+    static const int PLAYER_JUMP_VEL_LEVEL = 3;
+    static const int GRAVITY_SPEED = 120;
+    static const int MAX_FALL_SPEED = 1200;
 
     Player(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL, SDL_Texture *mFireAttackTexture = NULL, SDL_Texture *mHPTexture = NULL);
     bool checkCollision(SDL_Rect &a, const SDL_Rect &b);
     bool checkCollisionWall(SDL_Rect &a, Tile *b);
     void handleEvent(SDL_Event &e);
     void move(Tile *tiles = NULL, double timeStep = 1.0 / 60);
-    void render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily);
+    void render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss);
     void attacked(std::pair <int, int> value);
     void setCamera(SDL_Rect &camera);
     int getPosX();

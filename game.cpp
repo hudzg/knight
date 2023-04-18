@@ -114,6 +114,12 @@ bool Game::setSkeleton()
     return true;
 }
 
+bool Game::setBoss()
+{
+    boss = Boss(500.0, 0.0, gTexture[BOSS_TEXTURE]);
+    return true;
+}
+
 bool Game::loadMedia()
 {
     bool success = true;
@@ -148,6 +154,12 @@ bool Game::loadMedia()
         printf("Failed to load fire hp texture\n");
         success = false;
     }
+    gTexture[BOSS_TEXTURE] = window.loadFromFile("images/boss/boss.png");
+    if (gTexture[BOSS_TEXTURE] == NULL)
+    {
+        printf("Failed to load boss texture\n");
+        success = false;
+    }
     if (!setTiles(tiles))
     {
         printf("Failed to load tile set\n");
@@ -161,6 +173,11 @@ bool Game::loadMedia()
     if(!setSkeleton())
     {
         printf("Failed to set skeleton\n");
+        success = false;
+    }
+    if(!setBoss())
+    {
+        printf("Failed to set boss\n");
         success = false;
     }
     return success;
@@ -191,8 +208,11 @@ void Game::renderGame()
     skeletonFamily.move(tiles, player.getBox());
     skeletonFamily.render(window, camera);
 
+    boss.move(tiles, player.getBox());
+    boss.render(window, camera);
+
     player.attacked(skeletonFamily.getCountAttack(player.getBox()));
-    player.render(window, camera, skeletonFamily);
+    player.render(window, camera, skeletonFamily, boss);
     
     window.renderPresent();
 }

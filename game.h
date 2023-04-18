@@ -14,6 +14,7 @@
 #include "player.h"
 #include "utils.h"
 #include "skeleton.h"
+#include "boss.h"
 
 class Game
 {
@@ -26,12 +27,14 @@ private:
     bool running;
     Player player;
     SkeletonFamily skeletonFamily;
+    Boss boss;
 
 public:
     bool init();
     bool setTiles(Tile *tiles);
     bool setPlayer();
     bool setSkeleton();
+    bool setBoss();
     bool loadMedia();
     bool isRunning();
     void handleEvent(SDL_Event &event);

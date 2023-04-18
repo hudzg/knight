@@ -140,18 +140,22 @@ void Player::handleEvent(SDL_Event &e)
 
 void Player::move(Tile *tiles, double timeStep)
 {
-    if (mVelY < 0)
-    {
-        isJumping = true;
-        cntJump++;
-        if (cntJump >= PLAYER_MAX_CNT_JUMP)
-        {
-            cntJump = 0;
-            mVelY *= -1;
-        }
-    }
-    else
-        isJumping = false;
+    // if (mVelY < 0)
+    // {
+    //     isJumping = true;
+    //     cntJump++;
+    //     if (cntJump >= PLAYER_MAX_CNT_JUMP)
+    //     {
+    //         cntJump = 0;
+    //         mVelY *= -1;
+    //     }
+    // }
+    // else
+    //     isJumping = false;
+    mVelY += GRAVITY_SPEED;
+    if(mVelY >= MAX_FALL_SPEED) mVelY = MAX_FALL_SPEED;
+    if(mVelY < 0) isJumping = true;
+    else isJumping = false;
 
     if (isTakeHit)
     {
@@ -220,7 +224,7 @@ void Player::move(Tile *tiles, double timeStep)
     mBox.y = mPosY;
 }
 
-void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily)
+void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss)
 {
     // render HP
     HP.render(window);
@@ -268,7 +272,10 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
         // SDL_Rect tmpBox2 = {tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox.w, tmpBox.h};
         // window.renderBox(tmpBox2);
         if (cntAttackFrames == 0)
+        {
             skeletonFamily.attacked(tmpBox);
+            boss.attacked(tmpBox);
+        }
         cntAttackFrames++;
         if (cntAttackFrames >= TOTAL_PLAYER_ATTACK_SPRITES * 6)
         {
@@ -322,6 +329,7 @@ void Player::attacked(std::pair<int, int> value)
         // printf("h\n");
         cntTakeHitFrames = 0;
         isTakeHit = true;
+        mVelY = -750;
         if (value.second == 1)
         {
             direction = 1;
