@@ -28,6 +28,7 @@ bool RenderWindow::initSDL()
             {
 
                 SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+                SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_BLEND);
                 int imgFlags = IMG_INIT_PNG;
                 if (!(IMG_Init(imgFlags) & imgFlags))
                 {
@@ -137,4 +138,11 @@ void RenderWindow::renderBox(SDL_Rect rect)
 {
     SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0x00, 0xFF);
     SDL_RenderDrawRect(gRenderer, &rect);
+}
+
+void RenderWindow::renderFillBox(SDL_Rect rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+    // SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(gRenderer, r, g, b, a);
+    SDL_RenderFillRect(gRenderer, &rect);
 }

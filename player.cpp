@@ -236,6 +236,16 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
     if (isTakeHit)
     {
         window.renderPlayer(getTexture(), mPosX - camera.x, mPosY - camera.y, mBox, &gPlayerTakeHitClips[cntTakeHitFrames / 8], 0.0, NULL, flip);
+
+        // render red screen
+        if(cntTakeHitFrames < 20)
+        {
+            SDL_Rect redBox = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+            // window.renderFillBox(redBox, 255, 64, 64, 64);
+            window.renderFillBox(redBox, 139, 0, 0, 64);
+        }
+        // 
+
         cntTakeHitFrames++;
         if (cntTakeHitFrames >= TOTAL_PLAYER_TAKE_HIT_SPRITES * 8)
         {

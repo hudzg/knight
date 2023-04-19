@@ -173,6 +173,16 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
         }
         return;
     }
+    // render HP
+    SDL_Rect HPBox = mBox;
+    HPBox.y -= 16;
+    HPBox.h = 4;
+    HPBox.w = HPBox.w * HP / SKELETON_INITIAL_HP;
+    HPBox.x -= camera.x;
+    HPBox.y -= camera.y;
+    window.renderFillBox(HPBox, 255, 0, 0);
+    // 
+    
     if (isTakeHit)
     {
         SDL_Rect tmpBox = {mBox.x, mBox.y, mBox.w * 1.25, mBox.h};

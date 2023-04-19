@@ -193,10 +193,10 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
     if (isDied)
         return;
     SDL_Rect tmpBox = {mBox.x + mBox.w / 2 - BOSS_RENDER_WIDTH / 2, mBox.y - BOSS_RENDER_HEIGHT + BOSS_HEIGHT, BOSS_RENDER_WIDTH, BOSS_RENDER_HEIGHT};
-    SDL_Rect tmpBox2 = tmpBox;
-    tmpBox2.x -= camera.x;
-    tmpBox2.y -= camera.y;
-    window.renderBox(tmpBox2);
+    // SDL_Rect tmpBox2 = tmpBox;
+    // tmpBox2.x -= camera.x;
+    // tmpBox2.y -= camera.y;
+    // window.renderBox(tmpBox2);
     if (isDeath)
     {
         // SDL_Rect tmpBox = {mBox.x + mBox.w / 2 - BOSS_TEXTURE_WIDTH, mBox.y, BOSS_TEXTURE_WIDTH * 2, BOSS_TEXTURE_HEIGHT * 2};
@@ -209,6 +209,15 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
         }
         return;
     }
+    // render HP
+    SDL_Rect HPBox = mBox;
+    HPBox.y -= 16;
+    HPBox.h = 8;
+    HPBox.w = HPBox.w * HP / BOSS_INITIAL_HP;
+    HPBox.x -= camera.x;
+    HPBox.y -= camera.y;
+    window.renderFillBox(HPBox, 255, 0, 0);
+    // 
     if (isTakeHit)
     {
         // SDL_Rect tmpBox = {mBox.x + mBox.w / 2 - BOSS_TEXTURE_WIDTH, mBox.y, BOSS_TEXTURE_WIDTH * 2, BOSS_TEXTURE_HEIGHT * 2};
@@ -233,16 +242,18 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
         if (checkCollision(mBox, camera))
             window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossAttackClips[cntAttackFrames / 6], 0.0, NULL, flip);
         cntAttackFrames++;
-        // printf("%d\n", cntAttackFrames);
-        if (55 <= cntAttackFrames && cntAttackFrames <= 60)
-        {
-            SDL_Rect attackBox = {mBox.x + 0.5 * mBox.w, mBox.y, mBox.w * 1.16, mBox.h};
-            if (flip == SDL_FLIP_NONE)
-                attackBox.x -= mBox.w * 1.16;
-            attackBox.x -= camera.x;
-            attackBox.y -= camera.y;
-            window.renderBox(attackBox);
-        }
+
+        /// render hitbox
+        // if (55 <= cntAttackFrames && cntAttackFrames <= 60)
+        // {
+        //     SDL_Rect attackBox = {mBox.x + 0.5 * mBox.w, mBox.y, mBox.w * 1.16, mBox.h};
+        //     if (flip == SDL_FLIP_NONE)
+        //         attackBox.x -= mBox.w * 1.16;
+        //     attackBox.x -= camera.x;
+        //     attackBox.y -= camera.y;
+        //     window.renderBox(attackBox);
+        // }
+
         if (cntAttackFrames >= TOTAL_BOSS_ATTACK_SPRITES * 6)
         {
             isAttacking = false;

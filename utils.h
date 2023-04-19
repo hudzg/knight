@@ -26,6 +26,7 @@ public:
     void renderPlayer(SDL_Texture *mTexture, int x, int y, SDL_Rect rect, SDL_Rect *clip = NULL, double angle = 0.0, SDL_Point *center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
     void renderHitbox(SDL_Texture *mTexture, int x, int y, SDL_Rect rect, SDL_Rect *clip = NULL, double angle = 0.0, SDL_Point *center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
     void renderBox(SDL_Rect rect);
+    void renderFillBox(SDL_Rect rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255);
     void close();
     void clearRenderer();
     void renderPresent();
