@@ -6,21 +6,33 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     Game game;
-    if(!game.init())
+    if (!game.init())
     {
         printf("Failed to init\n");
     }
-    else 
+    else
     {
-        if(!game.loadMedia())
+        if (!game.loadMedia())
             printf("Failed to load media\n");
         else
         {
             SDL_Event event;
-            while(game.isRunning())
+            while (game.isRunning())
             {
-                while(SDL_PollEvent(&event)) game.handleEvent(event);
-                game.renderGame();
+                // printf("%d %d %d\n", game.getState(), STATE_MENU, STATE_PLAY);
+                if (game.getState() == STATE_MENU)
+                {
+                    // printf("h\n");
+                    while (SDL_PollEvent(&event))
+                        game.handleMenuEvent(event);
+                    game.renderMenu();
+                }
+                else
+                {
+                    while (SDL_PollEvent(&event))
+                        game.handleGameEvent(event);
+                    game.renderGame();
+                }
             }
         }
     }

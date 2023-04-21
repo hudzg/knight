@@ -23,6 +23,9 @@ enum TextureID
     SKELETON_TEXTURE,
     HP_TEXTURE,
     BOSS_TEXTURE,
+    MENU_BACKGROUND_TEXTURE,
+    MENU_BUTTON_TEXTURE,
+    MENU_TITLE_TEXTURE,
     TOTAL_TEXTURE
 };
 
@@ -41,6 +44,13 @@ enum TileSprites
     TILE_LEFT,
     TILE_TOPLEFT,
     TOTAL_TILE_SPRITES = 270
+};
+
+enum GameState
+{
+    STATE_PLAY,
+    STATE_MENU,
+    TOTAL_STATE
 };
 
 #endif

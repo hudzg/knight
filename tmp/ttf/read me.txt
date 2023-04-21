@@ -1,0 +1,39 @@
+
+ANTAVIANA TYPEFACE DIVISION
+___________________________
+
+http://www.astramat.com/typeface
+e-mail: typeface@astramat.com
+           info@antaviana.com
+
+
+
+Antaviana Typeface Division distributes freely this font,
+but you must be aware that this typeface is PUBLISHWARE.
+
+
+What is PUBLISHWARE?
+
+Publishware consists in the fact that the user must sent
+a copy of each work where it appears (in paper, CD-ROM or
+any other support) to the creators of this font.
+The address where the copy should be send is:
+
+ANTAVIANA SERVEIS INTERACTIUS, SCCL
+(Typeface Division)
+Santa Justina, 29
+25400 Les Borges Blanques
+Lleida
+Spain
+
+In case of using this typeface in a web, you just have to send the URL
+by e-mail to  
+
+	typeface@astramat.com 
+
+© Antaviana Serveis Interactius, SCCL
+Typeface Division
+
+http://www.astramat.com/typeface
+e-mail: typeface@astramat.com
+           info@antaviana.com

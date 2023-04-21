@@ -6,6 +6,7 @@ bool Game::init()
     running = true;
 
     if(!window.initSDL()) return false;
+    state = STATE_MENU;
     return true;
 }
 
@@ -120,6 +121,12 @@ bool Game::setBoss()
     return true;
 }
 
+bool Game::setMenu()
+{
+    menu = Menu(gTexture[MENU_BACKGROUND_TEXTURE], gTexture[MENU_BUTTON_TEXTURE], gTexture[MENU_TITLE_TEXTURE]);
+    return true;
+}
+
 bool Game::loadMedia()
 {
     bool success = true;
@@ -160,6 +167,24 @@ bool Game::loadMedia()
         printf("Failed to load boss texture\n");
         success = false;
     }
+    gTexture[MENU_BACKGROUND_TEXTURE] = window.loadFromFile("images/gui/menu-background.png");
+    if (gTexture[MENU_BACKGROUND_TEXTURE] == NULL)
+    {
+        printf("Failed to load menu background texture\n");
+        success = false;
+    }
+    gTexture[MENU_BUTTON_TEXTURE] = window.loadFromFile("images/gui/button.png");
+    if (gTexture[MENU_BUTTON_TEXTURE] == NULL)
+    {
+        printf("Failed to load menu button texture\n");
+        success = false;
+    }
+    gTexture[MENU_TITLE_TEXTURE] = window.loadFromFile("images/gui/title.png");
+    if (gTexture[MENU_TITLE_TEXTURE] == NULL)
+    {
+        printf("Failed to load menu title texture\n");
+        success = false;
+    }
     if (!setTiles(tiles))
     {
         printf("Failed to load tile set\n");
@@ -180,6 +205,11 @@ bool Game::loadMedia()
         printf("Failed to set boss\n");
         success = false;
     }
+    if(!setMenu())
+    {
+        printf("Failed to set menu\n");
+        success = false;
+    }
     return success;
 }
 
@@ -188,11 +218,24 @@ bool Game::isRunning()
     return running;
 }
 
-void Game::handleEvent(SDL_Event &event)
+void Game::handleMenuEvent(SDL_Event &event)
 {
     if (event.type == SDL_QUIT)
         running = false;
-    player.handleEvent(event);
+    menu.handleEvent(event, state);
+}
+void Game::renderMenu()
+{
+    window.clearRenderer();
+    menu.render(window);
+    window.renderPresent();
+}
+
+void Game::handleGameEvent(SDL_Event &event)
+{
+    if (event.type == SDL_QUIT)
+        running = false;
+    player.handleEvent(event, state);
 }
 
 void Game::renderGame()
@@ -216,6 +259,11 @@ void Game::renderGame()
     player.render(window, camera, skeletonFamily, boss);
     
     window.renderPresent();
+}
+
+int Game::getState()
+{
+    return state;
 }
 
 void Game::close()

@@ -108,7 +108,7 @@ void Boss::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
     if (checkCollision(attackBox, playerBox))
     {
         // printf("%d %f\n", playerBox.x, mPosX);
-        if (playerBox.x < mPosX)
+        if (playerBox.x + playerBox.w / 2 < mPosX + mBox.w / 2)
         {
             direction = -1;
             flip = SDL_FLIP_NONE;

@@ -15,6 +15,7 @@
 #include "utils.h"
 #include "skeleton.h"
 #include "boss.h"
+#include "menu.h"
 
 class Game
 {
@@ -28,6 +29,8 @@ private:
     Player player;
     SkeletonFamily skeletonFamily;
     Boss boss;
+    GameState state;
+    Menu menu;
 
 public:
     bool init();
@@ -35,9 +38,13 @@ public:
     bool setPlayer();
     bool setSkeleton();
     bool setBoss();
+    bool setMenu();
     bool loadMedia();
     bool isRunning();
-    void handleEvent(SDL_Event &event);
+    int getState();
+    void handleMenuEvent(SDL_Event &event);
+    void renderMenu();
+    void handleGameEvent(SDL_Event &event);
     void renderGame();
     void close();
 };

@@ -91,7 +91,7 @@ bool Player::checkCollisionWall(SDL_Rect &a, Tile *b)
     return false;
 }
 
-void Player::handleEvent(SDL_Event &e)
+void Player::handleEvent(SDL_Event &e, GameState &state)
 {
     // if (isTakeHit)
     //     return;
@@ -115,6 +115,9 @@ void Player::handleEvent(SDL_Event &e)
             break;
         case SDLK_d:
             mVelX += PLAYER_VEL;
+            break;
+        case SDLK_m:
+            state = STATE_MENU;
             break;
         }
     }
@@ -193,7 +196,9 @@ void Player::move(Tile *tiles, double timeStep)
 
         if (isDashing)
         {
+            // printf("h\n");
             int mDashVelX = PLAYER_DASH_VEL_LEVEL * direction * PLAYER_VEL;
+            printf("%d\n", mDashVelX);
             mPosX += mDashVelX * timeStep;
             mBox.x = mPosX;
             if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles))
@@ -237,7 +242,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
     {
         window.renderPlayer(getTexture(), mPosX - camera.x, mPosY - camera.y, mBox, &gPlayerTakeHitClips[cntTakeHitFrames / 8], 0.0, NULL, flip);
 
-        // render red screen
+        // render take hit screen
         if(cntTakeHitFrames < 20)
         {
             SDL_Rect redBox = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -251,6 +256,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
         {
             isTakeHit = false;
             cntTakeHitFrames = 0;
+            direction *= -1;
         }
         cntIdleFrames = cntJumpFrames = cntWalkFrames = cntFallFrames = cntAttackFrames = cntDashFrames = 0;
         return;
