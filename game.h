@@ -39,6 +39,7 @@ public:
     bool setSkeleton();
     bool setBoss();
     bool setMenu();
+    bool setDynamicObject();
     bool loadMedia();
     bool isRunning();
     int getState();

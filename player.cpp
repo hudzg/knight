@@ -38,6 +38,11 @@ void HealthPoint::addHP(int value)
     HP = max(0, HP + value);
 }
 
+int HealthPoint::getHP()
+{
+    return HP;
+}
+
 Player::Player(float x, float y, SDL_Texture *mTexture, SDL_Texture *mFireAttackTexture, SDL_Texture *mHPTexture) : Entity(x, y, mTexture)
 {
     fireAttackAnimation = FireAttack(x, y, mFireAttackTexture);
@@ -106,7 +111,7 @@ void Player::handleEvent(SDL_Event &e, GameState &state)
         case SDLK_SPACE:
             if (onGround && !isTakeHit)
             {
-                mVelY = -PLAYER_VEL * PLAYER_JUMP_VEL_LEVEL;
+                mVelY = -PLAYER_VEL * 3.5;
                 onGround = false;
             }
             break;
@@ -198,7 +203,7 @@ void Player::move(Tile *tiles, double timeStep)
         {
             // printf("h\n");
             int mDashVelX = PLAYER_DASH_VEL_LEVEL * direction * PLAYER_VEL;
-            printf("%d\n", mDashVelX);
+            // printf("%d\n", mDashVelX);
             mPosX += mDashVelX * timeStep;
             mBox.x = mPosX;
             if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles))

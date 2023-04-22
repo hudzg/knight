@@ -49,6 +49,7 @@ public:
     HealthPoint(SDL_Texture *mTexture = NULL);
     void render(RenderWindow &window);
     void addHP(int value);
+    int getHP();
 };
 
 class Player : public Entity
@@ -86,7 +87,7 @@ public:
     static const int PLAYER_VEL = 600;
     static const int PLAYER_MAX_CNT_JUMP = 20;
     static const int PLAYER_DASH_VEL_LEVEL = 2;
-    static const int PLAYER_JUMP_VEL_LEVEL = 3;
+    static const int PLAYER_JUMP_VEL_LEVEL = 4;
     static const int GRAVITY_SPEED = 120;
     static const int MAX_FALL_SPEED = 1200;
 

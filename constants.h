@@ -1,7 +1,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-const int LEVEL_WIDTH = 5120;
+const int LEVEL_WIDTH = 5120 * 2;
 const int LEVEL_HEIGHT = 1280;
 
 const int SCREEN_WIDTH = 1368;
@@ -11,7 +11,7 @@ const int TILE_WIDTH = 64;
 const int TILE_HEIGHT = 64;
 const int TILE_TEXTURE_WIDTH = 64;
 const int TILE_TEXTURE_HEIGHT = 64;
-const int TOTAL_TILES = 1600;
+const int TOTAL_TILES = 1600 * 2;
 const int TILE_SET_WIDTH = 960;
 const int TOTAL_WALL_TILES = 16;
 

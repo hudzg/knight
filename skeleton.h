@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "entity.h"
 #include "utils.h"
+#include <vector>
 
 class Skeleton : public Entity
 {
@@ -45,6 +46,8 @@ public:
 
     static const int SKELETON_INITIAL_HP = 4;
 
+    static const int SKELETON_IS_WALL = 240;
+
     Skeleton(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL);
     bool checkCollision(SDL_Rect &a, const SDL_Rect &b);
     bool checkCollisionWall(SDL_Rect &a, Tile *b);
@@ -59,8 +62,8 @@ public:
 class SkeletonFamily
 {
     private:
-    static const int TOTAL_SKELETON = 1;
-    Skeleton skeleton[TOTAL_SKELETON];
+    // static const int TOTAL_SKELETON = 2;
+    std::vector <Skeleton> skeleton;
     public:
     SkeletonFamily(SDL_Texture *mTexture = NULL);
     void move(Tile *tiles, const SDL_Rect &playerBox);

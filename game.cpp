@@ -50,7 +50,7 @@ bool Game::setTiles(Tile *tiles)
     if(!success) return false;
 
     int x = 0, y = 0;
-    std::ifstream map("images/map/map2.map");
+    std::ifstream map("images/map/map2/map.map");
     if (map.fail())
     {
         printf("Failed to load map \n");
@@ -65,7 +65,7 @@ bool Game::setTiles(Tile *tiles)
             // printf("%d\n", tileType);
             if (map.fail())
             {
-                printf("Failed to load map atile %d\n", i);
+                printf("Failed to load map tile %d\n", i);
                 success = false;
                 break;
             }
@@ -105,7 +105,7 @@ bool Game::setTiles(Tile *tiles)
 
 bool Game::setPlayer()
 {
-    player = Player(200.0, 0.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE]);
+    player = Player(0.0, 500.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE]);
     return true;
 }
 
@@ -117,13 +117,33 @@ bool Game::setSkeleton()
 
 bool Game::setBoss()
 {
-    boss = Boss(500.0, 0.0, gTexture[BOSS_TEXTURE]);
+    boss = Boss(9300.0, 500.0, gTexture[BOSS_TEXTURE]);
     return true;
 }
 
 bool Game::setMenu()
 {
     menu = Menu(gTexture[MENU_BACKGROUND_TEXTURE], gTexture[MENU_BUTTON_TEXTURE], gTexture[MENU_TITLE_TEXTURE]);
+    return true;
+}
+
+bool Game::setDynamicObject()
+{
+    if (!setPlayer())
+    {
+        printf("Failed to set player\n");
+        return false;
+    }
+    if(!setSkeleton())
+    {
+        printf("Failed to set skeleton\n");
+        return false;
+    }
+    if(!setBoss())
+    {
+        printf("Failed to set boss\n");
+        return false;
+    }
     return true;
 }
 
@@ -137,7 +157,7 @@ bool Game::loadMedia()
         success = false;
     }
     // printf("%d\n", (gRenderer != NULL));
-    gTexture[TILE_TEXTURE] = window.loadFromFile("images/map/tile.png");
+    gTexture[TILE_TEXTURE] = window.loadFromFile("images/map/map2/tile.png");
     if (gTexture[TILE_TEXTURE] == NULL)
     {
         printf("Failed to load tile texture\n");
@@ -190,24 +210,14 @@ bool Game::loadMedia()
         printf("Failed to load tile set\n");
         success = false;
     }
-    if (!setPlayer())
-    {
-        printf("Failed to set player\n");
-        success = false;
-    }
-    if(!setSkeleton())
-    {
-        printf("Failed to set skeleton\n");
-        success = false;
-    }
-    if(!setBoss())
-    {
-        printf("Failed to set boss\n");
-        success = false;
-    }
     if(!setMenu())
     {
         printf("Failed to set menu\n");
+        success = false;
+    }
+    if(!setDynamicObject())
+    {
+        printf("Failed to set dynamic object\n");
         success = false;
     }
     return success;
@@ -223,6 +233,10 @@ void Game::handleMenuEvent(SDL_Event &event)
     if (event.type == SDL_QUIT)
         running = false;
     menu.handleEvent(event, state);
+    if(state == STATE_PLAY)
+    {
+        setDynamicObject();
+    }
 }
 void Game::renderMenu()
 {

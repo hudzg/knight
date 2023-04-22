@@ -15,7 +15,7 @@ bool Skeleton::checkCollision(SDL_Rect &a, const SDL_Rect &b)
 bool Skeleton::checkCollisionWall(SDL_Rect &a, Tile *b)
 {
     for (int i = 0; i < TOTAL_TILES; i++)
-        if (b[i].getIsWall() && checkCollision(a, b[i].getBox()))
+        if ((b[i].getIsWall() || b[i].getType() == SKELETON_IS_WALL) && checkCollision(a, b[i].getBox()))
             return true;
     return false;
 }
@@ -284,33 +284,71 @@ int Skeleton::getPosY()
 
 SkeletonFamily::SkeletonFamily(SDL_Texture *mTexture)
 {
-    for (int i = 0; i < TOTAL_SKELETON; i++)
-        skeleton[i] = Skeleton(rand() % LEVEL_WIDTH, 0, mTexture);
-    skeleton[0] = Skeleton(500, 200, mTexture);
+    // for (int i = 0; i < TOTAL_SKELETON; i++)
+    //     skeleton[i] = Skeleton(rand() % LEVEL_WIDTH, 0, mTexture);
+    skeleton.push_back(Skeleton(64, 128, mTexture));
+    skeleton.push_back(Skeleton(512, 128, mTexture));
+    skeleton.push_back(Skeleton(768, 960, mTexture));
+    skeleton.push_back(Skeleton(15 * 64, 0 * 64, mTexture));
+    skeleton.push_back(Skeleton(17 * 64, 13 * 64, mTexture));
+    skeleton.push_back(Skeleton(21 * 64, 10 * 64, mTexture));
+    skeleton.push_back(Skeleton(33 * 64, 7 * 64, mTexture));
+    skeleton.push_back(Skeleton(41 * 64, 7 * 64, mTexture));
+    skeleton.push_back(Skeleton(46 * 64, 10 * 64, mTexture));
+    skeleton.push_back(Skeleton(53 * 64, 7 * 64, mTexture));
+    skeleton.push_back(Skeleton(58 * 64, 7 * 64, mTexture));
+    skeleton.push_back(Skeleton(61 * 64, 4 * 64, mTexture));
+    skeleton.push_back(Skeleton(67 * 64, 4 * 64, mTexture));
+    skeleton.push_back(Skeleton(49 * 64, 1 * 64, mTexture));
+    skeleton.push_back(Skeleton(55 * 64, 1 * 64, mTexture));
+    skeleton.push_back(Skeleton(70 * 64, 1 * 64, mTexture));
+    skeleton.push_back(Skeleton(77 * 64, 1 * 64, mTexture));
+    skeleton.push_back(Skeleton(50 * 64, 13 * 64, mTexture));
+    skeleton.push_back(Skeleton(58 * 64, 13 * 64, mTexture));
+    skeleton.push_back(Skeleton(62 * 64, 13 * 64, mTexture));
+    skeleton.push_back(Skeleton(68 * 64, 13 * 64, mTexture));
+    skeleton.push_back(Skeleton(78 * 64, 13 * 64, mTexture));
+    skeleton.push_back(Skeleton(86 * 64, 13 * 64, mTexture));
+    skeleton.push_back(Skeleton(90 * 64, 15 * 64, mTexture));
+    skeleton.push_back(Skeleton(95 * 64, 15 * 64, mTexture));
+    skeleton.push_back(Skeleton(100 * 64, 15 * 64, mTexture));
+    skeleton.push_back(Skeleton(92 * 64, 9 * 64, mTexture));
+    skeleton.push_back(Skeleton(97 * 64, 9 * 64, mTexture));
+    skeleton.push_back(Skeleton(92 * 64, 3 * 64, mTexture));
+    skeleton.push_back(Skeleton(97 * 64, 3 * 64, mTexture));
+    skeleton.push_back(Skeleton(109 * 64, 0 * 64, mTexture));
+    skeleton.push_back(Skeleton(115 * 64, 0 * 64, mTexture));
+    skeleton.push_back(Skeleton(120 * 64, 3 * 64, mTexture));
+    skeleton.push_back(Skeleton(126 * 64, 6 * 64, mTexture));
+    skeleton.push_back(Skeleton(132 * 64, 6 * 64, mTexture));
+    skeleton.push_back(Skeleton(130 * 64, 0 * 64, mTexture));
+    skeleton.push_back(Skeleton(139 * 64, 0 * 64, mTexture));
+    skeleton.push_back(Skeleton(144 * 64, 0 * 64, mTexture));
+
 }
 
 void SkeletonFamily::move(Tile *tiles, const SDL_Rect &playerBox)
 {
-    for (int i = 0; i < TOTAL_SKELETON; i++)
+    for (int i = 0; i < skeleton.size(); i++)
         skeleton[i].move(tiles, playerBox);
 }
 
 void SkeletonFamily::render(RenderWindow &window, SDL_Rect &camera)
 {
-    for (int i = 0; i < TOTAL_SKELETON; i++)
+    for (int i = 0; i < skeleton.size(); i++)
         skeleton[i].render(window, camera);
 }
 
 void SkeletonFamily::attacked(const SDL_Rect &playerAttackRect)
 {
-    for (int i = 0; i < TOTAL_SKELETON; i++)
+    for (int i = 0; i < skeleton.size(); i++)
         skeleton[i].attacked(playerAttackRect);
 }
 
 std::pair <int, int> SkeletonFamily::getCountAttack(SDL_Rect playerBox)
 {
     std::pair <int, int> result = make_pair(0, 0);
-    for (int i = 0; i < TOTAL_SKELETON; i++)
+    for (int i = 0; i < skeleton.size(); i++)
     {
         std::pair <int, int> tmp = skeleton[i].getAttack(playerBox);
         result.first += tmp.first;
