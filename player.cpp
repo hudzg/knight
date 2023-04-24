@@ -121,8 +121,8 @@ void Player::handleEvent(SDL_Event &e, GameState &state)
         case SDLK_d:
             mVelX += PLAYER_VEL;
             break;
-        case SDLK_m:
-            state = STATE_MENU;
+        case SDLK_ESCAPE:
+            state = STATE_PAUSE_MENU;
             break;
         }
     }
@@ -229,7 +229,8 @@ void Player::move(Tile *tiles, double timeStep)
     mBox.y = mPosY;
     if (mPosY < 0 || mPosY + PLAYER_HEIGHT > LEVEL_HEIGHT || checkCollisionWall(mBox, tiles))
     {
-        onGround = true;
+        if(mVelY > 0) onGround = true;
+        else onGround = false;
         mPosY -= mVelY * timeStep;
     }
     else
@@ -387,6 +388,11 @@ int Player::getPosX()
 int Player::getPosY()
 {
     return mPosY;
+}
+
+int Player::getHP()
+{
+    return HP.getHP();
 }
 
 SDL_Rect Player::getBox()

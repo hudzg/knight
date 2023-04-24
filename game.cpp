@@ -124,6 +124,9 @@ bool Game::setBoss()
 bool Game::setMenu()
 {
     menu = Menu(gTexture[MENU_BACKGROUND_TEXTURE], gTexture[MENU_BUTTON_TEXTURE], gTexture[MENU_TITLE_TEXTURE]);
+    pauseMenu = SubMenu(0, gTexture[SUBMENU_BACKGROUND_TEXTURE], gTexture[SUBMENU_BUTTON_TEXTURE], gTexture[SUBMENU_TITLE_TEXTURE], 1);
+    winMenu = SubMenu(160, gTexture[SUBMENU_BACKGROUND_TEXTURE], gTexture[SUBMENU_BUTTON_TEXTURE], gTexture[SUBMENU_TITLE_TEXTURE]);
+    gameOverMenu = SubMenu(320, gTexture[SUBMENU_BACKGROUND_TEXTURE], gTexture[SUBMENU_BUTTON_TEXTURE], gTexture[SUBMENU_TITLE_TEXTURE]);
     return true;
 }
 
@@ -205,6 +208,24 @@ bool Game::loadMedia()
         printf("Failed to load menu title texture\n");
         success = false;
     }
+    gTexture[SUBMENU_BACKGROUND_TEXTURE] = window.loadFromFile("images/gui/sub-menu/background.png");
+    if (gTexture[SUBMENU_BACKGROUND_TEXTURE] == NULL)
+    {
+        printf("Failed to load sub menu background texture\n");
+        success = false;
+    }
+    gTexture[SUBMENU_BUTTON_TEXTURE] = window.loadFromFile("images/gui/sub-menu/button.png");
+    if (gTexture[SUBMENU_BUTTON_TEXTURE] == NULL)
+    {
+        printf("Failed to load sub menu button texture\n");
+        success = false;
+    }
+    gTexture[SUBMENU_TITLE_TEXTURE] = window.loadFromFile("images/gui/sub-menu/title.png");
+    if (gTexture[SUBMENU_TITLE_TEXTURE] == NULL)
+    {
+        printf("Failed to load sub menu title texture\n");
+        success = false;
+    }
     if (!setTiles(tiles))
     {
         printf("Failed to load tile set\n");
@@ -245,6 +266,44 @@ void Game::renderMenu()
     window.renderPresent();
 }
 
+void Game::handlePauseMenuEvent(SDL_Event &event)
+{
+    if (event.type == SDL_QUIT)
+        running = false;
+    pauseMenu.handleEvent(event, state);
+    if(state == STATE_AGAIN)
+    {
+        state = STATE_PLAY;
+        setDynamicObject();
+    }
+}
+
+void Game::renderPauseMenu()
+{
+    window.clearRenderer();
+    pauseMenu.render(window);
+    window.renderPresent();
+}
+
+void Game::handleGameOverMenuEvent(SDL_Event &event)
+{
+    if (event.type == SDL_QUIT)
+        running = false;
+    gameOverMenu.handleEvent(event, state);
+    if(state == STATE_AGAIN)
+    {
+        state = STATE_PLAY;
+        setDynamicObject();
+    }
+}
+
+void Game::renderGameOverMenu()
+{
+    window.clearRenderer();
+    gameOverMenu.render(window);
+    window.renderPresent();
+}
+
 void Game::handleGameEvent(SDL_Event &event)
 {
     if (event.type == SDL_QUIT)
@@ -271,6 +330,8 @@ void Game::renderGame()
     player.attacked(skeletonFamily.getCountAttack(player.getBox()));
     player.attacked(boss.getAttack(player.getBox()));
     player.render(window, camera, skeletonFamily, boss);
+
+    if(player.getHP() == 0) state = STATE_GAME_OVER_MENU;
     
     window.renderPresent();
 }

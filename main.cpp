@@ -20,19 +20,47 @@ int main(int argc, char *argv[])
             while (game.isRunning())
             {
                 // printf("%d %d %d\n", game.getState(), STATE_MENU, STATE_PLAY);
-                if (game.getState() == STATE_MENU)
+                switch (game.getState())
                 {
-                    // printf("h\n");
+                case STATE_MENU:
                     while (SDL_PollEvent(&event))
                         game.handleMenuEvent(event);
                     game.renderMenu();
-                }
-                else
-                {
+                    break;
+
+                case STATE_PAUSE_MENU:
+                    while (SDL_PollEvent(&event))
+                        game.handlePauseMenuEvent(event);
+                    game.renderPauseMenu();
+                    break;
+
+                case STATE_GAME_OVER_MENU:
+                    while (SDL_PollEvent(&event))
+                        game.handleGameOverMenuEvent(event);
+                    game.renderGameOverMenu();
+                    break;
+
+                case STATE_PLAY:
                     while (SDL_PollEvent(&event))
                         game.handleGameEvent(event);
                     game.renderGame();
+                    break;
+                default:
+                    break;
                 }
+                // if (game.getState() == STATE_MENU)
+                // {
+                //     // printf("h\n");
+                //     while (SDL_PollEvent(&event))
+                //         game.handleMenuEvent(event);
+                //     game.renderMenu();
+                // }
+                // else
+                // {
+                //     while (SDL_PollEvent(&event))
+                //         game.handleGameEvent(event);
+                //     game.renderGame();
+                // }
             }
         }
     }

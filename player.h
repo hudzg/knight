@@ -101,6 +101,7 @@ public:
     void setCamera(SDL_Rect &camera);
     int getPosX();
     int getPosY();
+    int getHP();
     SDL_Rect getBox();
 };
 

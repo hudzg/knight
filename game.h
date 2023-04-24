@@ -31,6 +31,7 @@ private:
     Boss boss;
     GameState state;
     Menu menu;
+    SubMenu pauseMenu, gameOverMenu, winMenu;
 
 public:
     bool init();
@@ -45,6 +46,10 @@ public:
     int getState();
     void handleMenuEvent(SDL_Event &event);
     void renderMenu();
+    void handlePauseMenuEvent(SDL_Event &event);
+    void renderPauseMenu();
+    void handleGameOverMenuEvent(SDL_Event &event);
+    void renderGameOverMenu();
     void handleGameEvent(SDL_Event &event);
     void renderGame();
     void close();

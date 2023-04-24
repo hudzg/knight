@@ -49,4 +49,45 @@ public:
     void render(RenderWindow &window);
 };
 
+class SubMenu
+{
+private:
+    enum MenuTexture
+    {
+        BACKGROUND_TEXTURE,
+        BUTTON_TEXTURE,
+        TITLE_TEXTURE,
+        TOTAL_TEXTURE
+    };
+    enum MenuButton
+    {
+        AGAIN,
+        RESUME,
+        HOME,
+        TOTAL_BUTTON
+    };
+    SDL_Texture *gTexture[TOTAL_TEXTURE];
+    SDL_Rect backgroundBox, titleBox, buttonBox[TOTAL_BUTTON];
+    SDL_Rect titleClips;
+    SDL_Rect buttonClips[TOTAL_BUTTON][2];
+    int haveResume;
+    int mouseover[TOTAL_BUTTON];
+
+public:
+    static const int MENU_TITLE_WIDTH = 512;
+    static const int MENU_TITLE_HEIGHT = 80;
+    static const int MENU_TITLE_TEXTURE_WIDTH = 1024;
+    static const int MENU_TITLE_TEXTURE_HEIGHT = 160;
+
+    static const int MENU_BUTTON_WIDTH = 64;
+    static const int MENU_BUTTON_HEIGHT = 64;
+    static const int MENU_BUTTON_TEXTURE_WIDTH = 160;
+    static const int MENU_BUTTON_TEXTURE_HEIGHT = 160;
+
+
+    SubMenu(int y = 0, SDL_Texture *backgroundTexture = NULL, SDL_Texture *buttonTexture = NULL, SDL_Texture *titleTexture = NULL, int haveResume = 0);
+    void handleEvent(SDL_Event &e, GameState &state);
+    void render(RenderWindow &window);
+};
+
 #endif
