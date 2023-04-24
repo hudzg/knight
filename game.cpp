@@ -150,6 +150,28 @@ bool Game::setDynamicObject()
     return true;
 }
 
+void Game::setCursor()
+{
+    SDL_Surface* cursorSurface = IMG_Load("images/gui/cursor/cursor.png");
+
+    // Tạo con trỏ chuột mới từ biểu tượng chuột tải lên
+    if(cursorSurface == NULL)
+    {
+        printf("h\n");
+    }
+    // Thiết lập biểu tượng chuột mới
+    cursor = SDL_CreateColorCursor(cursorSurface, 0, 0);
+    SDL_SetCursor(cursor);
+    if(cursor == NULL)
+    {
+        printf("h\n");
+    }
+
+    // Giải phóng bộ nhớ và đóng SDL
+    // SDL_FreeCursor(cursor);
+    SDL_FreeSurface(cursorSurface);
+}
+
 bool Game::loadMedia()
 {
     bool success = true;
@@ -241,6 +263,7 @@ bool Game::loadMedia()
         printf("Failed to set dynamic object\n");
         success = false;
     }
+    setCursor();
     return success;
 }
 
@@ -344,6 +367,7 @@ int Game::getState()
 void Game::close()
 {
     window.close();
+    SDL_FreeCursor(cursor);
     for (SDL_Texture *mTexture : gTexture)
     {
         SDL_DestroyTexture(mTexture);

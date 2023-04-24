@@ -26,10 +26,12 @@ Menu::Menu(SDL_Texture *backgroundTexture, SDL_Texture *buttonTexture, SDL_Textu
 
 void Menu::handleEvent(SDL_Event &e, GameState &state)
 {
-    for (int i = 0; i < TOTAL_BUTTON; i++)
-        mouseover[i] = 0;
+    // for (int i = 0; i < TOTAL_BUTTON; i++)
+    //     mouseover[i] = 0;
     if (e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEMOTION)
     {
+        for (int i = 0; i < TOTAL_BUTTON; i++)
+            mouseover[i] = 0;
         int x, y;
         SDL_GetMouseState(&x, &y);
         for (int i = 0; i < TOTAL_BUTTON; i++)
@@ -44,7 +46,8 @@ void Menu::handleEvent(SDL_Event &e, GameState &state)
                 switch (e.type)
                 {
                 case SDL_MOUSEBUTTONDOWN:
-                    if(i == PLAY) state = STATE_PLAY;
+                    if (i == PLAY)
+                        state = STATE_PLAY;
                     break;
                 case SDL_MOUSEMOTION:
                     mouseover[i] = 1;
@@ -83,10 +86,10 @@ SubMenu::SubMenu(int y, SDL_Texture *backgroundTexture, SDL_Texture *buttonTextu
     //     buttonBox[i] = {SCREEN_WIDTH / 2 - MENU_BUTTON_WIDTH / 2, y, MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT};
     // }
 
-    for(int i = 0, x = SCREEN_WIDTH / 2 - ((2 + haveResume) * MENU_BUTTON_WIDTH + (1 + haveResume) * MENU_BUTTON_WIDTH / 4) / 2; i < TOTAL_BUTTON; i++)
+    for (int i = 0, x = SCREEN_WIDTH / 2 - ((2 + haveResume) * MENU_BUTTON_WIDTH + (1 + haveResume) * MENU_BUTTON_WIDTH / 4) / 2; i < TOTAL_BUTTON; i++)
     {
         mouseover[i] = 0;
-        if(i != RESUME || (haveResume && i == RESUME))
+        if (i != RESUME || (haveResume && i == RESUME))
         {
             buttonBox[i] = {x, 450, MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT};
             x += MENU_BUTTON_WIDTH + MENU_BUTTON_WIDTH / 4;
@@ -103,15 +106,18 @@ SubMenu::SubMenu(int y, SDL_Texture *backgroundTexture, SDL_Texture *buttonTextu
 
 void SubMenu::handleEvent(SDL_Event &e, GameState &state)
 {
-    for (int i = 0; i < TOTAL_BUTTON; i++)
-        mouseover[i] = 0;
+    // for (int i = 0; i < TOTAL_BUTTON; i++)
+    //     mouseover[i] = 0;
     if (e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEMOTION)
     {
+        for (int i = 0; i < TOTAL_BUTTON; i++)
+            mouseover[i] = 0;
         int x, y;
         SDL_GetMouseState(&x, &y);
         for (int i = 0; i < TOTAL_BUTTON; i++)
         {
-            if(!(i != RESUME || (haveResume && i == RESUME))) continue;
+            if (!(i != RESUME || (haveResume && i == RESUME)))
+                continue;
             bool inside = 0;
             if (buttonBox[i].x <= x && x <= buttonBox[i].x + buttonBox[i].w && buttonBox[i].y <= y && y <= buttonBox[i].y + buttonBox[i].h)
                 inside = 1;
@@ -122,9 +128,12 @@ void SubMenu::handleEvent(SDL_Event &e, GameState &state)
                 switch (e.type)
                 {
                 case SDL_MOUSEBUTTONDOWN:
-                    if(i == RESUME) state = STATE_PLAY;
-                    if(i == AGAIN) state = STATE_AGAIN;
-                    if(i == HOME) state = STATE_MENU;
+                    if (i == RESUME)
+                        state = STATE_PLAY;
+                    if (i == AGAIN)
+                        state = STATE_AGAIN;
+                    if (i == HOME)
+                        state = STATE_MENU;
                     break;
                 case SDL_MOUSEMOTION:
                     mouseover[i] = 1;
@@ -142,7 +151,7 @@ void SubMenu::render(RenderWindow &window)
 {
     window.renderPlayer(gTexture[BACKGROUND_TEXTURE], 0, 0, backgroundBox);
     for (int i = 0; i < TOTAL_BUTTON; i++)
-        if(i != RESUME || (haveResume && i == RESUME))
+        if (i != RESUME || (haveResume && i == RESUME))
             window.renderPlayer(gTexture[BUTTON_TEXTURE], buttonBox[i].x, buttonBox[i].y, buttonBox[i], &buttonClips[i][mouseover[i]]);
     window.renderPlayer(gTexture[TITLE_TEXTURE], titleBox.x, titleBox.y, titleBox, &titleClips);
 }

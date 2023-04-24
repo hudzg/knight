@@ -32,6 +32,7 @@ private:
     GameState state;
     Menu menu;
     SubMenu pauseMenu, gameOverMenu, winMenu;
+    SDL_Cursor* cursor;
 
 public:
     bool init();
@@ -41,6 +42,7 @@ public:
     bool setBoss();
     bool setMenu();
     bool setDynamicObject();
+    void setCursor();
     bool loadMedia();
     bool isRunning();
     int getState();
