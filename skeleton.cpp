@@ -20,7 +20,15 @@ bool Skeleton::checkCollisionWall(SDL_Rect &a, Tile *b)
     return false;
 }
 
-Skeleton::Skeleton(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mTexture)
+bool Skeleton::checkCollisionDoor(vector <Door> &doors)
+{
+    for(int i = 0; i < doors.size(); i++)
+        if(!doors[i].isOpen() && checkCollision(mBox, doors[i].getBox()))
+            return true;
+    return false;
+}
+
+Skeleton::Skeleton(float x, float y, int ID, SDL_Texture *mTexture) : Entity(x, y, mTexture)
 {
     initialX = x;
     initialY = y;
@@ -44,9 +52,10 @@ Skeleton::Skeleton(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mText
     cntIdle = 0;
     HP = SKELETON_INITIAL_HP;
     isDied = false;
+    this->ID = ID;
 }
 
-void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
+void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors, double timeStep)
 {
     // printf("%f %f\n", mPosX, mPosY);
     if (isDied)
@@ -139,7 +148,7 @@ void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
 
     mPosX += mVelX * timeStep;
     mBox.x = mPosX;
-    if (mPosX < 0 || mPosX + SKELETON_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || mPosX < initialX - MAX_WALK_WIDTH || mPosX > initialX + MAX_WALK_WIDTH)
+    if (mPosX < 0 || mPosX + SKELETON_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors) || mPosX < initialX - MAX_WALK_WIDTH || mPosX > initialX + MAX_WALK_WIDTH)
     {
         mPosX -= mVelX * timeStep;
         mVelX = 0;
@@ -148,7 +157,7 @@ void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
 
     mPosY += mVelY * timeStep;
     mBox.y = mPosY;
-    if (mPosY < 0 || mPosY + SKELETON_HEIGHT > LEVEL_HEIGHT || checkCollisionWall(mBox, tiles))
+    if (mPosY < 0 || mPosY + SKELETON_HEIGHT > LEVEL_HEIGHT || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors))
     {
         mPosY -= mVelY * timeStep;
     }
@@ -164,7 +173,7 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
     if (isDeath)
     {
         SDL_Rect tmpBox = {mBox.x, mBox.y, 1.0 * mBox.w * 330 / 240, 1.0 * mBox.h * 320 / 330};
-        if(checkCollision(mBox, camera))
+        if (checkCollision(mBox, camera))
             window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gSkeletonDeathClips[cntDeathFrames / 8], 0.0, NULL, flip);
         cntDeathFrames++;
         if (cntDeathFrames >= TOTAL_SKELETON_DEATH_SPRITES * 8)
@@ -181,12 +190,12 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
     HPBox.x -= camera.x;
     HPBox.y -= camera.y;
     window.renderFillBox(HPBox, 255, 0, 0);
-    // 
-    
+    //
+
     if (isTakeHit)
     {
         SDL_Rect tmpBox = {mBox.x, mBox.y, mBox.w * 1.25, mBox.h};
-        if(checkCollision(mBox, camera))
+        if (checkCollision(mBox, camera))
             window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gSkeletonTakeHitClips[cntTakeHitFrames / 8], 0.0, NULL, flip);
         cntTakeHitFrames++;
         if (cntTakeHitFrames >= TOTAL_SKELETON_TAKE_HIT_SPRITES * 8)
@@ -203,8 +212,19 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
         SDL_Rect tmpBox = {mBox.x, mBox.y - mBox.h * 0.12, mBox.w * 1.8, mBox.h * 1.12};
         if (flip != SDL_FLIP_NONE)
             tmpBox.x -= mBox.w * 0.8;
-        if(checkCollision(mBox, camera))
+        if (checkCollision(mBox, camera))
             window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gSkeletonAttackClips[cntAttackFrames / 8], 0.0, NULL, flip);
+
+        // render attack hit box
+        // if (50 <= cntAttackFrames && cntAttackFrames <= 70)
+        // {
+        //     SDL_Rect attackBox = {mBox.x + mBox.w * 0.8, mBox.y - mBox.h * 0.12, mBox.w, mBox.h * 1.12};
+        //     if (flip != SDL_FLIP_NONE)
+        //         attackBox.x = mBox.x - mBox.w * 0.8;
+        //     attackBox.x -= camera.x;
+        //     attackBox.y -= camera.y;
+        //     window.renderBox(attackBox);
+        // }
         cntAttackFrames++;
         if (cntAttackFrames >= TOTAL_SKELETON_ATTACK_SPRITES * 8)
         {
@@ -216,7 +236,7 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
     }
     if (isWalking)
     {
-        if(checkCollision(mBox, camera))
+        if (checkCollision(mBox, camera))
             window.renderPlayer(getTexture(), mBox.x - camera.x, mBox.y - camera.y, mBox, &gSkeletonWalkClips[cntWalkFrames / 4], 0.0, NULL, flip);
         cntWalkFrames++;
         if (cntWalkFrames >= TOTAL_SKELETON_WALK_SPRITES * 4)
@@ -224,7 +244,7 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
         cntIdleFrames = cntAttackFrames = cntTakeHitFrames = 0;
         return;
     }
-    if(checkCollision(mBox, camera))
+    if (checkCollision(mBox, camera))
         window.renderPlayer(getTexture(), mBox.x - camera.x, mBox.y - camera.y, mBox, &gSkeletonIdleClips[cntIdleFrames / 4], 0.0, NULL, flip);
     cntIdleFrames++;
     if (cntIdleFrames >= TOTAL_SKELETON_IDLE_SPRITES * 4)
@@ -240,14 +260,16 @@ void Skeleton::render(RenderWindow &window, SDL_Rect &camera)
     cntWalkFrames = cntAttackFrames = cntTakeHitFrames = 0;
 }
 
-std::pair <int, int> Skeleton::getAttack(SDL_Rect playerBox)
+std::pair<int, int> Skeleton::getAttack(SDL_Rect playerBox)
 {
     // printf("%d\n", direction);
     if (isDied || !isAttacking || cntAttackFrames != 60)
         return make_pair(0, 0);
-    SDL_Rect attackBox = {mBox.x + mBox.w, mBox.y - mBox.h * 0.12, mBox.w * 0.8, mBox.h * 1.12};
+    SDL_Rect attackBox = {mBox.x + mBox.w * 0.8, mBox.y - mBox.h * 0.12, mBox.w, mBox.h * 1.12};
     if (flip != SDL_FLIP_NONE)
         attackBox.x = mBox.x - mBox.w * 0.8;
+    // SDL_Rect tmpBox2 = {attackBox.x - camera.x, attackBox.y - camera.y, attackBox.w, attackBox.h};
+    //     window.renderBox(tmpBox2);
     if (checkCollision(attackBox, playerBox))
         return make_pair(1, direction);
     return make_pair(0, 0);
@@ -282,56 +304,63 @@ int Skeleton::getPosY()
     return mPosY;
 }
 
+bool Skeleton::getDied()
+{
+    return isDied;
+}
+
 SkeletonFamily::SkeletonFamily(SDL_Texture *mTexture)
 {
     // for (int i = 0; i < TOTAL_SKELETON; i++)
     //     skeleton[i] = Skeleton(rand() % LEVEL_WIDTH, 0, mTexture);
-    skeleton.push_back(Skeleton(64, 128, mTexture));
-    skeleton.push_back(Skeleton(512, 128, mTexture));
-    skeleton.push_back(Skeleton(768, 960, mTexture));
-    skeleton.push_back(Skeleton(15 * 64, 0 * 64, mTexture));
-    skeleton.push_back(Skeleton(16 * 64, 5 * 64, mTexture));
-    skeleton.push_back(Skeleton(17 * 64, 13 * 64, mTexture));
-    skeleton.push_back(Skeleton(21 * 64, 10 * 64, mTexture));
-    skeleton.push_back(Skeleton(33 * 64, 7 * 64, mTexture));
-    skeleton.push_back(Skeleton(41 * 64, 7 * 64, mTexture));
-    skeleton.push_back(Skeleton(46 * 64, 10 * 64, mTexture));
-    skeleton.push_back(Skeleton(53 * 64, 7 * 64, mTexture));
-    skeleton.push_back(Skeleton(58 * 64, 7 * 64, mTexture));
-    skeleton.push_back(Skeleton(61 * 64, 4 * 64, mTexture));
-    skeleton.push_back(Skeleton(67 * 64, 4 * 64, mTexture));
-    skeleton.push_back(Skeleton(49 * 64, 1 * 64, mTexture));
-    skeleton.push_back(Skeleton(55 * 64, 1 * 64, mTexture));
-    skeleton.push_back(Skeleton(70 * 64, 1 * 64, mTexture));
-    skeleton.push_back(Skeleton(77 * 64, 1 * 64, mTexture));
-    skeleton.push_back(Skeleton(50 * 64, 13 * 64, mTexture));
-    skeleton.push_back(Skeleton(58 * 64, 13 * 64, mTexture));
-    skeleton.push_back(Skeleton(62 * 64, 13 * 64, mTexture));
-    skeleton.push_back(Skeleton(68 * 64, 13 * 64, mTexture));
-    skeleton.push_back(Skeleton(78 * 64, 13 * 64, mTexture));
-    skeleton.push_back(Skeleton(86 * 64, 13 * 64, mTexture));
-    skeleton.push_back(Skeleton(90 * 64, 15 * 64, mTexture));
-    skeleton.push_back(Skeleton(95 * 64, 15 * 64, mTexture));
-    skeleton.push_back(Skeleton(100 * 64, 15 * 64, mTexture));
-    skeleton.push_back(Skeleton(92 * 64, 9 * 64, mTexture));
-    skeleton.push_back(Skeleton(97 * 64, 9 * 64, mTexture));
-    skeleton.push_back(Skeleton(92 * 64, 3 * 64, mTexture));
-    skeleton.push_back(Skeleton(97 * 64, 3 * 64, mTexture));
-    skeleton.push_back(Skeleton(109 * 64, 0 * 64, mTexture));
-    skeleton.push_back(Skeleton(115 * 64, 0 * 64, mTexture));
-    skeleton.push_back(Skeleton(120 * 64, 3 * 64, mTexture));
-    skeleton.push_back(Skeleton(126 * 64, 6 * 64, mTexture));
-    skeleton.push_back(Skeleton(132 * 64, 6 * 64, mTexture));
-    skeleton.push_back(Skeleton(130 * 64, 0 * 64, mTexture));
-    skeleton.push_back(Skeleton(139 * 64, 0 * 64, mTexture));
-    skeleton.push_back(Skeleton(144 * 64, 0 * 64, mTexture));
+    skeleton.push_back(Skeleton(64, 128, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(512, 128, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(768, 960, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(15 * 64, 0 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(16 * 64, 5 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(17 * 64, 13 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(21 * 64, 10 * 64, skeleton.size(), mTexture));
 
+    skeleton.push_back(Skeleton(33 * 64, 7 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(41 * 64, 7 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(46 * 64, 10 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(53 * 64, 7 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(58 * 64, 7 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(61 * 64, 4 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(67 * 64, 4 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(49 * 64, 1 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(55 * 64, 1 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(70 * 64, 1 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(77 * 64, 1 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(50 * 64, 13 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(58 * 64, 13 * 64, skeleton.size(), mTexture));
+
+    skeleton.push_back(Skeleton(62 * 64, 13 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(68 * 64, 13 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(78 * 64, 13 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(86 * 64, 13 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(90 * 64, 15 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(95 * 64, 15 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(100 * 64, 15 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(92 * 64, 9 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(97 * 64, 9 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(92 * 64, 3 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(97 * 64, 3 * 64, skeleton.size(), mTexture));
+
+    skeleton.push_back(Skeleton(109 * 64, 0 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(115 * 64, 0 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(120 * 64, 3 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(126 * 64, 6 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(132 * 64, 6 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(130 * 64, 0 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(139 * 64, 0 * 64, skeleton.size(), mTexture));
+    skeleton.push_back(Skeleton(144 * 64, 0 * 64, skeleton.size(), mTexture));
 }
 
-void SkeletonFamily::move(Tile *tiles, const SDL_Rect &playerBox)
+void SkeletonFamily::move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors)
 {
     for (int i = 0; i < skeleton.size(); i++)
-        skeleton[i].move(tiles, playerBox);
+        skeleton[i].move(tiles, playerBox, doors);
 }
 
 void SkeletonFamily::render(RenderWindow &window, SDL_Rect &camera)
@@ -346,15 +375,32 @@ void SkeletonFamily::attacked(const SDL_Rect &playerAttackRect)
         skeleton[i].attacked(playerAttackRect);
 }
 
-std::pair <int, int> SkeletonFamily::getCountAttack(SDL_Rect playerBox)
+void SkeletonFamily::checkDied()
 {
-    std::pair <int, int> result = make_pair(0, 0);
+    for(int i = 0; i < skeleton.size(); i++)
+        while (i < skeleton.size() && skeleton[i].getDied())
+        {
+            skeleton.erase(skeleton.begin() + i);
+            cntSkeletonDied++;
+        }
+        
+}
+
+std::pair<int, int> SkeletonFamily::getCountAttack(SDL_Rect playerBox)
+{
+    std::pair<int, int> result = make_pair(0, 0);
     for (int i = 0; i < skeleton.size(); i++)
     {
-        std::pair <int, int> tmp = skeleton[i].getAttack(playerBox);
+        std::pair<int, int> tmp = skeleton[i].getAttack(playerBox);
         result.first += tmp.first;
-        if(tmp.first > 0) result.second = tmp.second;
+        if (tmp.first > 0)
+            result.second = tmp.second;
     }
     // printf("%d\n", result.second);
     return result;
+}
+
+int SkeletonFamily::getCntSkeletonDied()
+{
+    return cntSkeletonDied;
 }

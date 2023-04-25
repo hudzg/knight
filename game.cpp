@@ -70,7 +70,11 @@ bool Game::setTiles(Tile *tiles)
                 break;
             }
             if (tileType >= 0 && tileType < TOTAL_TILE_SPRITES)
+            {
                 tiles[i] = Tile(x, y, gTexture[TILE_TEXTURE], tileType, wallID.count(tileType));
+                if(tileType == TILE_TRAP)
+                    traps.push_back(tiles[i].getBox());
+            }
             else
             {
                 printf("Invalid map tile %d\n", i);
@@ -130,11 +134,26 @@ bool Game::setMenu()
     return true;
 }
 
+bool Game::setDoor()
+{
+    doors.clear();
+    doors.push_back(Door(31 * 64, 7 * 64, gTexture[DOOR_TEXTURE], 7));
+    doors.push_back(Door(60 * 64, 13 * 64, gTexture[DOOR_TEXTURE], 7 + 13));
+    doors.push_back(Door(107 * 64, 0 * 64, gTexture[DOOR_TEXTURE], 7 + 13 + 11));
+    doors.push_back(Door(1146 * 64, 0 * 64, gTexture[DOOR_TEXTURE], 7 + 13 + 11 + 8));
+    return true;
+}
+
 bool Game::setDynamicObject()
 {
     if (!setPlayer())
     {
         printf("Failed to set player\n");
+        return false;
+    }
+    if(!setDoor())
+    {
+        printf("Failed to set door\n");
         return false;
     }
     if(!setSkeleton())
@@ -249,6 +268,12 @@ bool Game::loadMedia()
         printf("Failed to load sub menu title texture\n");
         success = false;
     }
+    gTexture[DOOR_TEXTURE] = window.loadFromFile("images/object/door.png");
+    if (gTexture[DOOR_TEXTURE] == NULL)
+    {
+        printf("Failed to load door texture\n");
+        success = false;
+    }
     if (!setTiles(tiles))
     {
         printf("Failed to load tile set\n");
@@ -259,6 +284,11 @@ bool Game::loadMedia()
         printf("Failed to set menu\n");
         success = false;
     }
+    // if(!setDoor())
+    // {
+    //     printf("Failed to set door\n");
+    //     success = false;
+    // }
     if(!setDynamicObject())
     {
         printf("Failed to set dynamic object\n");
@@ -338,22 +368,30 @@ void Game::handleGameEvent(SDL_Event &event)
 void Game::renderGame()
 {
     window.clearRenderer();
-    player.move(tiles);
+    player.move(tiles, doors);
     player.setCamera(camera);
 
 
     for (int i = 0; i < TOTAL_TILES; i++)
         tiles[i].render(window, camera, &gTileClips[tiles[i].getType()]);
 
-    skeletonFamily.move(tiles, player.getBox());
+    for (int i = 0; i < doors.size(); i++)
+    {
+        doors[i].setCanOpen(skeletonFamily.getCntSkeletonDied());
+        doors[i].render(window, camera);
+    }
+
+    skeletonFamily.move(tiles, player.getBox(), doors);
     skeletonFamily.render(window, camera);
+    skeletonFamily.checkDied();
 
     boss.move(tiles, player.getBox());
     boss.render(window, camera);
 
     player.attacked(skeletonFamily.getCountAttack(player.getBox()));
     player.attacked(boss.getAttack(player.getBox()));
-    player.render(window, camera, skeletonFamily, boss);
+    player.checkCollisionTrap(traps);
+    player.render(window, camera, skeletonFamily, boss, doors);
 
     if(player.getHP() == 0) state = STATE_GAME_OVER_MENU;
     

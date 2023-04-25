@@ -474,6 +474,14 @@ bool Player::checkCollision(SDL_Rect &a, const SDL_Rect &b)
     return false;
 }
 
+bool Player::checkCollisionDoor(vector <Door> &doors)
+{
+    for(int i = 0; i < doors.size(); i++)
+        if(!doors[i].isOpen() && checkCollision(mBox, doors[i].getBox()))
+            return true;
+    return false;
+}
+
 bool Player::checkCollisionWall(SDL_Rect &a, Tile *b)
 {
     for (int i = 0; i < TOTAL_TILES; i++)
@@ -496,6 +504,21 @@ bool Player::checkCollisionWall(SDL_Rect &a, Tile *b)
             return true;
     }
     return false;
+}
+
+void Player::checkCollisionTrap(const vector<SDL_Rect> &b)
+{
+    if (isTakeTrap)
+        return;
+    for (SDL_Rect x : b)
+        if (checkCollision(mBox, x))
+        {
+            isTakeTrap = true;
+            cntTimeTakeTrap = 0;
+            attacked(make_pair(1, 0));
+            return;
+        }
+    return;
 }
 
 void Player::handleEvent(SDL_Event &e, GameState &state)
@@ -549,7 +572,7 @@ void Player::handleEvent(SDL_Event &e, GameState &state)
     }
 }
 
-void Player::move(Tile *tiles, double timeStep)
+void Player::move(Tile *tiles, vector <Door> &doors, double timeStep)
 {
     // if (mVelY < 0)
     // {
@@ -583,7 +606,7 @@ void Player::move(Tile *tiles, double timeStep)
         // printf()
         mPosX += 0.5 * direction * PLAYER_VEL * timeStep;
         mBox.x = mPosX;
-        if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles))
+        if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors))
         {
             mPosX -= 0.5 * direction * PLAYER_VEL * timeStep;
             mBox.x = mPosX;
@@ -615,7 +638,7 @@ void Player::move(Tile *tiles, double timeStep)
             // printf("%d\n", mDashVelX);
             mPosX += mDashVelX * timeStep;
             mBox.x = mPosX;
-            if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles))
+            if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors))
             {
                 mPosX -= mDashVelX * timeStep;
                 mBox.x = mPosX;
@@ -625,7 +648,7 @@ void Player::move(Tile *tiles, double timeStep)
         {
             mPosX += mVelX * timeStep;
             mBox.x = mPosX;
-            if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles))
+            if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors))
             {
                 // printf("h\n");
                 mPosX -= mVelX * timeStep;
@@ -636,7 +659,7 @@ void Player::move(Tile *tiles, double timeStep)
 
     mPosY += mVelY * timeStep;
     mBox.y = mPosY;
-    if (mPosY < 0 || mPosY + PLAYER_HEIGHT > LEVEL_HEIGHT || checkCollisionWall(mBox, tiles))
+    if (mPosY < 0 || mPosY + PLAYER_HEIGHT > LEVEL_HEIGHT || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors))
     {
         if (mVelY > 0)
             onGround = true;
@@ -650,7 +673,7 @@ void Player::move(Tile *tiles, double timeStep)
     mBox.y = mPosY;
 }
 
-void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss)
+void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector<Door> &doors)
 {
     // render HP
     HP.render(window);
@@ -708,6 +731,8 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
         {
             skeletonFamily.attacked(tmpBox);
             boss.attacked(tmpBox);
+            for (int i = 0; i < doors.size(); i++)
+                doors[i].setOpen(tmpBox);
         }
         cntAttackFrames++;
         if (cntAttackFrames >= TOTAL_PLAYER_ATTACK_SPRITES * 6)
@@ -768,10 +793,14 @@ void Player::attacked(std::pair<int, int> value)
             direction = 1;
             flip = SDL_FLIP_HORIZONTAL;
         }
-        else
+        else if (value.second == -1)
         {
             direction = -1;
             flip = SDL_FLIP_NONE;
+        }
+        else
+        {
+            direction *= -1;
         }
     }
 }

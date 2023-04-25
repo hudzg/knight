@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "skeleton.h"
 #include "boss.h"
+#include "door.h"
 
 using namespace std;
 
@@ -100,9 +101,11 @@ public:
     Player(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL, SDL_Texture *mFireAttackTexture = NULL, SDL_Texture *mHPTexture = NULL);
     bool checkCollision(SDL_Rect &a, const SDL_Rect &b);
     bool checkCollisionWall(SDL_Rect &a, Tile *b);
+    bool checkCollisionDoor(vector <Door> &doors);
+    void checkCollisionTrap(const vector <SDL_Rect> &b);
     void handleEvent(SDL_Event &e, GameState &state);
-    void move(Tile *tiles = NULL, double timeStep = 1.0 / 60);
-    void render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss);
+    void move(Tile *tiles, vector <Door> &doors, double timeStep = 1.0 / 60);
+    void render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector <Door> &doors);
     void attacked(std::pair <int, int> value);
     void setCamera(SDL_Rect &camera);
     int getPosX();

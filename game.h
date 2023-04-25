@@ -16,6 +16,7 @@
 #include "skeleton.h"
 #include "boss.h"
 #include "menu.h"
+#include "door.h"
 
 class Game
 {
@@ -33,6 +34,8 @@ private:
     Menu menu;
     SubMenu pauseMenu, gameOverMenu, winMenu;
     SDL_Cursor* cursor;
+    vector <SDL_Rect> traps;
+    vector <Door> doors;
 
 public:
     bool init();
@@ -41,6 +44,7 @@ public:
     bool setSkeleton();
     bool setBoss();
     bool setMenu();
+    bool setDoor();
     bool setDynamicObject();
     void setCursor();
     bool loadMedia();

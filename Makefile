@@ -3,7 +3,7 @@
 #and may not be redistributed without written permission.
 
 #OBJS specifies which files to compile as part of the project
-OBJS = skeleton.cpp boss.cpp menu.cpp tile.cpp entity.cpp player.cpp utils.cpp game.cpp main.cpp
+OBJS = skeleton.cpp boss.cpp menu.cpp door.cpp tile.cpp entity.cpp player.cpp utils.cpp game.cpp main.cpp
 
 #CC specifies which compiler we're using
 CC = g++
