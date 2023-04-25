@@ -46,8 +46,11 @@ void Menu::handleEvent(SDL_Event &e, GameState &state)
                 switch (e.type)
                 {
                 case SDL_MOUSEBUTTONDOWN:
-                    if (i == PLAY)
-                        state = STATE_PLAY;
+                    if (e.button.button == SDL_BUTTON_LEFT)
+                    {
+                        if (i == PLAY)
+                            state = STATE_PLAY;
+                    }
                     break;
                 case SDL_MOUSEMOTION:
                     mouseover[i] = 1;
@@ -128,12 +131,15 @@ void SubMenu::handleEvent(SDL_Event &e, GameState &state)
                 switch (e.type)
                 {
                 case SDL_MOUSEBUTTONDOWN:
-                    if (i == RESUME)
-                        state = STATE_PLAY;
-                    if (i == AGAIN)
-                        state = STATE_AGAIN;
-                    if (i == HOME)
-                        state = STATE_MENU;
+                    if (e.button.button == SDL_BUTTON_LEFT)
+                    {
+                        if (i == RESUME)
+                            state = STATE_PLAY;
+                        if (i == AGAIN)
+                            state = STATE_AGAIN;
+                        if (i == HOME)
+                            state = STATE_MENU;
+                    }
                     break;
                 case SDL_MOUSEMOTION:
                     mouseover[i] = 1;

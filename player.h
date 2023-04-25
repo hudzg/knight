@@ -23,7 +23,7 @@ public:
     static const int FIRE_ATTACK_HEIGHT = 168;
     static const int FIRE_ATTACK_TEXTURE_WIDTH = 302;
     static const int FIRE_ATTACK_TEXTURE_HEIGHT = 112;
-    static const int FIRE_ATTACK_REAL_WIDTH = 300;
+    static const int FIRE_ATTACK_REAL_WIDTH = 280;
     static const int FIRE_ATTACK_REAL_HEIGHT = 112;
     FireAttack(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL);
     void attack(RenderWindow &window, int x, int y, SDL_Rect mBox, SDL_RendererFlip flip);
@@ -78,18 +78,24 @@ private:
     SDL_RendererFlip flip;
     FireAttack fireAttackAnimation;
     HealthPoint HP;
+    bool isTakeTrap;
+    int cntTimeTakeTrap;
 
 public:
-    static const int PLAYER_WIDTH = 128;
+    static const int PLAYER_WIDTH = 64;
     static const int PLAYER_HEIGHT = 128;
-    static const int PLAYER_TEXTURE_WIDTH = 320;
+    static const int PLAYER_TEXTURE_WIDTH = 480;
     static const int PLAYER_TEXTURE_HEIGHT = 320;
+    static const int PLAYER_RENDER_WIDTH = 192;
+    static const int PLAYER_RENDER_HEIGHT = 128;
     static const int PLAYER_VEL = 600;
     static const int PLAYER_MAX_CNT_JUMP = 20;
     static const int PLAYER_DASH_VEL_LEVEL = 2;
     static const int PLAYER_JUMP_VEL_LEVEL = 4;
     static const int GRAVITY_SPEED = 120;
     static const int MAX_FALL_SPEED = 1200;
+    static const int TILE_TRAP = 242;
+    static const int MAX_TIME_TAKE_TRAP = 60;
 
     Player(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL, SDL_Texture *mFireAttackTexture = NULL, SDL_Texture *mHPTexture = NULL);
     bool checkCollision(SDL_Rect &a, const SDL_Rect &b);

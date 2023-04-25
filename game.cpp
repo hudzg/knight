@@ -175,7 +175,8 @@ void Game::setCursor()
 bool Game::loadMedia()
 {
     bool success = true;
-    gTexture[PLAYER_TEXTURE] = window.loadFromFile("images/knight2.png");
+    // gTexture[PLAYER_TEXTURE] = window.loadFromFile("images/knight2.png");
+    gTexture[PLAYER_TEXTURE] = window.loadFromFile("images/knight/knight.png");
     if (gTexture[PLAYER_TEXTURE] == NULL)
     {
         printf("Failed to load dot texture\n");

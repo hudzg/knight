@@ -290,6 +290,7 @@ SkeletonFamily::SkeletonFamily(SDL_Texture *mTexture)
     skeleton.push_back(Skeleton(512, 128, mTexture));
     skeleton.push_back(Skeleton(768, 960, mTexture));
     skeleton.push_back(Skeleton(15 * 64, 0 * 64, mTexture));
+    skeleton.push_back(Skeleton(16 * 64, 5 * 64, mTexture));
     skeleton.push_back(Skeleton(17 * 64, 13 * 64, mTexture));
     skeleton.push_back(Skeleton(21 * 64, 10 * 64, mTexture));
     skeleton.push_back(Skeleton(33 * 64, 7 * 64, mTexture));
