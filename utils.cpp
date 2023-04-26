@@ -18,7 +18,7 @@ bool RenderWindow::initSDL()
         }
         else
         {
-            gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+            gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
             if (gRenderer == NULL)
             {
                 printf("Failed to render, error: %s\n", SDL_GetError());

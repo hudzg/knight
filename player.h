@@ -9,6 +9,7 @@
 #include "skeleton.h"
 #include "boss.h"
 #include "door.h"
+#include <math.h>
 
 using namespace std;
 
@@ -93,8 +94,8 @@ public:
     static const int PLAYER_MAX_CNT_JUMP = 20;
     static const int PLAYER_DASH_VEL_LEVEL = 2;
     static const int PLAYER_JUMP_VEL_LEVEL = 4;
-    static const int GRAVITY_SPEED = 120;
-    static const int MAX_FALL_SPEED = 1200;
+    static const int GRAVITY_SPEED = 60;
+    static const int MAX_FALL_SPEED = 600;
     static const int TILE_TRAP = 242;
     static const int MAX_TIME_TAKE_TRAP = 60;
 

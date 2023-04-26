@@ -14,6 +14,9 @@ const int TILE_TEXTURE_HEIGHT = 64;
 const int TOTAL_TILES = 1600 * 2;
 const int TILE_SET_WIDTH = 960;
 const int TOTAL_WALL_TILES = 16;
+const double PI = 3.1415926535897932384626433832795;
+const int SCREEN_FPS = 60;
+const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
 
 enum TextureID
 {

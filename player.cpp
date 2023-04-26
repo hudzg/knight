@@ -536,15 +536,15 @@ void Player::handleEvent(SDL_Event &e, GameState &state)
         case SDLK_SPACE:
             if (onGround && !isTakeHit)
             {
-                mVelY = -PLAYER_VEL * 3.5;
+                mVelY = -PLAYER_VEL * 2.25;
                 onGround = false;
             }
             break;
         case SDLK_a:
-            mVelX -= PLAYER_VEL;
+            mVelX -= PLAYER_VEL / 1.5;
             break;
         case SDLK_d:
-            mVelX += PLAYER_VEL;
+            mVelX += PLAYER_VEL / 1.5;
             break;
         case SDLK_ESCAPE:
             state = STATE_PAUSE_MENU;
@@ -556,10 +556,10 @@ void Player::handleEvent(SDL_Event &e, GameState &state)
         switch (e.key.keysym.sym)
         {
         case SDLK_a:
-            mVelX += PLAYER_VEL;
+            mVelX += PLAYER_VEL / 1.5;
             break;
         case SDLK_d:
-            mVelX -= PLAYER_VEL;
+            mVelX -= PLAYER_VEL / 1.5;
             break;
         }
     }
@@ -634,8 +634,8 @@ void Player::move(Tile *tiles, vector <Door> &doors, double timeStep)
         if (isDashing)
         {
             // printf("h\n");
-            int mDashVelX = PLAYER_DASH_VEL_LEVEL * direction * PLAYER_VEL;
-            // printf("%d\n", mDashVelX);
+            int mDashVelX = PLAYER_DASH_VEL_LEVEL * direction * PLAYER_VEL / 1.5 * cos(1.0 * cntDashFrames / (TOTAL_PLAYER_DASH_SPRITES * 6) * PI / 2);
+            // printf("%d %f\n", mDashVelX, 1.0 * cntDashFrames / (TOTAL_PLAYER_DASH_SPRITES * 4) * PI / 2);
             mPosX += mDashVelX * timeStep;
             mBox.x = mPosX;
             if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors))
@@ -707,9 +707,9 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
     }
     if (isDashing)
     {
-        window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gPlayerDashClips[cntDashFrames / 4], 0.0, NULL, flip);
+        window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gPlayerDashClips[cntDashFrames / 6], 0.0, NULL, flip);
         cntDashFrames++;
-        if (cntDashFrames >= TOTAL_PLAYER_DASH_SPRITES * 4)
+        if (cntDashFrames >= TOTAL_PLAYER_DASH_SPRITES * 6)
         {
             isDashing = false;
             cntDashFrames = 0;
