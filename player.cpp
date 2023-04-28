@@ -634,7 +634,7 @@ void Player::move(Tile *tiles, vector <Door> &doors, double timeStep)
         if (isDashing)
         {
             // printf("h\n");
-            int mDashVelX = PLAYER_DASH_VEL_LEVEL * direction * PLAYER_VEL / 1.5 * cos(1.0 * cntDashFrames / (TOTAL_PLAYER_DASH_SPRITES * 6) * PI / 2);
+            int mDashVelX = PLAYER_DASH_VEL_LEVEL * direction * PLAYER_VEL / 1.25 * cos(1.0 * cntDashFrames / (TOTAL_PLAYER_DASH_SPRITES * 6) * PI / 2);
             // printf("%d %f\n", mDashVelX, 1.0 * cntDashFrames / (TOTAL_PLAYER_DASH_SPRITES * 4) * PI / 2);
             mPosX += mDashVelX * timeStep;
             mBox.x = mPosX;
@@ -702,6 +702,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
             cntTakeHitFrames = 0;
             direction *= -1;
         }
+        isDashing = isAttacking = false;
         cntIdleFrames = cntJumpFrames = cntWalkFrames = cntFallFrames = cntAttackFrames = cntDashFrames = 0;
         return;
     }
