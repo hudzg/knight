@@ -20,7 +20,7 @@ bool Boss::checkCollisionWall(SDL_Rect &a, Tile *b)
     return false;
 }
 
-Boss::Boss(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mTexture)
+Boss::Boss(float x, float y, SDL_Texture *mTexture, SDL_Texture *fireBallTexture) : Entity(x, y, mTexture)
 {
     initialX = x;
     initialY = y;
@@ -28,8 +28,8 @@ Boss::Boss(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mTexture)
     mVelX = BOSS_VEL;
     mVelY = BOSS_VEL * 4;
     mBox = {(int)x, (int)y, BOSS_WIDTH, BOSS_HEIGHT};
-    isWalking = isAttacking = isTakeHit = isDeath = isSmashing = false;
-    cntIdleFrames = cntWalkFrames = cntAttackFrames = cntTakeHitFrames = cntDeathFrames = cntSmashFrames = 0;
+    isWalking = isAttacking = isTakeHit = isDeath = isSmashing = isCasting = false;
+    cntIdleFrames = cntWalkFrames = cntAttackFrames = cntTakeHitFrames = cntDeathFrames = cntSmashFrames = cntCastFrames = 0;
     for (int i = 0, y = 0; i < TOTAL_BOSS_IDLE_SPRITES; i++, y += BOSS_TEXTURE_HEIGHT)
         gBossIdleClips[i] = {0, y, BOSS_TEXTURE_WIDTH, BOSS_TEXTURE_HEIGHT};
     for (int i = 0, y = 0; i < TOTAL_BOSS_WALK_SPRITES; i++, y += BOSS_TEXTURE_HEIGHT)
@@ -42,6 +42,8 @@ Boss::Boss(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mTexture)
         gBossDeathClips[i] = {4 * BOSS_TEXTURE_WIDTH, y, BOSS_TEXTURE_WIDTH, BOSS_TEXTURE_HEIGHT};
     for (int i = 0, y = 0; i < TOTAL_BOSS_SMASH_SPRITES; i++, y += BOSS_TEXTURE_HEIGHT)
         gBossSmashClips[i] = {5 * BOSS_TEXTURE_WIDTH, y, BOSS_TEXTURE_WIDTH, BOSS_TEXTURE_HEIGHT};
+    for (int i = 0, y = 0; i < TOTAL_BOSS_CAST_SPRITES; i++, y += BOSS_TEXTURE_HEIGHT)
+        gBossCastClips[i] = {6 * BOSS_TEXTURE_WIDTH, y, BOSS_TEXTURE_WIDTH, BOSS_TEXTURE_HEIGHT};
     flip = SDL_FLIP_HORIZONTAL;
     cntIdle = 0;
     HP = BOSS_INITIAL_HP;
@@ -49,12 +51,21 @@ Boss::Boss(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mTexture)
 
     notTakeHit = false;
     cntAttacked = cntNotTakeHit = 0;
-    cntJump = 0;
+    cntCycle = 0;
+    for (int i = 0; i < MAX_BOSS_CYCLE; i++)
+        stateAttack[i] = ATTACK;
+    stateAttack[3] = SMASH;
+    stateAttack[7] = CAST;
+
+    fireRain = FireRain(fireBallTexture);
 }
 
 void Boss::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
 {
     // printf("%f %f\n", mPosX, mPosY);
+    fireRain.move();
+    fireRain.checkOnGround();
+
     if (isDied)
         return;
 
@@ -101,7 +112,7 @@ void Boss::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
         return;
     }
 
-    if (isSmashing || isAttacking || isDeath)
+    if (isCasting || isSmashing || isAttacking || isDeath)
         return;
     // if(isDeath) return;
 
@@ -122,13 +133,29 @@ void Boss::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
             flip = SDL_FLIP_HORIZONTAL;
         }
         isAttacking = true;
-        cntJump++;
-        if (cntJump == MAX_BOSS_JUMP)
+        switch (stateAttack[cntCycle])
         {
-            cntJump = 0;
+        case ATTACK:
+            isAttacking = true;
+            break;
+        case SMASH:
             mVelY = -BOSS_VEL * 6;
             isSmashing = true;
-            isAttacking = false;
+            break;
+        case CAST:
+            isCasting = true;
+            break;
+
+        default:
+            break;
+        }
+        cntCycle++;
+        if (cntCycle >= MAX_BOSS_CYCLE)
+        {
+            cntCycle = 0;
+            // mVelY = -BOSS_VEL * 6;
+            // isSmashing = true;
+            // isAttacking = false;
         }
     }
     else
@@ -150,7 +177,7 @@ void Boss::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
         }
     }
 
-    if (isSmashing || isAttacking)
+    if (isCasting || isSmashing || isAttacking)
         return;
 
     if (mVelX != 0)
@@ -194,6 +221,9 @@ void Boss::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
 
 void Boss::render(RenderWindow &window, SDL_Rect &camera)
 {
+
+    fireRain.render(window, camera);
+
     if (isDied)
         return;
     SDL_Rect tmpBox = {mBox.x + mBox.w / 2 - BOSS_RENDER_WIDTH / 2, mBox.y - BOSS_RENDER_HEIGHT + BOSS_HEIGHT, BOSS_RENDER_WIDTH, BOSS_RENDER_HEIGHT};
@@ -233,36 +263,52 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
             isTakeHit = false;
             cntTakeHitFrames = 0;
         }
-        cntIdleFrames = cntWalkFrames = cntAttackFrames = 0;
+        cntIdleFrames = cntWalkFrames = cntAttackFrames = cntSmashFrames = cntCastFrames = 0;
         isAttacking = false;
+        return;
+    }
+    if (isCasting)
+    {
+        fireRain.insert();
+        if (checkCollision(mBox, camera))
+            window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossCastClips[cntCastFrames / 5], 0.0, NULL, flip);
+        cntCastFrames++;
+        if (cntCastFrames >= TOTAL_BOSS_CAST_SPRITES * 5)
+        {
+            isCasting = false;
+            cntCastFrames = 0;
+        }
+        cntIdleFrames = cntWalkFrames = cntTakeHitFrames = cntAttackFrames = cntSmashFrames = 0;
         return;
     }
     if (isSmashing)
     {
+        // fireRain.push_back(FireBall(140 * 64, 6 * 64, ))
         if (checkCollision(mBox, camera))
             window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossSmashClips[cntSmashFrames / 5], 0.0, NULL, flip);
         cntSmashFrames++;
 
         /// render hitbox
-        if (55 <= cntSmashFrames && cntSmashFrames <= 60)
-        {
-            SDL_Rect attackBox = {mBox.x, mBox.y + mBox.h * 1 / 2, mBox.w * 2, mBox.h / 2};
-            attackBox.x += mBox.w / 2 - attackBox.w / 2;
-            attackBox.x -= camera.x;
-            attackBox.y -= camera.y;
-            window.renderBox(attackBox);
-        }
+        // if (55 <= cntSmashFrames && cntSmashFrames <= 60)
+        // {
+        //     SDL_Rect attackBox = {mBox.x, mBox.y + mBox.h * 1 / 2, mBox.w * 2, mBox.h / 2};
+        //     attackBox.x += mBox.w / 2 - attackBox.w / 2;
+        //     attackBox.x -= camera.x;
+        //     attackBox.y -= camera.y;
+        //     window.renderBox(attackBox);
+        // }
 
         if (cntSmashFrames >= TOTAL_BOSS_SMASH_SPRITES * 5)
         {
             isSmashing = false;
             cntSmashFrames = 0;
         }
-        cntIdleFrames = cntWalkFrames = cntTakeHitFrames = cntAttackFrames = 0;
+        cntIdleFrames = cntWalkFrames = cntTakeHitFrames = cntAttackFrames = cntCastFrames = 0;
         return;
     }
     if (isAttacking)
     {
+        // fireRain.insert();
         if (checkCollision(mBox, camera))
             window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossAttackClips[cntAttackFrames / 6], 0.0, NULL, flip);
         cntAttackFrames++;
@@ -283,7 +329,7 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
             isAttacking = false;
             cntAttackFrames = 0;
         }
-        cntIdleFrames = cntWalkFrames = cntTakeHitFrames = cntSmashFrames = 0;
+        cntIdleFrames = cntWalkFrames = cntTakeHitFrames = cntSmashFrames = cntCastFrames = 0;
         return;
     }
     if (isWalking)
@@ -294,7 +340,7 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
         cntWalkFrames++;
         if (cntWalkFrames >= TOTAL_BOSS_WALK_SPRITES * 4)
             cntWalkFrames = 0;
-        cntIdleFrames = cntAttackFrames = cntTakeHitFrames = cntSmashFrames = 0;
+        cntIdleFrames = cntAttackFrames = cntTakeHitFrames = cntSmashFrames = cntCastFrames = 0;
         return;
     }
     // SDL_Rect tmpBox = {mBox.x + mBox.w / 2 - BOSS_TEXTURE_WIDTH, mBox.y, BOSS_TEXTURE_WIDTH * 2, BOSS_TEXTURE_HEIGHT * 2};
@@ -311,21 +357,26 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
             mVelX = direction * BOSS_VEL;
         }
     }
-    cntWalkFrames = cntAttackFrames = cntTakeHitFrames = cntSmashFrames = 0;
+    cntWalkFrames = cntAttackFrames = cntTakeHitFrames = cntSmashFrames = cntCastFrames = 0;
 }
 
 std::pair<int, int> Boss::getAttack(SDL_Rect playerBox)
 {
     // printf("%d\n", direction);
+    std::pair<int, int> res = fireRain.getCountAttack(playerBox);
     if (isDied || isDeath)
-        return make_pair(0, 0);
+        return res;
     if (isAttacking && cntAttackFrames == 60)
     {
         SDL_Rect attackBox = {mBox.x + 0.5 * mBox.w, mBox.y, mBox.w * 1.16, mBox.h};
         if (flip == SDL_FLIP_NONE)
             attackBox.x -= mBox.w * 1.16;
         if (checkCollision(attackBox, playerBox))
-            return make_pair(1, direction);
+        {
+            res.first++;
+            res.second = direction;
+        }
+        return res;
     }
     if (isSmashing && cntSmashFrames == 60)
     {
@@ -333,9 +384,13 @@ std::pair<int, int> Boss::getAttack(SDL_Rect playerBox)
         attackBox.x += mBox.w / 2 - attackBox.w / 2;
         int direction = (mBox.x + mBox.w / 2 > playerBox.x + playerBox.w / 2 ? -1 : 1);
         if (checkCollision(attackBox, playerBox))
-            return make_pair(1, direction);
+        {
+            res.first++;
+            res.second = direction;
+        }
+        return res;
     }
-    return make_pair(0, 0);
+    return res;
 }
 
 void Boss::attacked(const SDL_Rect &playerAttackRect)

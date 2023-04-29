@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "random": "cpp",
+        "chrono": "cpp"
     }
 }

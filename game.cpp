@@ -122,7 +122,7 @@ bool Game::setSkeleton()
 
 bool Game::setBoss()
 {
-    boss = Boss(9300.0, 500.0, gTexture[BOSS_TEXTURE]);
+    boss = Boss(9300.0, 500.0, gTexture[BOSS_TEXTURE], gTexture[FIRE_BALL_TEXTURE]);
     return true;
 }
 
@@ -231,6 +231,12 @@ bool Game::loadMedia()
     if (gTexture[BOSS_TEXTURE] == NULL)
     {
         printf("Failed to load boss texture\n");
+        success = false;
+    }
+    gTexture[FIRE_BALL_TEXTURE] = window.loadFromFile("images/boss/fire-ball.png");
+    if (gTexture[FIRE_BALL_TEXTURE] == NULL)
+    {
+        printf("Failed to load fire ball texture\n");
         success = false;
     }
     gTexture[MENU_BACKGROUND_TEXTURE] = window.loadFromFile("images/gui/menu-background.png");

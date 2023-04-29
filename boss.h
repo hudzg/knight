@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "entity.h"
 #include "utils.h"
+#include "fire-ball.h"
 
 class Boss : public Entity
 {
@@ -16,11 +17,12 @@ private:
     static const int TOTAL_BOSS_TAKE_HIT_SPRITES = 5;
     static const int TOTAL_BOSS_DEATH_SPRITES = 22;
     static const int TOTAL_BOSS_SMASH_SPRITES = 18;
+    static const int TOTAL_BOSS_CAST_SPRITES = 18;
     double mVelX, mVelY;
     float initialX, initialY;
     SDL_Rect mBox;
-    bool isWalking, isAttacking, isChasing, isTakeHit, isDeath, isSmashing;
-    int cntIdleFrames, cntWalkFrames, cntAttackFrames, cntTakeHitFrames, cntDeathFrames, cntSmashFrames;
+    bool isWalking, isAttacking, isChasing, isTakeHit, isDeath, isSmashing, isCasting;
+    int cntIdleFrames, cntWalkFrames, cntAttackFrames, cntTakeHitFrames, cntDeathFrames, cntSmashFrames, cntCastFrames;
     int direction;
     SDL_Rect gBossIdleClips[TOTAL_BOSS_IDLE_SPRITES];
     SDL_Rect gBossWalkClips[TOTAL_BOSS_WALK_SPRITES];
@@ -28,17 +30,26 @@ private:
     SDL_Rect gBossTakeHitClips[TOTAL_BOSS_TAKE_HIT_SPRITES];
     SDL_Rect gBossDeathClips[TOTAL_BOSS_DEATH_SPRITES];
     SDL_Rect gBossSmashClips[TOTAL_BOSS_SMASH_SPRITES];
+    SDL_Rect gBossCastClips[TOTAL_BOSS_CAST_SPRITES];
     SDL_RendererFlip flip;
     int cntIdle;
     int HP;
     bool isDied;
+    FireRain fireRain;
 
     static const int MAX_BOSS_ATTACKED = 2;
     static const int MAX_BOSS_NOT_TAKE_HIT = 120;
-    static const int MAX_BOSS_JUMP = 4;
+    static const int MAX_BOSS_CYCLE = 8;
+    enum BossAttack
+    {
+        ATTACK,
+        SMASH,
+        CAST
+    };
+    BossAttack stateAttack[MAX_BOSS_CYCLE];
     bool notTakeHit;
     int cntNotTakeHit, cntAttacked;
-    int cntJump;
+    int cntCycle;
 
 public:
     // static const int BOSS_WIDTH = 192;
@@ -62,7 +73,7 @@ public:
     static const int GRAVITY_SPEED = 30;
     static const int MAX_FALL_SPEED = 1200;
 
-    Boss(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL);
+    Boss(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL, SDL_Texture *fireBallTexture = NULL);
     bool checkCollision(SDL_Rect &a, const SDL_Rect &b);
     bool checkCollisionWall(SDL_Rect &a, Tile *b);
     void move(Tile *tiles, const SDL_Rect &playerBox, double timeStep = 1.0 / 60);
