@@ -110,7 +110,7 @@ bool Game::setTiles(Tile *tiles)
 bool Game::setPlayer()
 {
     // player = Player(0.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE]);
-    player = Player(9300.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE]);
+    player = Player(9300.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE]);
     return true;
 }
 
@@ -213,6 +213,12 @@ bool Game::loadMedia()
     if (gTexture[FIRE_ATTACK_TEXTURE] == NULL)
     {
         printf("Failed to load fire attack texture\n");
+        success = false;
+    }
+    gTexture[HAMMER_SKILL_TEXTURE] = window.loadFromFile("images/attack/skill.png");
+    if (gTexture[HAMMER_SKILL_TEXTURE] == NULL)
+    {
+        printf("Failed to load hammer god skill texture\n");
         success = false;
     }
     gTexture[SKELETON_TEXTURE] = window.loadFromFile("images/skeleton/skeleton.png");

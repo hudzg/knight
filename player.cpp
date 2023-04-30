@@ -1,23 +1,23 @@
 #include "player.h"
 
-FireAttack::FireAttack(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mTexture)
-{
-    cntFrames = 0;
-    for (int i = 0, x = 0; i < TOTAL_ATTACK_SPRITES; i++, x += FIRE_ATTACK_TEXTURE_WIDTH)
-        gClips[i] = {x, 0, FIRE_ATTACK_TEXTURE_WIDTH, FIRE_ATTACK_TEXTURE_HEIGHT};
-}
+// FireAttack::FireAttack(float x, float y, SDL_Texture *mTexture) : Entity(x, y, mTexture)
+// {
+//     cntFrames = 0;
+//     for (int i = 0, x = 0; i < TOTAL_ATTACK_SPRITES; i++, x += FIRE_ATTACK_TEXTURE_WIDTH)
+//         gClips[i] = {x, 0, FIRE_ATTACK_TEXTURE_WIDTH, FIRE_ATTACK_TEXTURE_HEIGHT};
+// }
 
-void FireAttack::attack(RenderWindow &window, int x, int y, SDL_Rect mBox, SDL_RendererFlip flip)
-{
-    mBox.w = FIRE_ATTACK_WIDTH;
-    mBox.h = FIRE_ATTACK_HEIGHT;
-    // SDL_Rect tmpBox2 = {x, y, mBox.w, mBox.h};
-    // window.renderBox(tmpBox2);
-    window.renderPlayer(getTexture(), x, y, mBox, &gClips[cntFrames / 2], 0.0, NULL, flip);
-    cntFrames++;
-    if (cntFrames >= TOTAL_ATTACK_SPRITES * 2)
-        cntFrames = 0;
-}
+// void FireAttack::attack(RenderWindow &window, int x, int y, SDL_Rect mBox, SDL_RendererFlip flip)
+// {
+//     mBox.w = FIRE_ATTACK_WIDTH;
+//     mBox.h = FIRE_ATTACK_HEIGHT;
+//     // SDL_Rect tmpBox2 = {x, y, mBox.w, mBox.h};
+//     // window.renderBox(tmpBox2);
+//     window.renderPlayer(getTexture(), x, y, mBox, &gClips[cntFrames / 2], 0.0, NULL, flip);
+//     cntFrames++;
+//     if (cntFrames >= TOTAL_ATTACK_SPRITES * 2)
+//         cntFrames = 0;
+// }
 
 HealthPoint::HealthPoint(SDL_Texture *mTexture) : Entity(0, 0, mTexture)
 {
@@ -427,9 +427,10 @@ int HealthPoint::getHP()
 //     return mBox;
 // }
 
-Player::Player(float x, float y, SDL_Texture *mTexture, SDL_Texture *mFireAttackTexture, SDL_Texture *mHPTexture) : Entity(x, y, mTexture)
+Player::Player(float x, float y, SDL_Texture *mTexture, SDL_Texture *mFireAttackTexture, SDL_Texture *mHPTexture, SDL_Texture *mSkillTexture) : Entity(x, y, mTexture)
 {
-    fireAttackAnimation = FireAttack(x, y, mFireAttackTexture);
+    fireAttackAnimation = FireAttack(mFireAttackTexture);
+    skill = HammerGodSkill(mSkillTexture);
     HP = HealthPoint(mHPTexture);
     direction = 1;
     cntJump = 0;
@@ -460,6 +461,7 @@ Player::Player(float x, float y, SDL_Texture *mTexture, SDL_Texture *mFireAttack
     flip = SDL_FLIP_NONE;
     cntTimeTakeTrap = 0;
     isTakeTrap = false;
+    useSkill = false;
 }
 
 bool Player::checkCollision(SDL_Rect &a, const SDL_Rect &b)
@@ -474,10 +476,10 @@ bool Player::checkCollision(SDL_Rect &a, const SDL_Rect &b)
     return false;
 }
 
-bool Player::checkCollisionDoor(vector <Door> &doors)
+bool Player::checkCollisionDoor(vector<Door> &doors)
 {
-    for(int i = 0; i < doors.size(); i++)
-        if(!doors[i].isOpen() && checkCollision(mBox, doors[i].getBox()))
+    for (int i = 0; i < doors.size(); i++)
+        if (!doors[i].isOpen() && checkCollision(mBox, doors[i].getBox()))
             return true;
     return false;
 }
@@ -531,7 +533,11 @@ void Player::handleEvent(SDL_Event &e, GameState &state)
         {
         case SDLK_LSHIFT:
             if (!isTakeHit)
+            {
                 isDashing = true;
+                // isAttacking = false;
+                // useSkill = false;
+            }
             break;
         case SDLK_SPACE:
             if (onGround && !isTakeHit)
@@ -565,14 +571,35 @@ void Player::handleEvent(SDL_Event &e, GameState &state)
     }
     else if (e.type == SDL_MOUSEBUTTONDOWN && e.key.repeat == 0)
     {
-        if (e.button.button == SDL_BUTTON_LEFT && !isTakeHit)
+        if (!isTakeHit && !isAttacking)
         {
-            isAttacking = true;
+            switch (e.button.button)
+            {
+            case SDL_BUTTON_LEFT:
+                isAttacking = true;
+                break;
+            case SDL_BUTTON_RIGHT:
+                isAttacking = true;
+                useSkill = true;
+                skill.Reset();
+                break;
+            default:
+                break;
+            }
         }
+        // if (e.button.button == SDL_BUTTON_LEFT && !isTakeHit)
+        // {
+        //     isAttacking = true;
+        // }
+        // if (e.button.button == SDL_BUTTON_RIGHT && !isTakeHit)
+        // {
+        //     isAttacking = true;
+        //     useSkill = true;
+        // }
     }
 }
 
-void Player::move(Tile *tiles, vector <Door> &doors, double timeStep)
+void Player::move(Tile *tiles, vector<Door> &doors, double timeStep)
 {
     // if (mVelY < 0)
     // {
@@ -706,6 +733,73 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
         cntIdleFrames = cntJumpFrames = cntWalkFrames = cntFallFrames = cntAttackFrames = cntDashFrames = 0;
         return;
     }
+    if (isAttacking)
+    {
+        // attack when dash
+        if (isDashing)
+        {
+            cntDashFrames++;
+            if (cntDashFrames >= TOTAL_PLAYER_DASH_SPRITES * 6)
+            {
+                isDashing = false;
+                cntDashFrames = 0;
+            }
+        }
+
+        // normal attack
+        if (!useSkill)
+        {
+            window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gPlayerAttackClips[cntAttackFrames / 6], 0.0, NULL, flip);
+            fireAttackAnimation.render(window, mBox.x + mBox.w / 2 - FireAttack::FIRE_ATTACK_WIDTH / 2 - camera.x, mBox.y + mBox.h / 2 - FireAttack::FIRE_ATTACK_HEIGHT / 2 - camera.y, mBox, flip);
+            tmpBox.x = mBox.x + mBox.w / 2 - FireAttack::FIRE_ATTACK_REAL_WIDTH / 2;
+            tmpBox.y = mBox.y + mBox.h / 2 - FireAttack::FIRE_ATTACK_REAL_HEIGHT / 2;
+            tmpBox.w = FireAttack::FIRE_ATTACK_REAL_WIDTH;
+            tmpBox.h = FireAttack::FIRE_ATTACK_REAL_HEIGHT;
+            SDL_Rect tmpBox2 = {tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox.w, tmpBox.h};
+            window.renderBox(tmpBox2);
+            if (cntAttackFrames == 0)
+            {
+                skeletonFamily.attacked(tmpBox);
+                boss.attacked(tmpBox);
+                for (int i = 0; i < doors.size(); i++)
+                    doors[i].setOpen(tmpBox);
+            }
+            cntAttackFrames++;
+            if (cntAttackFrames >= TOTAL_PLAYER_ATTACK_SPRITES * 6)
+            {
+                isAttacking = false;
+                cntAttackFrames = 0;
+            }
+            cntIdleFrames = cntWalkFrames = cntJumpFrames = cntFallFrames = cntTakeHitFrames = 0;
+            return;
+        }
+
+        // skill attack
+        // printf("h\n");
+        window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gPlayerAttackClips[cntAttackFrames / 8], 0.0, NULL, flip);
+        if (cntAttackFrames == 0)
+            skill.setPos(mBox.x + mBox.w / 2 - HammerGodSkill::HAMMER_GOD_SKILL_RENDER_WIDTH / 2, mBox.y + HammerGodSkill::HAMMER_GOD_SKILL_RENDER_HEIGHT / 20 + mBox.h - HammerGodSkill::HAMMER_GOD_SKILL_RENDER_HEIGHT, flip);
+        skill.render(window, camera);
+        tmpBox = skill.getAttackBox();
+        SDL_Rect tmpBox2 = {tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox.w, tmpBox.h};
+        window.renderBox(tmpBox2);
+        if (cntAttackFrames == 36)
+        {
+            skeletonFamily.attacked(tmpBox);
+            boss.attacked(tmpBox);
+            for (int i = 0; i < doors.size(); i++)
+                doors[i].setOpen(tmpBox);
+        }
+        cntAttackFrames++;
+        if (cntAttackFrames >= TOTAL_PLAYER_ATTACK_SPRITES * 8)
+        {
+            isAttacking = false;
+            useSkill = false;
+            cntAttackFrames = 0;
+        }
+        cntIdleFrames = cntWalkFrames = cntJumpFrames = cntFallFrames = cntTakeHitFrames = 0;
+        return;
+    }
     if (isDashing)
     {
         window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gPlayerDashClips[cntDashFrames / 6], 0.0, NULL, flip);
@@ -716,32 +810,6 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
             cntDashFrames = 0;
         }
         cntIdleFrames = cntWalkFrames = cntJumpFrames = cntFallFrames = cntAttackFrames = cntTakeHitFrames = 0;
-        return;
-    }
-    if (isAttacking)
-    {
-        window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gPlayerAttackClips[cntAttackFrames / 6], 0.0, NULL, flip);
-        fireAttackAnimation.attack(window, mPosX + mBox.w / 2 - FireAttack::FIRE_ATTACK_WIDTH / 2 - camera.x, mPosY + mBox.h / 2 - FireAttack::FIRE_ATTACK_HEIGHT / 2 - camera.y, mBox, flip);
-        tmpBox.x = mPosX + mBox.w / 2 - FireAttack::FIRE_ATTACK_REAL_WIDTH / 2;
-        tmpBox.y = mPosY + mBox.h / 2 - FireAttack::FIRE_ATTACK_REAL_HEIGHT / 2;
-        tmpBox.w = FireAttack::FIRE_ATTACK_REAL_WIDTH;
-        tmpBox.h = FireAttack::FIRE_ATTACK_REAL_HEIGHT;
-        SDL_Rect tmpBox2 = {tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox.w, tmpBox.h};
-        window.renderBox(tmpBox2);
-        if (cntAttackFrames == 0)
-        {
-            skeletonFamily.attacked(tmpBox);
-            boss.attacked(tmpBox);
-            for (int i = 0; i < doors.size(); i++)
-                doors[i].setOpen(tmpBox);
-        }
-        cntAttackFrames++;
-        if (cntAttackFrames >= TOTAL_PLAYER_ATTACK_SPRITES * 6)
-        {
-            isAttacking = false;
-            cntAttackFrames = 0;
-        }
-        cntIdleFrames = cntWalkFrames = cntJumpFrames = cntFallFrames = cntDashFrames = cntTakeHitFrames = 0;
         return;
     }
     if (isJumping)
