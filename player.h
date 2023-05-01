@@ -11,6 +11,7 @@
 #include "door.h"
 #include <math.h>
 #include "player-skill.h"
+#include "secret-area.h"
 
 using namespace std;
 
@@ -108,8 +109,8 @@ public:
     bool checkCollisionDoor(vector <Door> &doors);
     void checkCollisionTrap(const vector <SDL_Rect> &b);
     void handleEvent(SDL_Event &e, GameState &state);
-    void move(Tile *tiles, vector <Door> &doors, double timeStep = 1.0 / 60);
-    void render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector <Door> &doors);
+    void move(Tile *tiles, vector <Door> &doors, SecretArea &secretArea, double timeStep = 1.0 / 60);
+    void render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector <Door> &doors, SecretArea &secretArea);
     void attacked(std::pair <int, int> value);
     void setCamera(SDL_Rect &camera);
     int getPosX();

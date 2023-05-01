@@ -53,9 +53,12 @@ Boss::Boss(float x, float y, SDL_Texture *mTexture, SDL_Texture *fireBallTexture
     cntAttacked = cntNotTakeHit = 0;
     cntCycle = 0;
     for (int i = 0; i < MAX_BOSS_CYCLE; i++)
-        stateAttack[i] = ATTACK;
-    stateAttack[3] = SMASH;
-    stateAttack[7] = CAST;
+        stateAttack[i] = CAST;
+
+    // for (int i = 0; i < MAX_BOSS_CYCLE; i++)
+    //     stateAttack[i] = ATTACK;
+    // stateAttack[3] = SMASH;
+    // stateAttack[7] = CAST;
 
     fireRain = FireRain(fireBallTexture);
 }
@@ -132,7 +135,7 @@ void Boss::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
             direction = 1;
             flip = SDL_FLIP_HORIZONTAL;
         }
-        isAttacking = true;
+        // isAttacking = true;
         switch (stateAttack[cntCycle])
         {
         case ATTACK:
@@ -283,7 +286,6 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
     }
     if (isSmashing)
     {
-        // fireRain.push_back(FireBall(140 * 64, 6 * 64, ))
         if (checkCollision(mBox, camera))
             window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossSmashClips[cntSmashFrames / 5], 0.0, NULL, flip);
         cntSmashFrames++;
@@ -308,7 +310,6 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
     }
     if (isAttacking)
     {
-        // fireRain.insert();
         if (checkCollision(mBox, camera))
             window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossAttackClips[cntAttackFrames / 6], 0.0, NULL, flip);
         cntAttackFrames++;
@@ -364,6 +365,7 @@ std::pair<int, int> Boss::getAttack(SDL_Rect playerBox)
 {
     // printf("%d\n", direction);
     std::pair<int, int> res = fireRain.getCountAttack(playerBox);
+    // std::pair<int, int> res = make_pair(0, 0);
     if (isDied || isDeath)
         return res;
     if (isAttacking && cntAttackFrames == 60)

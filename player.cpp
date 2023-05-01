@@ -599,7 +599,7 @@ void Player::handleEvent(SDL_Event &e, GameState &state)
     }
 }
 
-void Player::move(Tile *tiles, vector<Door> &doors, double timeStep)
+void Player::move(Tile *tiles, vector<Door> &doors, SecretArea &secretArea, double timeStep)
 {
     // if (mVelY < 0)
     // {
@@ -633,7 +633,7 @@ void Player::move(Tile *tiles, vector<Door> &doors, double timeStep)
         // printf()
         mPosX += 0.5 * direction * PLAYER_VEL * timeStep;
         mBox.x = mPosX;
-        if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors))
+        if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors) || (!secretArea.isOpen() && checkCollision(mBox, secretArea.getBox())))
         {
             mPosX -= 0.5 * direction * PLAYER_VEL * timeStep;
             mBox.x = mPosX;
@@ -665,7 +665,7 @@ void Player::move(Tile *tiles, vector<Door> &doors, double timeStep)
             // printf("%d %f\n", mDashVelX, 1.0 * cntDashFrames / (TOTAL_PLAYER_DASH_SPRITES * 4) * PI / 2);
             mPosX += mDashVelX * timeStep;
             mBox.x = mPosX;
-            if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors))
+            if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors) || (!secretArea.isOpen() && checkCollision(mBox, secretArea.getBox())))
             {
                 mPosX -= mDashVelX * timeStep;
                 mBox.x = mPosX;
@@ -675,7 +675,7 @@ void Player::move(Tile *tiles, vector<Door> &doors, double timeStep)
         {
             mPosX += mVelX * timeStep;
             mBox.x = mPosX;
-            if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors))
+            if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors) || (!secretArea.isOpen() && checkCollision(mBox, secretArea.getBox())))
             {
                 // printf("h\n");
                 mPosX -= mVelX * timeStep;
@@ -686,7 +686,7 @@ void Player::move(Tile *tiles, vector<Door> &doors, double timeStep)
 
     mPosY += mVelY * timeStep;
     mBox.y = mPosY;
-    if (mPosY < 0 || mPosY + PLAYER_HEIGHT > LEVEL_HEIGHT || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors))
+    if (mPosY < 0 || mPosY + PLAYER_HEIGHT > LEVEL_HEIGHT || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors) || (!secretArea.isOpen() && checkCollision(mBox, secretArea.getBox())))
     {
         if (mVelY > 0)
             onGround = true;
@@ -700,7 +700,7 @@ void Player::move(Tile *tiles, vector<Door> &doors, double timeStep)
     mBox.y = mPosY;
 }
 
-void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector<Door> &doors)
+void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector<Door> &doors, SecretArea &secretArea)
 {
     // render HP
     HP.render(window);
@@ -763,6 +763,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
                 boss.attacked(tmpBox);
                 for (int i = 0; i < doors.size(); i++)
                     doors[i].setOpen(tmpBox);
+                secretArea.setOpen(tmpBox);
             }
             cntAttackFrames++;
             if (cntAttackFrames >= TOTAL_PLAYER_ATTACK_SPRITES * 6)
@@ -789,6 +790,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
             boss.attacked(tmpBox);
             for (int i = 0; i < doors.size(); i++)
                 doors[i].setOpen(tmpBox);
+            secretArea.setOpen(tmpBox);
         }
         cntAttackFrames++;
         if (cntAttackFrames >= TOTAL_PLAYER_ATTACK_SPRITES * 8)

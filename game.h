@@ -17,6 +17,7 @@
 #include "boss.h"
 #include "menu.h"
 #include "door.h"
+#include "secret-area.h"
 
 class Game
 {
@@ -36,6 +37,7 @@ private:
     SDL_Cursor* cursor;
     vector <SDL_Rect> traps;
     vector <Door> doors;
+    SecretArea secretArea;
 
 public:
     bool init();
@@ -45,6 +47,7 @@ public:
     bool setBoss();
     bool setMenu();
     bool setDoor();
+    bool setSecretArea();
     bool setDynamicObject();
     void setCursor();
     bool loadMedia();

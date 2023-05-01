@@ -109,7 +109,7 @@ bool Game::setTiles(Tile *tiles)
 
 bool Game::setPlayer()
 {
-    // player = Player(0.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE]);
+    // player = Player(0.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE]);
     player = Player(9300.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE]);
     return true;
 }
@@ -141,7 +141,13 @@ bool Game::setDoor()
     doors.push_back(Door(31 * 64, 7 * 64, gTexture[DOOR_TEXTURE], 7));
     doors.push_back(Door(60 * 64, 13 * 64, gTexture[DOOR_TEXTURE], 7 + 13));
     doors.push_back(Door(107 * 64, 0 * 64, gTexture[DOOR_TEXTURE], 7 + 13 + 11));
-    doors.push_back(Door(1146 * 64, 0 * 64, gTexture[DOOR_TEXTURE], 7 + 13 + 11 + 8));
+    doors.push_back(Door(146 * 64, 0 * 64, gTexture[DOOR_TEXTURE], 7 + 13 + 11 + 8));
+    return true;
+}
+
+bool Game::setSecretArea()
+{
+    secretArea = SecretArea(79 * 64, 0, gTexture[SECRET_AREA_TEXTURE]);
     return true;
 }
 
@@ -165,6 +171,11 @@ bool Game::setDynamicObject()
     if(!setBoss())
     {
         printf("Failed to set boss\n");
+        return false;
+    }
+    if(!setSecretArea())
+    {
+        printf("Failed to set secret area\n");
         return false;
     }
     return true;
@@ -287,6 +298,25 @@ bool Game::loadMedia()
         printf("Failed to load door texture\n");
         success = false;
     }
+    gTexture[SECRET_AREA_TEXTURE] = window.loadFromFile("images/secret-area/secret-area.png");
+    if (gTexture[SECRET_AREA_TEXTURE] == NULL)
+    {
+        printf("Failed to load secret area texture\n");
+        success = false;
+    }
+    gTexture[KEY_TEXTURE] = window.loadFromFile("images/secret-area/key.png");
+    if (gTexture[KEY_TEXTURE] == NULL)
+    {
+        printf("Failed to load key texture\n");
+        success = false;
+    }
+    gTexture[CHEST_TEXTURE] = window.loadFromFile("images/secret-area/chest.png");
+    if (gTexture[CHEST_TEXTURE] == NULL)
+    {
+        printf("Failed to load chest texture\n");
+        success = false;
+    }
+    
     if (!setTiles(tiles))
     {
         printf("Failed to load tile set\n");
@@ -381,7 +411,7 @@ void Game::handleGameEvent(SDL_Event &event)
 void Game::renderGame()
 {
     window.clearRenderer();
-    player.move(tiles, doors);
+    player.move(tiles, doors, secretArea);
     player.setCamera(camera);
 
 
@@ -394,7 +424,10 @@ void Game::renderGame()
         doors[i].render(window, camera);
     }
 
-    skeletonFamily.move(tiles, player.getBox(), doors);
+    if(doors.back().isOpen()) secretArea.setCanOpen();
+    secretArea.render(window, camera);
+
+    skeletonFamily.move(tiles, player.getBox(), doors, secretArea);
     skeletonFamily.render(window, camera);
     skeletonFamily.checkDied();
 
@@ -404,7 +437,7 @@ void Game::renderGame()
     player.attacked(skeletonFamily.getCountAttack(player.getBox()));
     player.attacked(boss.getAttack(player.getBox()));
     player.checkCollisionTrap(traps);
-    player.render(window, camera, skeletonFamily, boss, doors);
+    player.render(window, camera, skeletonFamily, boss, doors, secretArea);
 
     if(player.getHP() == 0) state = STATE_GAME_OVER_MENU;
     

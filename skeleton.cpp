@@ -55,7 +55,7 @@ Skeleton::Skeleton(float x, float y, int ID, SDL_Texture *mTexture) : Entity(x, 
     this->ID = ID;
 }
 
-void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors, double timeStep)
+void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors, SecretArea &secretArea, double timeStep)
 {
     // printf("%f %f\n", mPosX, mPosY);
     if (isDied)
@@ -148,7 +148,7 @@ void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors
 
     mPosX += mVelX * timeStep;
     mBox.x = mPosX;
-    if (mPosX < 0 || mPosX + SKELETON_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors) || mPosX < initialX - MAX_WALK_WIDTH || mPosX > initialX + MAX_WALK_WIDTH)
+    if (mPosX < 0 || mPosX + SKELETON_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors) || (!secretArea.isOpen() && checkCollision(mBox, secretArea.getBox())) || mPosX < initialX - MAX_WALK_WIDTH || mPosX > initialX + MAX_WALK_WIDTH)
     {
         mPosX -= mVelX * timeStep;
         mVelX = 0;
@@ -157,7 +157,7 @@ void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors
 
     mPosY += mVelY * timeStep;
     mBox.y = mPosY;
-    if (mPosY < 0 || mPosY + SKELETON_HEIGHT > LEVEL_HEIGHT || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors))
+    if (mPosY < 0 || mPosY + SKELETON_HEIGHT > LEVEL_HEIGHT || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors) || (!secretArea.isOpen() && checkCollision(mBox, secretArea.getBox())))
     {
         mPosY -= mVelY * timeStep;
     }
@@ -357,10 +357,10 @@ SkeletonFamily::SkeletonFamily(SDL_Texture *mTexture)
     skeleton.push_back(Skeleton(144 * 64, 0 * 64, skeleton.size(), mTexture));
 }
 
-void SkeletonFamily::move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors)
+void SkeletonFamily::move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors, SecretArea &secretArea)
 {
     for (int i = 0; i < skeleton.size(); i++)
-        skeleton[i].move(tiles, playerBox, doors);
+        skeleton[i].move(tiles, playerBox, doors, secretArea);
 }
 
 void SkeletonFamily::render(RenderWindow &window, SDL_Rect &camera)

@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "door.h"
 #include <vector>
+#include "secret-area.h"
 
 class Skeleton : public Entity
 {
@@ -46,7 +47,7 @@ public:
     static const int MAX_IDLE_FRAMES = 4;
     static const int MAX_ATTACK_WIDTH = 4;
 
-    static const int SKELETON_INITIAL_HP = 4;
+    static const int SKELETON_INITIAL_HP = 1;
 
     static const int SKELETON_IS_WALL = 240;
 
@@ -54,7 +55,7 @@ public:
     bool checkCollision(SDL_Rect &a, const SDL_Rect &b);
     bool checkCollisionWall(SDL_Rect &a, Tile *b);
     bool checkCollisionDoor(vector <Door> &doors);
-    void move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors, double timeStep = 1.0 / 60);
+    void move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors, SecretArea &secretArea, double timeStep = 1.0 / 60);
     void render(RenderWindow &window, SDL_Rect &camera);
     void attacked(const SDL_Rect &playerAttackRect);
     std::pair <int, int> getAttack(SDL_Rect playerBox);
@@ -71,7 +72,7 @@ class SkeletonFamily
     int cntSkeletonDied;
     public:
     SkeletonFamily(SDL_Texture *mTexture = NULL);
-    void move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors);
+    void move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors, SecretArea &secretArea);
     void render(RenderWindow &window, SDL_Rect &camera);
     void attacked(const SDL_Rect &playerAttackRect);
     void checkDied();

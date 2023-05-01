@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "constants.h"
 #include <vector>
+#include <iostream>
 // #include <random>
 // #include <chrono>
 
@@ -52,7 +53,7 @@ public:
         std::mt19937 rd(std::chrono::_V2::steady_clock::now().time_since_epoch().count());
         return l + (1ll * (rd() % MOD) * (rd() % MOD)) % (r - l + 1);
     }
-    static const int MAX_TIME_INSERT = 6;
+    static const int MAX_TIME_INSERT = 4;
     FireRain(SDL_Texture *mTexture = NULL);
     void insert();
     void move();

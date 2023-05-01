@@ -9,6 +9,7 @@ FireBall::FireBall(float mPosX, float mPosY, SDL_Texture *mTexture)
     mBox = {(int)mPosX, (int)mPosY, FIRE_BALL_WIDTH, FIRE_BALL_HEIGHT};
     for (int i = 0, x = 0; i < TOTAL_FIRE_BALL_SPRITES; i++, x += FIRE_BALL_TEXTURE_WIDTH)
         gClips[i] = {x, 0, FIRE_BALL_TEXTURE_WIDTH, FIRE_BALL_TEXTURE_HEIGHT};
+    cntFrames = 0;
 }
 
 bool FireBall::checkCollision(SDL_Rect &a, const SDL_Rect &b)
@@ -38,6 +39,7 @@ void FireBall::move(double timeStep)
 }
 void FireBall::render(RenderWindow &window, SDL_Rect &camera)
 {
+    // cerr << cntFrames << " ";
     SDL_Rect tmpBox = {mBox.x + mBox.w / 2 - FIRE_BALL_RENDER_WIDTH / 2, mBox.y, FIRE_BALL_RENDER_WIDTH, FIRE_BALL_RENDER_HEIGHT};
     window.renderPlayer(mTexture, tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gClips[cntFrames / 4]);
 
@@ -73,8 +75,9 @@ FireRain::FireRain(SDL_Texture *mTexture)
 
 void FireRain::insert()
 {
+    // std::cerr << "insert\n";
     if (timeInsert == 0)
-        fireBalls.push_back(FireBall(Rand(136 * 64, 157 * 64), 6 * 64, mTexture));
+        fireBalls.push_back(FireBall(Rand(136 * 64, 156 * 64), 6 * 64, mTexture));
     timeInsert++;
     if (timeInsert >= MAX_TIME_INSERT)
         timeInsert = 0;
@@ -82,17 +85,24 @@ void FireRain::insert()
 
 void FireRain::move()
 {
+    // std::cerr << "move\n";
     for (int i = 0; i < fireBalls.size(); i++)
         fireBalls[i].move();
 }
 void FireRain::render(RenderWindow &window, SDL_Rect &camera)
 {
+    // std::cerr << "render " << fireBalls.size() << " ";
     for (int i = 0; i < fireBalls.size(); i++)
+    {
+        // cout << i << " ";
         fireBalls[i].render(window, camera);
+    }
+    // std::cerr << "h\n";
 }
 
 void FireRain::checkOnGround()
 {
+    // std::cerr << "checkOnGround\n";
     for (int i = 0; i < fireBalls.size(); i++)
         while (i < fireBalls.size() && fireBalls[i].onGround())
         {
@@ -102,12 +112,18 @@ void FireRain::checkOnGround()
 
 std::pair<int, int> FireRain::getCountAttack(SDL_Rect &playerBox)
 {
+    // std::cerr << "getCountAttack\n";
     std::pair<int, int> result = make_pair(0, 0);
     for (int i = 0; i < fireBalls.size(); i++)
     {
         std::pair<int, int> tmp = make_pair(0, 0);
         do
         {
+            if(i >= fireBalls.size()) 
+            {
+                // printf("h\n");
+                std::cerr << "h\n";
+            }
             tmp = fireBalls[i].getAttack(playerBox);
             result.first += tmp.first;
             if (tmp.first > 0)
