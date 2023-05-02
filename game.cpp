@@ -110,7 +110,8 @@ bool Game::setTiles(Tile *tiles)
 bool Game::setPlayer()
 {
     // player = Player(0.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE]);
-    player = Player(9300.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE]);
+    player = Player(75 * 64, 0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE]);
+    // player = Player(9300.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE]);
     return true;
 }
 
@@ -148,6 +149,8 @@ bool Game::setDoor()
 bool Game::setSecretArea()
 {
     secretArea = SecretArea(79 * 64, 0, gTexture[SECRET_AREA_TEXTURE]);
+    key = Key(82 * 64, 3 * 64, gTexture[KEY_TEXTURE]);
+    chest = Chest(3 * 64, 10 * 64, gTexture[CHEST_TEXTURE]);
     return true;
 }
 
@@ -424,7 +427,18 @@ void Game::renderGame()
         doors[i].render(window, camera);
     }
 
-    if(doors.back().isOpen()) secretArea.setCanOpen();
+    if(doors.back().isOpen()) 
+    {
+        secretArea.setCanOpen();
+        key.setNotPick();
+        chest.setClose();
+    }
+    key.setPick(player.getBox(), camera);
+    key.move();
+    key.render(window, camera);
+
+    chest.render(window, camera);
+
     secretArea.render(window, camera);
 
     skeletonFamily.move(tiles, player.getBox(), doors, secretArea);
@@ -437,7 +451,7 @@ void Game::renderGame()
     player.attacked(skeletonFamily.getCountAttack(player.getBox()));
     player.attacked(boss.getAttack(player.getBox()));
     player.checkCollisionTrap(traps);
-    player.render(window, camera, skeletonFamily, boss, doors, secretArea);
+    player.render(window, camera, skeletonFamily, boss, doors, secretArea, key, chest);
 
     if(player.getHP() == 0) state = STATE_GAME_OVER_MENU;
     

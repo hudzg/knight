@@ -579,9 +579,12 @@ void Player::handleEvent(SDL_Event &e, GameState &state)
                 isAttacking = true;
                 break;
             case SDL_BUTTON_RIGHT:
-                isAttacking = true;
-                useSkill = true;
-                skill.Reset();
+                if (skill.getIsUnlock())
+                {
+                    isAttacking = true;
+                    useSkill = true;
+                    skill.Reset();
+                }
                 break;
             default:
                 break;
@@ -700,7 +703,7 @@ void Player::move(Tile *tiles, vector<Door> &doors, SecretArea &secretArea, doub
     mBox.y = mPosY;
 }
 
-void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector<Door> &doors, SecretArea &secretArea)
+void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector<Door> &doors, SecretArea &secretArea, Key &key, Chest &chest)
 {
     // render HP
     HP.render(window);
@@ -764,6 +767,14 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
                 for (int i = 0; i < doors.size(); i++)
                     doors[i].setOpen(tmpBox);
                 secretArea.setOpen(tmpBox);
+                if (key.isPick())
+                {
+                    if (chest.setOpen(tmpBox))
+                    {
+                        key.setUsed();
+                        skill.setUnlock();
+                    }
+                }
             }
             cntAttackFrames++;
             if (cntAttackFrames >= TOTAL_PLAYER_ATTACK_SPRITES * 6)

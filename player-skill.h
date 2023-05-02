@@ -31,6 +31,7 @@ private:
     int x, y;
     SDL_RendererFlip flip;
     SDL_Rect mBox;
+    bool isUnlock;
 
 public:
     static const int HAMMER_GOD_SKILL_WIDTH = 453;
@@ -45,6 +46,8 @@ public:
     void render(RenderWindow &window, SDL_Rect &camera);
     SDL_Rect getAttackBox();
     void Reset();
+    bool getIsUnlock();
+    void setUnlock();
 };
 
 #endif

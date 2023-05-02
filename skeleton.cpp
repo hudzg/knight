@@ -60,6 +60,7 @@ void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors
     // printf("%f %f\n", mPosX, mPosY);
     if (isDied)
         return;
+    attacked(mBox);
 
     if (isTakeHit)
     {

@@ -38,6 +38,8 @@ private:
     vector <SDL_Rect> traps;
     vector <Door> doors;
     SecretArea secretArea;
+    Key key;
+    Chest chest;
 
 public:
     bool init();
