@@ -110,7 +110,7 @@ bool Game::setTiles(Tile *tiles)
 bool Game::setPlayer()
 {
     // player = Player(0.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE]);
-    player = Player(75 * 64, 0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE]);
+    player = Player(75 * 64, 0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE]);
     // player = Player(9300.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE]);
     return true;
 }
@@ -238,13 +238,25 @@ bool Game::loadMedia()
     gTexture[SKELETON_TEXTURE] = window.loadFromFile("images/skeleton/skeleton.png");
     if (gTexture[SKELETON_TEXTURE] == NULL)
     {
-        printf("Failed to load fire skeleton texture\n");
+        printf("Failed to load skeleton texture\n");
         success = false;
     }
-    gTexture[HP_TEXTURE] = window.loadFromFile("images/hp/hp.png");
+    gTexture[HP_TEXTURE] = window.loadFromFile("images/hud/hp.png");
     if (gTexture[HP_TEXTURE] == NULL)
     {
-        printf("Failed to load fire hp texture\n");
+        printf("Failed to load hp texture\n");
+        success = false;
+    }
+    gTexture[MP_TEXTURE] = window.loadFromFile("images/hud/mp.png");
+    if (gTexture[MP_TEXTURE] == NULL)
+    {
+        printf("Failed to load mp texture\n");
+        success = false;
+    }
+    gTexture[ATKP_TEXTURE] = window.loadFromFile("images/hud/attack.png");
+    if (gTexture[ATKP_TEXTURE] == NULL)
+    {
+        printf("Failed to load atk point texture\n");
         success = false;
     }
     gTexture[BOSS_TEXTURE] = window.loadFromFile("images/boss/boss.png");

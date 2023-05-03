@@ -52,13 +52,13 @@ Boss::Boss(float x, float y, SDL_Texture *mTexture, SDL_Texture *fireBallTexture
     notTakeHit = false;
     cntAttacked = cntNotTakeHit = 0;
     cntCycle = 0;
-    for (int i = 0; i < MAX_BOSS_CYCLE; i++)
-        stateAttack[i] = CAST;
-
     // for (int i = 0; i < MAX_BOSS_CYCLE; i++)
-    //     stateAttack[i] = ATTACK;
-    // stateAttack[3] = SMASH;
-    // stateAttack[7] = CAST;
+    //     stateAttack[i] = CAST;
+
+    for (int i = 0; i < MAX_BOSS_CYCLE; i++)
+        stateAttack[i] = ATTACK;
+    stateAttack[3] = SMASH;
+    stateAttack[7] = CAST;
 
     fireRain = FireRain(fireBallTexture);
 }
@@ -395,10 +395,10 @@ std::pair<int, int> Boss::getAttack(SDL_Rect playerBox)
     return res;
 }
 
-void Boss::attacked(const SDL_Rect &playerAttackRect)
+int Boss::attacked(const SDL_Rect &playerAttackRect)
 {
     if (isDeath || isDied || notTakeHit || isSmashing)
-        return;
+        return 0;
     if (checkCollision(mBox, playerAttackRect))
     {
         HP--;
@@ -418,7 +418,9 @@ void Boss::attacked(const SDL_Rect &playerAttackRect)
             mVelX = BOSS_VEL;
         else
             mVelX = -BOSS_VEL;
+        return 1;
     }
+    return 0;
 }
 
 int Boss::getPosX()

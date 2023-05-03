@@ -12,6 +12,7 @@
 #include <math.h>
 #include "player-skill.h"
 #include "secret-area.h"
+#include "hud.h"
 
 using namespace std;
 
@@ -33,28 +34,28 @@ using namespace std;
 //     void attack(RenderWindow &window, int x, int y, SDL_Rect mBox, SDL_RendererFlip flip);
 // };
 
-class HealthPoint : public Entity
-{
-private:
-    static const int TOTAL_HP_SPRITES = 2;
-    SDL_Rect gClips[TOTAL_HP_SPRITES];
-    int HP;
-    SDL_Rect mBox;
+// class HealthPoint : public Entity
+// {
+// private:
+//     static const int TOTAL_HP_SPRITES = 2;
+//     SDL_Rect gClips[TOTAL_HP_SPRITES];
+//     int HP;
+//     SDL_Rect mBox;
 
-public:
-    static const int HP_WIDTH = 80;
-    static const int HP_HEIGHT = 80;
-    static const int HP_TEXTURE_WIDTH = 160;
-    static const int HP_TEXTURE_HEIGHT = 160;
+// public:
+//     static const int HP_WIDTH = 80;
+//     static const int HP_HEIGHT = 80;
+//     static const int HP_TEXTURE_WIDTH = 160;
+//     static const int HP_TEXTURE_HEIGHT = 160;
 
-    static const int TOTAL_HP = 4;
-    static const int HP_POS_X = 80;
-    static const int HP_POS_Y = 40;
-    HealthPoint(SDL_Texture *mTexture = NULL);
-    void render(RenderWindow &window);
-    void addHP(int value);
-    int getHP();
-};
+//     static const int TOTAL_HP = 4;
+//     static const int HP_POS_X = 80;
+//     static const int HP_POS_Y = 40;
+//     HealthPoint(SDL_Texture *mTexture = NULL);
+//     void render(RenderWindow &window);
+//     void addHP(int value);
+//     int getHP();
+// };
 
 class Player : public Entity
 {
@@ -82,7 +83,7 @@ private:
     SDL_RendererFlip flip;
     FireAttack fireAttackAnimation;
     HammerGodSkill skill;
-    HealthPoint HP;
+    PlayerPoint HP, MP;
     bool isTakeTrap;
     int cntTimeTakeTrap;
     bool useSkill;
@@ -103,7 +104,7 @@ public:
     static const int TILE_TRAP = 242;
     static const int MAX_TIME_TAKE_TRAP = 60;
 
-    Player(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL, SDL_Texture *mFireAttackTexture = NULL, SDL_Texture *mHPTexture = NULL, SDL_Texture *mSkillTexture = NULL);
+    Player(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL, SDL_Texture *mFireAttackTexture = NULL, SDL_Texture *mHPTexture = NULL, SDL_Texture *mSkillTexture = NULL, SDL_Texture *mMPTexture = NULL);
     bool checkCollision(SDL_Rect &a, const SDL_Rect &b);
     bool checkCollisionWall(SDL_Rect &a, Tile *b);
     bool checkCollisionDoor(vector <Door> &doors);

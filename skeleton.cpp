@@ -276,10 +276,10 @@ std::pair<int, int> Skeleton::getAttack(SDL_Rect playerBox)
     return make_pair(0, 0);
 }
 
-void Skeleton::attacked(const SDL_Rect &playerAttackRect)
+int Skeleton::attacked(const SDL_Rect &playerAttackRect)
 {
     if (isDeath || isDied)
-        return;
+        return 0;
     if (checkCollision(mBox, playerAttackRect))
     {
         HP--;
@@ -292,7 +292,9 @@ void Skeleton::attacked(const SDL_Rect &playerAttackRect)
             mVelX = SKELETON_VEL;
         else
             mVelX = -SKELETON_VEL;
+        return 1;
     }
+    return 0;
 }
 
 int Skeleton::getPosX()
@@ -370,10 +372,12 @@ void SkeletonFamily::render(RenderWindow &window, SDL_Rect &camera)
         skeleton[i].render(window, camera);
 }
 
-void SkeletonFamily::attacked(const SDL_Rect &playerAttackRect)
+int SkeletonFamily::attacked(const SDL_Rect &playerAttackRect)
 {
+    int cnt = 0;
     for (int i = 0; i < skeleton.size(); i++)
-        skeleton[i].attacked(playerAttackRect);
+        cnt += skeleton[i].attacked(playerAttackRect);
+    return cnt;
 }
 
 void SkeletonFamily::checkDied()

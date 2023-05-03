@@ -19,29 +19,29 @@
 //         cntFrames = 0;
 // }
 
-HealthPoint::HealthPoint(SDL_Texture *mTexture) : Entity(0, 0, mTexture)
-{
-    HP = TOTAL_HP;
-    for (int i = 0, x = 0; i < TOTAL_HP_SPRITES; i++, x += HP_TEXTURE_WIDTH)
-        gClips[i] = {x, 0, HP_TEXTURE_WIDTH, HP_TEXTURE_HEIGHT};
-    mBox = {0, 0, HP_WIDTH, HP_HEIGHT};
-}
+// HealthPoint::HealthPoint(SDL_Texture *mTexture) : Entity(0, 0, mTexture)
+// {
+//     HP = TOTAL_HP;
+//     for (int i = 0, x = 0; i < TOTAL_HP_SPRITES; i++, x += HP_TEXTURE_WIDTH)
+//         gClips[i] = {x, 0, HP_TEXTURE_WIDTH, HP_TEXTURE_HEIGHT};
+//     mBox = {0, 0, HP_WIDTH, HP_HEIGHT};
+// }
 
-void HealthPoint::render(RenderWindow &window)
-{
-    for (int i = 0, x = HP_POS_X; i < TOTAL_HP; i++, x += HP_WIDTH)
-        window.renderPlayer(getTexture(), x, HP_POS_Y, mBox, &gClips[i >= HP]);
-}
+// void HealthPoint::render(RenderWindow &window)
+// {
+//     for (int i = 0, x = HP_POS_X; i < TOTAL_HP; i++, x += HP_WIDTH)
+//         window.renderPlayer(getTexture(), x, HP_POS_Y, mBox, &gClips[i >= HP]);
+// }
 
-void HealthPoint::addHP(int value)
-{
-    HP = max(0, HP + value);
-}
+// void HealthPoint::addHP(int value)
+// {
+//     HP = max(0, HP + value);
+// }
 
-int HealthPoint::getHP()
-{
-    return HP;
-}
+// int HealthPoint::getHP()
+// {
+//     return HP;
+// }
 
 // Player::Player(float x, float y, SDL_Texture *mTexture, SDL_Texture *mFireAttackTexture, SDL_Texture *mHPTexture) : Entity(x, y, mTexture)
 // {
@@ -427,11 +427,12 @@ int HealthPoint::getHP()
 //     return mBox;
 // }
 
-Player::Player(float x, float y, SDL_Texture *mTexture, SDL_Texture *mFireAttackTexture, SDL_Texture *mHPTexture, SDL_Texture *mSkillTexture) : Entity(x, y, mTexture)
+Player::Player(float x, float y, SDL_Texture *mTexture, SDL_Texture *mFireAttackTexture, SDL_Texture *mHPTexture, SDL_Texture *mSkillTexture, SDL_Texture *mMPTexture) : Entity(x, y, mTexture)
 {
     fireAttackAnimation = FireAttack(mFireAttackTexture);
     skill = HammerGodSkill(mSkillTexture);
-    HP = HealthPoint(mHPTexture);
+    HP = PlayerPoint(4, 40, 20, 2, mHPTexture);
+    MP = PlayerPoint(4, 40, 20 + 80, 2, mMPTexture);
     direction = 1;
     cntJump = 0;
     mVelX = 0;
@@ -579,11 +580,12 @@ void Player::handleEvent(SDL_Event &e, GameState &state)
                 isAttacking = true;
                 break;
             case SDL_BUTTON_RIGHT:
-                if (skill.getIsUnlock())
+                if (skill.getIsUnlock() && MP.checkFullPoint())
                 {
                     isAttacking = true;
                     useSkill = true;
                     skill.Reset();
+                    MP.addPoint(-MP.getPoint());
                 }
                 break;
             default:
@@ -705,8 +707,11 @@ void Player::move(Tile *tiles, vector<Door> &doors, SecretArea &secretArea, doub
 
 void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector<Door> &doors, SecretArea &secretArea, Key &key, Chest &chest)
 {
-    // render HP
+    // render hud
     HP.render(window);
+    if (skill.getIsUnlock())
+        MP.render(window);
+
     SDL_Rect tmpBox = {mBox.x + mBox.w / 2 - PLAYER_RENDER_WIDTH / 2, mBox.y, PLAYER_RENDER_WIDTH, PLAYER_RENDER_HEIGHT};
     // SDL_Rect tmpBox2 = tmpBox;
     // tmpBox2.x -= camera.x;
@@ -762,8 +767,10 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
             window.renderBox(tmpBox2);
             if (cntAttackFrames == 0)
             {
-                skeletonFamily.attacked(tmpBox);
-                boss.attacked(tmpBox);
+                int cntEnemyAttack = 0;
+                cntEnemyAttack += skeletonFamily.attacked(tmpBox);
+                cntEnemyAttack += boss.attacked(tmpBox);
+                MP.addPoint(cntEnemyAttack);
                 for (int i = 0; i < doors.size(); i++)
                     doors[i].setOpen(tmpBox);
                 secretArea.setOpen(tmpBox);
@@ -797,8 +804,10 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
         window.renderBox(tmpBox2);
         if (cntAttackFrames == 36)
         {
-            skeletonFamily.attacked(tmpBox);
-            boss.attacked(tmpBox);
+            int cntEnemyAttack = 0;
+            cntEnemyAttack += skeletonFamily.attacked(tmpBox);
+            cntEnemyAttack += boss.attacked(tmpBox);
+            MP.addPoint(cntEnemyAttack);
             for (int i = 0; i < doors.size(); i++)
                 doors[i].setOpen(tmpBox);
             secretArea.setOpen(tmpBox);
@@ -863,7 +872,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
 
 void Player::attacked(std::pair<int, int> value)
 {
-    HP.addHP(-value.first);
+    HP.addPoint(-value.first);
     if (value.first > 0)
     {
         // printf("h\n");
@@ -910,7 +919,7 @@ int Player::getPosY()
 
 int Player::getHP()
 {
-    return HP.getHP();
+    return HP.getPoint();
 }
 
 SDL_Rect Player::getBox()
