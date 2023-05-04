@@ -60,7 +60,7 @@ void Skeleton::move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors
     // printf("%f %f\n", mPosX, mPosY);
     if (isDied)
         return;
-    attacked(mBox);
+    attacked(mBox, HP);
 
     if (isTakeHit)
     {
@@ -276,14 +276,14 @@ std::pair<int, int> Skeleton::getAttack(SDL_Rect playerBox)
     return make_pair(0, 0);
 }
 
-int Skeleton::attacked(const SDL_Rect &playerAttackRect)
+int Skeleton::attacked(const SDL_Rect &playerAttackRect, int damage)
 {
     if (isDeath || isDied)
         return 0;
     if (checkCollision(mBox, playerAttackRect))
     {
-        HP--;
-        if (HP == 0)
+        HP -= damage;
+        if (HP <= 0)
         {
             isDeath = true;
         }
@@ -372,11 +372,11 @@ void SkeletonFamily::render(RenderWindow &window, SDL_Rect &camera)
         skeleton[i].render(window, camera);
 }
 
-int SkeletonFamily::attacked(const SDL_Rect &playerAttackRect)
+int SkeletonFamily::attacked(const SDL_Rect &playerAttackRect, int damage)
 {
     int cnt = 0;
     for (int i = 0; i < skeleton.size(); i++)
-        cnt += skeleton[i].attacked(playerAttackRect);
+        cnt += skeleton[i].attacked(playerAttackRect, damage);
     return cnt;
 }
 

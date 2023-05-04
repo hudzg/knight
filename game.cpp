@@ -109,9 +109,9 @@ bool Game::setTiles(Tile *tiles)
 
 bool Game::setPlayer()
 {
-    // player = Player(0.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE]);
-    player = Player(75 * 64, 0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE]);
-    // player = Player(9300.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE]);
+    player = Player(0.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE], gTexture[ATKP_TEXTURE], gTexture[HP_BUFF_TEXTURE], gTexture[ATK_BUFF_TEXTURE], gTexture[SKILL_UNLOCK_TEXTURE]);
+    // player = Player(75 * 64, 0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE], gTexture[ATKP_TEXTURE]);
+    // player = Player(9300.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE], gTexture[ATKP_TEXTURE]);
     return true;
 }
 
@@ -331,6 +331,24 @@ bool Game::loadMedia()
         printf("Failed to load chest texture\n");
         success = false;
     }
+    gTexture[HP_BUFF_TEXTURE] = window.loadFromFile("images/buff-effect/hp-buff.png");
+    if (gTexture[HP_BUFF_TEXTURE] == NULL)
+    {
+        printf("Failed to load hp buff texture\n");
+        success = false;
+    }
+    gTexture[ATK_BUFF_TEXTURE] = window.loadFromFile("images/buff-effect/atk-buff.png");
+    if (gTexture[ATK_BUFF_TEXTURE] == NULL)
+    {
+        printf("Failed to load atk buff texture\n");
+        success = false;
+    }
+    gTexture[SKILL_UNLOCK_TEXTURE] = window.loadFromFile("images/buff-effect/skill-unlock.png");
+    if (gTexture[SKILL_UNLOCK_TEXTURE] == NULL)
+    {
+        printf("Failed to load skill unlock texture\n");
+        success = false;
+    }
     
     if (!setTiles(tiles))
     {
@@ -464,6 +482,7 @@ void Game::renderGame()
     player.attacked(boss.getAttack(player.getBox()));
     player.checkCollisionTrap(traps);
     player.render(window, camera, skeletonFamily, boss, doors, secretArea, key, chest);
+    player.renderEffect(window, camera);
 
     if(player.getHP() == 0) state = STATE_GAME_OVER_MENU;
     

@@ -395,13 +395,13 @@ std::pair<int, int> Boss::getAttack(SDL_Rect playerBox)
     return res;
 }
 
-int Boss::attacked(const SDL_Rect &playerAttackRect)
+int Boss::attacked(const SDL_Rect &playerAttackRect, int damage)
 {
     if (isDeath || isDied || notTakeHit || isSmashing)
         return 0;
     if (checkCollision(mBox, playerAttackRect))
     {
-        HP--;
+        HP -= damage;
         cntAttacked++;
         if (cntAttacked >= MAX_BOSS_ATTACKED)
         {
@@ -409,7 +409,7 @@ int Boss::attacked(const SDL_Rect &playerAttackRect)
             notTakeHit = true;
             cntNotTakeHit = 0;
         }
-        if (HP == 0)
+        if (HP <= 0)
         {
             isDeath = true;
         }

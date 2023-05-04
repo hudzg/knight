@@ -13,49 +13,9 @@
 #include "player-skill.h"
 #include "secret-area.h"
 #include "hud.h"
+#include "buff-effect.h"
 
 using namespace std;
-
-// class FireAttack : public Entity
-// {
-// private:
-//     static const int TOTAL_ATTACK_SPRITES = 19;
-//     SDL_Rect gClips[TOTAL_ATTACK_SPRITES];
-//     int cntFrames;
-
-// public:
-//     static const int FIRE_ATTACK_WIDTH = 453;
-//     static const int FIRE_ATTACK_HEIGHT = 168;
-//     static const int FIRE_ATTACK_TEXTURE_WIDTH = 302;
-//     static const int FIRE_ATTACK_TEXTURE_HEIGHT = 112;
-//     static const int FIRE_ATTACK_REAL_WIDTH = 280;
-//     static const int FIRE_ATTACK_REAL_HEIGHT = 112;
-//     FireAttack(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL);
-//     void attack(RenderWindow &window, int x, int y, SDL_Rect mBox, SDL_RendererFlip flip);
-// };
-
-// class HealthPoint : public Entity
-// {
-// private:
-//     static const int TOTAL_HP_SPRITES = 2;
-//     SDL_Rect gClips[TOTAL_HP_SPRITES];
-//     int HP;
-//     SDL_Rect mBox;
-
-// public:
-//     static const int HP_WIDTH = 80;
-//     static const int HP_HEIGHT = 80;
-//     static const int HP_TEXTURE_WIDTH = 160;
-//     static const int HP_TEXTURE_HEIGHT = 160;
-
-//     static const int TOTAL_HP = 4;
-//     static const int HP_POS_X = 80;
-//     static const int HP_POS_Y = 40;
-//     HealthPoint(SDL_Texture *mTexture = NULL);
-//     void render(RenderWindow &window);
-//     void addHP(int value);
-//     int getHP();
-// };
 
 class Player : public Entity
 {
@@ -83,10 +43,15 @@ private:
     SDL_RendererFlip flip;
     FireAttack fireAttackAnimation;
     HammerGodSkill skill;
-    PlayerPoint HP, MP;
+    PlayerPoint HP, MP, ATKP;
     bool isTakeTrap;
     int cntTimeTakeTrap;
     bool useSkill;
+    vector<int> doorToAddHP;
+    vector<int> doorToAddATK;
+    HPBuff effectHPBuff;
+    ATKBuff effectATKBuff;
+    SkillUnlock effectSkillUnlock;
 
 public:
     static const int PLAYER_WIDTH = 64;
@@ -104,15 +69,16 @@ public:
     static const int TILE_TRAP = 242;
     static const int MAX_TIME_TAKE_TRAP = 60;
 
-    Player(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL, SDL_Texture *mFireAttackTexture = NULL, SDL_Texture *mHPTexture = NULL, SDL_Texture *mSkillTexture = NULL, SDL_Texture *mMPTexture = NULL);
+    Player(float mPosX = 0, float mPosY = 0, SDL_Texture *mTexture = NULL, SDL_Texture *mFireAttackTexture = NULL, SDL_Texture *mHPTexture = NULL, SDL_Texture *mSkillTexture = NULL, SDL_Texture *mMPTexture = NULL, SDL_Texture *mATKPTexture = NULL, SDL_Texture *mHPBuffTexture = NULL, SDL_Texture *mATKBuffTexture = NULL, SDL_Texture *mSkillUnlockTexture = NULL);
     bool checkCollision(SDL_Rect &a, const SDL_Rect &b);
     bool checkCollisionWall(SDL_Rect &a, Tile *b);
-    bool checkCollisionDoor(vector <Door> &doors);
-    void checkCollisionTrap(const vector <SDL_Rect> &b);
+    bool checkCollisionDoor(vector<Door> &doors);
+    void checkCollisionTrap(const vector<SDL_Rect> &b);
     void handleEvent(SDL_Event &e, GameState &state);
-    void move(Tile *tiles, vector <Door> &doors, SecretArea &secretArea, double timeStep = 1.0 / 60);
-    void render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector <Door> &doors, SecretArea &secretArea, Key &key, Chest &chest);
-    void attacked(std::pair <int, int> value);
+    void move(Tile *tiles, vector<Door> &doors, SecretArea &secretArea, double timeStep = 1.0 / 60);
+    void render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector<Door> &doors, SecretArea &secretArea, Key &key, Chest &chest);
+    void renderEffect(RenderWindow &window, SDL_Rect &camera);
+    void attacked(std::pair<int, int> value);
     void setCamera(SDL_Rect &camera);
     int getPosX();
     int getPosY();

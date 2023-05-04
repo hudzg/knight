@@ -3,12 +3,12 @@
 Door::Door(int x, int y, SDL_Texture *mTexture, int cntSkeletonToOpenDoor) : Entity(x, y, mTexture)
 {
     mBox = {x, y, DOOR_WIDTH, DOOR_HEIGHT};
-    // state = CLOSE;
+    state = CLOSE;
     canOpen = false;
     for(int i = 0, x = 0; i < TOTAL_STATE; i++, x += DOOR_TEXTURE_WIDTH)
         clips[i] = {x, 0, DOOR_TEXTURE_WIDTH, DOOR_TEXTURE_HEIGHT};
     this->cntSkeletonToOpenDoor = cntSkeletonToOpenDoor;
-    state = OPEN;
+    // state = OPEN;
 }
 
 bool Door::checkCollision(SDL_Rect &a, const SDL_Rect &b)
