@@ -55,7 +55,7 @@ public:
     }
     static const int MAX_TIME_INSERT = 4;
     FireRain(SDL_Texture *mTexture = NULL);
-    void insert();
+    void insert(Mix_Chunk *sound);
     void move();
     void render(RenderWindow &window, SDL_Rect &camera);
     void checkOnGround();

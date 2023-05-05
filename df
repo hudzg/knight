@@ -1,0 +1,203 @@
+[33mcommit 94fe6c5d3e338568e290537878dcb2a4c5ea7eef[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Fri May 5 22:59:12 2023 +0700
+
+    a
+
+[33mcommit 2cec1d6f60cd94be788909d9100772f29b638f21[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Fri May 5 22:47:34 2023 +0700
+
+     add boss sound effect
+
+[33mcommit 2697116d1aa3efee230593706426aab8c50eb54c[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Fri May 5 22:45:37 2023 +0700
+
+    add boss sound effect
+
+[33mcommit a063b91e734347c8e7c6d85d23d31caabf86976b[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Fri May 5 11:39:41 2023 +0700
+
+    add player sound effect & fix player move
+
+[33mcommit 42c3c1c501d3e0c307e83e3fe739292d230ab713[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Thu May 4 16:29:51 2023 +0700
+
+    update HUD & add player effect
+
+[33mcommit 93dc307c097c31c57eebfbc24f3a9fdf0bd8f0da[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Wed May 3 23:10:08 2023 +0700
+
+    add HUD
+
+[33mcommit b2bcf19ca151c2036c68b89bad2d0db4541f3412[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Tue May 2 16:08:52 2023 +0700
+
+    add key, chest & unlock skill
+
+[33mcommit e29ff0d7b2474603df1207142a6b1bb937c83e8c[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Mon May 1 23:23:45 2023 +0700
+
+    fix fire-ball super bug & add secret-area
+
+[33mcommit 829492f628b7e205df83b2eac9688a72e2c28d0c[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Sun Apr 30 22:47:11 2023 +0700
+
+    add player special skill
+
+[33mcommit cafbbe60b04b4b53ee0c5c99d8bc1f8a99a23c67[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Sat Apr 29 22:18:54 2023 +0700
+
+    add boss cast skill
+
+[33mcommit 2ca2a4c4667ff00af226a1282acfb4d08fde6110[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Fri Apr 28 23:58:04 2023 +0700
+
+    add smash
+
+[33mcommit 23b41fe4a5d5316b33ac6f83bfdc8857fbe54ec7[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Fri Apr 28 23:56:20 2023 +0700
+
+    add smash
+
+[33mcommit 3b115f99954e58bc7c8f20acdd6367237d7fb83f[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Wed Apr 26 22:46:57 2023 +0700
+
+    add FPS
+
+[33mcommit bd5af92217f97472ca8875d505b73775d71d5f55[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Tue Apr 25 21:19:42 2023 +0700
+
+    add trap & door
+
+[33mcommit 2e1df05c9962db056f7dc1dce3893d79f43302f9[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Tue Apr 25 08:16:48 2023 +0700
+
+    fix player box
+
+[33mcommit 13a1d64e7a5a38021fabb322ee62ffbc8a30a39e[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Mon Apr 24 17:01:13 2023 +0700
+
+    add cursor
+
+[33mcommit 7be78403aef1478a3284ece398a85c3ff121c490[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Mon Apr 24 10:54:16 2023 +0700
+
+    add submenu
+
+[33mcommit 2eb761fd6fb559d6fdb6a9ef015bdbcf5232e256[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Sat Apr 22 23:58:02 2023 +0700
+
+    update map
+
+[33mcommit 2202e8661b4c77e618453f91831f9c1da403c872[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Fri Apr 21 17:32:38 2023 +0700
+
+    add menu
+
+[33mcommit f8678fd152707816dc14adee0de25db92ec76301[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Wed Apr 19 11:45:02 2023 +0700
+
+    add enemy HP & take hit screen
+
+[33mcommit b495b6db09ed1f1b1a66c0f274b741d95062849b[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Tue Apr 18 23:00:59 2023 +0700
+
+    update boss
+
+[33mcommit a8c6439df94ba175095b25fe37fb332bc687a9d5[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Tue Apr 18 16:43:44 2023 +0700
+
+    init boss
+
+[33mcommit deab2dc67244f5d19cdc556b427ada89f8294f6e[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Mon Apr 17 23:51:52 2023 +0700
+
+    fix player take hit
+
+[33mcommit 5b3f482e02c4e08cae621a27bc32c713a7ff1241[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Sun Apr 16 23:35:37 2023 +0700
+
+    fix player attack hit box
+
+[33mcommit 961308fab0a6556db21955f6887caa80ddea6cc2[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Sat Apr 15 23:06:57 2023 +0700
+
+    player take hit
+
+[33mcommit 754cd9dc5005d0e8a22d54eeb05747bad248e197[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Sat Apr 15 21:51:15 2023 +0700
+
+    skeleton attack
+
+[33mcommit 2e51516eda1576b805f584ec1d1a685e48afbf74[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Tue Apr 11 22:52:00 2023 +0700
+
+    fix skeleton attack
+
+[33mcommit 702646ab7b0eab1d0cad73d9d8d0f86f1ff56b31[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Mon Apr 3 23:07:15 2023 +0700
+
+    death animation
+
+[33mcommit 3bdd0bb7c4fa191399117c08b5307172bbede459[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Thu Mar 30 23:04:20 2023 +0700
+
+    skeleton take hit
+
+[33mcommit c626b083eec463452c1cd794feee01b31534af10[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Wed Mar 29 22:39:39 2023 +0700
+
+    fix touch wall
+
+[33mcommit 01cfe00e7bc66c8b4a33ada746f619a74182b29b[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Sat Mar 25 23:38:50 2023 +0700
+
+    skeleton walk
+
+[33mcommit 95802d79baa59a6dfbf0227d913a1e8416c08964[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Thu Mar 23 23:19:12 2023 +0700
+
+    skeleton idle
+
+[33mcommit 5edba48bc9db834107b6cb9678f5614fd89a4dac[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Tue Mar 21 17:19:46 2023 +0700
+
+    code
+
+[33mcommit 0f9ab0e84ddad1bcad86553dc1ac63383418a3c3[m
+Author: hudzg <hungbim004@gmail.com>
+Date:   Tue Mar 21 17:06:22 2023 +0700
+
+    first commit

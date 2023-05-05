@@ -73,11 +73,14 @@ FireRain::FireRain(SDL_Texture *mTexture)
     fireBalls.clear();
 }
 
-void FireRain::insert()
+void FireRain::insert(Mix_Chunk *sound)
 {
     // std::cerr << "insert\n";
     if (timeInsert == 0)
+    {
+        Mix_PlayChannel(-1, sound, 0);
         fireBalls.push_back(FireBall(Rand(136 * 64, 156 * 64), 6 * 64, mTexture));
+    }
     timeInsert++;
     if (timeInsert >= MAX_TIME_INSERT)
         timeInsert = 0;

@@ -42,6 +42,8 @@ private:
     Chest chest;
     Mix_Chunk *menuSound[TOTAL_MENU_SOUND_EFFECT];
     Mix_Chunk *playerSound[TOTAL_PLAYER_SOUND_EFFECT];
+    Mix_Chunk *bossSound[TOTAL_BOSS_SOUND_EFFECT];
+    Mix_Music *menuTheme, *gameTheme;
 
 public:
     bool init();

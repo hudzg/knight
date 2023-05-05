@@ -77,7 +77,7 @@ public:
     bool checkCollision(SDL_Rect &a, const SDL_Rect &b);
     bool checkCollisionWall(SDL_Rect &a, Tile *b);
     void move(Tile *tiles, const SDL_Rect &playerBox, double timeStep = 1.0 / 60);
-    void render(RenderWindow &window, SDL_Rect &camera);
+    void render(RenderWindow &window, SDL_Rect &camera, Mix_Chunk *sound[]);
     int attacked(const SDL_Rect &playerAttackRect, int damage);
     std::pair<int, int> getAttack(SDL_Rect playerBox);
     int getPosX();

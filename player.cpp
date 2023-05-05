@@ -120,7 +120,7 @@ void Player::handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *sound[])
         case SDLK_LSHIFT:
             if (!isTakeHit)
             {
-                Mix_PlayChannel(-1, sound[DASH_SOUND], 0);
+                Mix_PlayChannel(-1, sound[PLAYER_DASH_SOUND], 0);
                 isDashing = true;
                 // isAttacking = false;
                 // useSkill = false;
@@ -130,7 +130,7 @@ void Player::handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *sound[])
             if (onGround && !isTakeHit)
             {
                 mVelY = -PLAYER_VEL * 2.25;
-                Mix_PlayChannel(-1, sound[JUMP_SOUND], 0);
+                Mix_PlayChannel(-1, sound[PLAYER_JUMP_SOUND], 0);
                 onGround = false;
                 isLand = 0;
             }
@@ -148,7 +148,7 @@ void Player::handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *sound[])
         case SDLK_ESCAPE:
             setPressButton();
             state = STATE_PAUSE_MENU;
-            Mix_PlayChannel(-1, sound[PAUSE_SOUND], 0);
+            Mix_PlayChannel(-1, sound[PLAYER_PAUSE_SOUND], 0);
             break;
         }
     }
@@ -180,7 +180,7 @@ void Player::handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *sound[])
             {
             case SDL_BUTTON_LEFT:
                 isAttacking = true;
-                Mix_PlayChannel(-1, sound[ATTACK_SOUND], 0);
+                Mix_PlayChannel(-1, sound[PLAYER_ATTACK_SOUND], 0);
                 break;
             case SDL_BUTTON_RIGHT:
                 if (skill.getIsUnlock() && MP.checkFullPoint())
@@ -342,7 +342,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
     if (isLand == 1)
     {
         isLand = 2;
-        Mix_PlayChannel(-1, sound[LAND_SOUND], 0);
+        Mix_PlayChannel(-1, sound[PLAYER_LAND_SOUND], 0);
     }
 
     SDL_Rect tmpBox = {mBox.x + mBox.w / 2 - PLAYER_RENDER_WIDTH / 2, mBox.y, PLAYER_RENDER_WIDTH, PLAYER_RENDER_HEIGHT};
@@ -353,7 +353,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
     if (isTakeHit)
     {
         if (cntTakeHitFrames == 0)
-            Mix_PlayChannel(-1, sound[TAKE_HIT_SOUND], 0);
+            Mix_PlayChannel(-1, sound[PLAYER_TAKE_HIT_SOUND], 0);
 
         window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gPlayerTakeHitClips[cntTakeHitFrames / 8], 0.0, NULL, flip);
 
@@ -415,7 +415,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
                         // HP.addTotalPoint(1);
                         doorToAddHP.erase(doorToAddHP.begin() + i);
                         effectHPBuff.setIsBuff();
-                        Mix_PlayChannel(-1, sound[HP_BUFF_SOUND], 0);
+                        Mix_PlayChannel(-1, sound[PLAYER_HP_BUFF_SOUND], 0);
                     }
                 for (int i = 0; i < doorToAddATK.size(); i++)
                     while (i < doorToAddATK.size() && doors[doorToAddATK[i]].isOpen())
@@ -423,7 +423,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
                         // ATKP.addTotalPoint(1);
                         doorToAddATK.erase(doorToAddATK.begin() + i);
                         effectATKBuff.setIsBuff();
-                        Mix_PlayChannel(-1, sound[ATK_BUFF_SOUND], 0);
+                        Mix_PlayChannel(-1, sound[PLAYER_ATK_BUFF_SOUND], 0);
                     }
                 secretArea.setOpen(tmpBox);
                 if (key.isPick())
@@ -433,7 +433,7 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
                         key.setUsed();
                         // skill.setUnlock();
                         effectSkillUnlock.setIsBuff();
-                        Mix_PlayChannel(-1, sound[ATK_BUFF_SOUND], 0);
+                        Mix_PlayChannel(-1, sound[PLAYER_ATK_BUFF_SOUND], 0);
                     }
                 }
             }
@@ -516,8 +516,8 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
     }
     else
     {
-        if (cntWalkFrames % 12 == 0)
-            Mix_PlayChannel(-1, sound[WALK_SOUND], 0);
+        if (cntWalkFrames % 18 == 0)
+            Mix_PlayChannel(-1, sound[PLAYER_WALK_SOUND], 0);
         window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gPlayerWalkClips[cntWalkFrames / 6], 0.0, NULL, flip);
         cntWalkFrames++;
         if (cntWalkFrames >= TOTAL_PLAYER_WALK_SPRITES * 6)

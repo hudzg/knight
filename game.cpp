@@ -111,9 +111,9 @@ bool Game::setTiles(Tile *tiles)
 
 bool Game::setPlayer()
 {
-    player = Player(0.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE], gTexture[ATKP_TEXTURE], gTexture[HP_BUFF_TEXTURE], gTexture[ATK_BUFF_TEXTURE], gTexture[SKILL_UNLOCK_TEXTURE]);
-    // player = Player(75 * 64, 0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE], gTexture[ATKP_TEXTURE]);
-    // player = Player(9300.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE], gTexture[ATKP_TEXTURE]);
+    // player = Player(0.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE], gTexture[ATKP_TEXTURE], gTexture[HP_BUFF_TEXTURE], gTexture[ATK_BUFF_TEXTURE], gTexture[SKILL_UNLOCK_TEXTURE]);
+    // player = Player(75 * 64, 0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE], gTexture[ATKP_TEXTURE], gTexture[HP_BUFF_TEXTURE], gTexture[ATK_BUFF_TEXTURE], gTexture[SKILL_UNLOCK_TEXTURE]);
+    player = Player(9300.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE], gTexture[ATKP_TEXTURE], gTexture[HP_BUFF_TEXTURE], gTexture[ATK_BUFF_TEXTURE], gTexture[SKILL_UNLOCK_TEXTURE]);
     return true;
 }
 
@@ -357,7 +357,7 @@ bool Game::loadTexture()
 bool Game::loadSound()
 {
     bool success = true;
-    
+
     // menu
     menuSound[SELECT_BUTTON_SOUND] = Mix_LoadWAV("sounds/select-button.wav");
     if (menuSound[SELECT_BUTTON_SOUND] == NULL)
@@ -367,66 +367,101 @@ bool Game::loadSound()
     }
 
     // player
-    playerSound[ATTACK_SOUND] = Mix_LoadWAV("sounds/player/attack.wav");
-    if (playerSound[ATTACK_SOUND] == NULL)
+    playerSound[PLAYER_ATTACK_SOUND] = Mix_LoadWAV("sounds/player/attack.wav");
+    if (playerSound[PLAYER_ATTACK_SOUND] == NULL)
     {
         printf("Failed to load player attack sound effect! SDL_mixer Error: %s\n", Mix_GetError());
         success = false;
     }
 
-    playerSound[DASH_SOUND] = Mix_LoadWAV("sounds/player/dash.wav");
-    if (playerSound[DASH_SOUND] == NULL)
+    playerSound[PLAYER_DASH_SOUND] = Mix_LoadWAV("sounds/player/dash.wav");
+    if (playerSound[PLAYER_DASH_SOUND] == NULL)
     {
         printf("Failed to load player DASH sound effect! SDL_mixer Error: %s\n", Mix_GetError());
         success = false;
     }
 
-    playerSound[JUMP_SOUND] = Mix_LoadWAV("sounds/player/jump.wav");
-    if (playerSound[JUMP_SOUND] == NULL)
+    playerSound[PLAYER_JUMP_SOUND] = Mix_LoadWAV("sounds/player/jump.wav");
+    if (playerSound[PLAYER_JUMP_SOUND] == NULL)
     {
         printf("Failed to load player jump sound effect! SDL_mixer Error: %s\n", Mix_GetError());
         success = false;
     }
 
-    playerSound[LAND_SOUND] = Mix_LoadWAV("sounds/player/land.wav");
-    if (playerSound[LAND_SOUND] == NULL)
+    playerSound[PLAYER_LAND_SOUND] = Mix_LoadWAV("sounds/player/land.wav");
+    if (playerSound[PLAYER_LAND_SOUND] == NULL)
     {
         printf("Failed to load player land sound effect! SDL_mixer Error: %s\n", Mix_GetError());
         success = false;
     }
 
-    playerSound[TAKE_HIT_SOUND] = Mix_LoadWAV("sounds/player/take-hit.wav");
-    if (playerSound[TAKE_HIT_SOUND] == NULL)
+    playerSound[PLAYER_TAKE_HIT_SOUND] = Mix_LoadWAV("sounds/player/take-hit.wav");
+    if (playerSound[PLAYER_TAKE_HIT_SOUND] == NULL)
     {
         printf("Failed to load player take hit sound effect! SDL_mixer Error: %s\n", Mix_GetError());
         success = false;
     }
 
-    playerSound[WALK_SOUND] = Mix_LoadWAV("sounds/player/walk2.wav");
-    if (playerSound[WALK_SOUND] == NULL)
+    playerSound[PLAYER_WALK_SOUND] = Mix_LoadWAV("sounds/player/walk2.wav");
+    if (playerSound[PLAYER_WALK_SOUND] == NULL)
     {
         printf("Failed to load player walk sound effect! SDL_mixer Error: %s\n", Mix_GetError());
         success = false;
     }
 
-    playerSound[HP_BUFF_SOUND] = Mix_LoadWAV("sounds/player/hp-buff.wav");
-    if (playerSound[HP_BUFF_SOUND] == NULL)
+    playerSound[PLAYER_HP_BUFF_SOUND] = Mix_LoadWAV("sounds/player/hp-buff.wav");
+    if (playerSound[PLAYER_HP_BUFF_SOUND] == NULL)
     {
         printf("Failed to load player hp buff sound effect! SDL_mixer Error: %s\n", Mix_GetError());
         success = false;
     }
 
-    playerSound[ATK_BUFF_SOUND] = Mix_LoadWAV("sounds/player/atk-buff.wav");
-    if (playerSound[ATK_BUFF_SOUND] == NULL)
+    playerSound[PLAYER_ATK_BUFF_SOUND] = Mix_LoadWAV("sounds/player/atk-buff.wav");
+    if (playerSound[PLAYER_ATK_BUFF_SOUND] == NULL)
     {
         printf("Failed to load player atk buff sound effect! SDL_mixer Error: %s\n", Mix_GetError());
         success = false;
     }
 
-    playerSound[PAUSE_SOUND] = Mix_LoadWAV("sounds/player/pause.wav");
-    if (playerSound[PAUSE_SOUND] == NULL)
+    playerSound[PLAYER_PAUSE_SOUND] = Mix_LoadWAV("sounds/player/pause.wav");
+    if (playerSound[PLAYER_PAUSE_SOUND] == NULL)
     {
         printf("Failed to load player pause sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    bossSound[BOSS_ATTACK_SOUND] = Mix_LoadWAV("sounds/boss/attack2.mp3");
+    if (bossSound[BOSS_ATTACK_SOUND] == NULL)
+    {
+        printf("Failed to load boss attack sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    bossSound[BOSS_FIRE_SOUND] = Mix_LoadWAV("sounds/boss/fire.wav");
+    if (bossSound[BOSS_FIRE_SOUND] == NULL)
+    {
+        printf("Failed to load boss fire sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    bossSound[BOSS_BOOM_SOUND] = Mix_LoadWAV("sounds/boss/boom.mp3");
+    if (bossSound[BOSS_BOOM_SOUND] == NULL)
+    {
+        printf("Failed to load boss boom sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    menuTheme = Mix_LoadMUS("sounds/menu-theme.wav");
+    if (menuTheme == NULL)
+    {
+        printf("Failed to load menu theme music! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    gameTheme = Mix_LoadMUS("sounds/game-theme.wav");
+    if (gameTheme == NULL)
+    {
+        printf("Failed to load game theme music! SDL_mixer Error: %s\n", Mix_GetError());
         success = false;
     }
 
@@ -479,12 +514,18 @@ bool Game::isRunning()
 
 void Game::handleMenuEvent(SDL_Event &event)
 {
+    if(Mix_PlayingMusic() == 0)
+    {
+        Mix_PlayMusic(menuTheme, -1);
+        Mix_VolumeMusic(32);
+    }
     if (event.type == SDL_QUIT)
         running = false;
     menu.handleEvent(event, state, menuSound);
     if (state == STATE_PLAY)
     {
         setDynamicObject();
+        Mix_HaltMusic();
     }
 }
 void Game::renderMenu()
@@ -503,6 +544,10 @@ void Game::handlePauseMenuEvent(SDL_Event &event)
     {
         state = STATE_PLAY;
         setDynamicObject();
+    }
+    if(state == STATE_MENU)
+    {
+        Mix_HaltMusic();
     }
 }
 
@@ -523,6 +568,10 @@ void Game::handleGameOverMenuEvent(SDL_Event &event)
         state = STATE_PLAY;
         setDynamicObject();
     }
+    if(state == STATE_MENU)
+    {
+        Mix_HaltMusic();
+    }
 }
 
 void Game::renderGameOverMenu()
@@ -534,6 +583,11 @@ void Game::renderGameOverMenu()
 
 void Game::handleGameEvent(SDL_Event &event)
 {
+    if(Mix_PlayingMusic() == 0)
+    {
+        Mix_PlayMusic(gameTheme, -1);
+        Mix_VolumeMusic(32);
+    }
     if (event.type == SDL_QUIT)
         running = false;
     player.handleEvent(event, state, playerSound);
@@ -573,7 +627,7 @@ void Game::renderGame()
     skeletonFamily.checkDied();
 
     boss.move(tiles, player.getBox());
-    boss.render(window, camera);
+    boss.render(window, camera, bossSound);
 
     player.attacked(skeletonFamily.getCountAttack(player.getBox()));
     player.attacked(boss.getAttack(player.getBox()));
@@ -596,6 +650,7 @@ void Game::close()
 {
     window.close();
     SDL_FreeCursor(cursor);
+    cursor = NULL;
     for (SDL_Texture *mTexture : gTexture)
     {
         SDL_DestroyTexture(mTexture);
@@ -611,4 +666,14 @@ void Game::close()
         Mix_FreeChunk(mSound);
         mSound = NULL;
     }
+    for (Mix_Chunk *mSound : bossSound)
+    {
+        Mix_FreeChunk(mSound);
+        mSound = NULL;
+    }
+    Mix_FreeMusic(menuTheme);
+    menuTheme = NULL;
+    Mix_FreeMusic(gameTheme);
+    gameTheme = NULL;
+
 }

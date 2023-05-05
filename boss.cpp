@@ -222,7 +222,7 @@ void Boss::move(Tile *tiles, const SDL_Rect &playerBox, double timeStep)
     // mBox.y = mPosY;
 }
 
-void Boss::render(RenderWindow &window, SDL_Rect &camera)
+void Boss::render(RenderWindow &window, SDL_Rect &camera, Mix_Chunk *sound[])
 {
 
     fireRain.render(window, camera);
@@ -272,7 +272,7 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
     }
     if (isCasting)
     {
-        fireRain.insert();
+        fireRain.insert(sound[BOSS_FIRE_SOUND]);
         if (checkCollision(mBox, camera))
             window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossCastClips[cntCastFrames / 5], 0.0, NULL, flip);
         cntCastFrames++;
@@ -288,6 +288,10 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
     {
         if (checkCollision(mBox, camera))
             window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossSmashClips[cntSmashFrames / 5], 0.0, NULL, flip);
+
+        if(cntSmashFrames == 56)
+            Mix_PlayChannel(-1, sound[BOSS_BOOM_SOUND], 0);
+
         cntSmashFrames++;
 
         /// render hitbox
@@ -312,6 +316,10 @@ void Boss::render(RenderWindow &window, SDL_Rect &camera)
     {
         if (checkCollision(mBox, camera))
             window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gBossAttackClips[cntAttackFrames / 6], 0.0, NULL, flip);
+
+        if(cntAttackFrames == 52)
+            Mix_PlayChannel(-1, sound[BOSS_ATTACK_SOUND], 0);
+
         cntAttackFrames++;
 
         /// render hitbox
