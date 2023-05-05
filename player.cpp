@@ -41,9 +41,13 @@ Player::Player(float x, float y, SDL_Texture *mTexture, SDL_Texture *mFireAttack
     isTakeTrap = false;
     useSkill = false;
     doorToAddHP.clear();
-    doorToAddHP.push_back(0); doorToAddHP.push_back(2);
+    doorToAddHP.push_back(0);
+    doorToAddHP.push_back(2);
     doorToAddATK.clear();
-    doorToAddATK.push_back(1); doorToAddATK.push_back(3);
+    doorToAddATK.push_back(1);
+    doorToAddATK.push_back(3);
+    isLand = 0;
+    pressButtonA = pressButtonD = false;
 }
 
 bool Player::checkCollision(SDL_Rect &a, const SDL_Rect &b)
@@ -105,7 +109,7 @@ void Player::checkCollisionTrap(const vector<SDL_Rect> &b)
     return;
 }
 
-void Player::handleEvent(SDL_Event &e, GameState &state)
+void Player::handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *sound[])
 {
     // if (isTakeHit)
     //     return;
@@ -116,6 +120,7 @@ void Player::handleEvent(SDL_Event &e, GameState &state)
         case SDLK_LSHIFT:
             if (!isTakeHit)
             {
+                Mix_PlayChannel(-1, sound[DASH_SOUND], 0);
                 isDashing = true;
                 // isAttacking = false;
                 // useSkill = false;
@@ -125,17 +130,25 @@ void Player::handleEvent(SDL_Event &e, GameState &state)
             if (onGround && !isTakeHit)
             {
                 mVelY = -PLAYER_VEL * 2.25;
+                Mix_PlayChannel(-1, sound[JUMP_SOUND], 0);
                 onGround = false;
+                isLand = 0;
             }
             break;
         case SDLK_a:
             mVelX -= PLAYER_VEL / 1.5;
+            pressButtonA = true;
+            // Mix_PlayChannel(-1, sound[WALK_SOUND], 0);
             break;
         case SDLK_d:
             mVelX += PLAYER_VEL / 1.5;
+            pressButtonD = true;
+            // Mix_PlayChannel(-1, sound[WALK_SOUND], 0);
             break;
         case SDLK_ESCAPE:
+            setPressButton();
             state = STATE_PAUSE_MENU;
+            Mix_PlayChannel(-1, sound[PAUSE_SOUND], 0);
             break;
         }
     }
@@ -144,10 +157,18 @@ void Player::handleEvent(SDL_Event &e, GameState &state)
         switch (e.key.keysym.sym)
         {
         case SDLK_a:
-            mVelX += PLAYER_VEL / 1.5;
+            if (pressButtonA)
+            {
+                mVelX += PLAYER_VEL / 1.5;
+                pressButtonA = false;
+            }
             break;
         case SDLK_d:
-            mVelX -= PLAYER_VEL / 1.5;
+            if (pressButtonD)
+            {
+                mVelX -= PLAYER_VEL / 1.5;
+                pressButtonD = false;
+            }
             break;
         }
     }
@@ -159,6 +180,7 @@ void Player::handleEvent(SDL_Event &e, GameState &state)
             {
             case SDL_BUTTON_LEFT:
                 isAttacking = true;
+                Mix_PlayChannel(-1, sound[ATTACK_SOUND], 0);
                 break;
             case SDL_BUTTON_RIGHT:
                 if (skill.getIsUnlock() && MP.checkFullPoint())
@@ -275,13 +297,20 @@ void Player::move(Tile *tiles, vector<Door> &doors, SecretArea &secretArea, doub
     if (mPosY < 0 || mPosY + PLAYER_HEIGHT > LEVEL_HEIGHT || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors) || (!secretArea.isOpen() && checkCollision(mBox, secretArea.getBox())))
     {
         if (mVelY > 0)
+        {
             onGround = true;
+            if (isLand == 0)
+                isLand = 1;
+        }
         else
             onGround = false;
         mPosY -= mVelY * timeStep;
     }
     else
+    {
         onGround = false;
+        isLand = 0;
+    }
     mBox.x = mPosX;
     mBox.y = mPosY;
 }
@@ -289,18 +318,32 @@ void Player::move(Tile *tiles, vector<Door> &doors, SecretArea &secretArea, doub
 void Player::renderEffect(RenderWindow &window, SDL_Rect &camera)
 {
     effectHPBuff.render(window, camera, mBox, flip);
+    if (effectHPBuff.checkIsEnd())
+        HP.addTotalPoint(1);
+
     effectATKBuff.render(window, camera, mBox, flip);
+    if (effectATKBuff.checkIsEnd())
+        ATKP.addTotalPoint(1);
+
     effectSkillUnlock.render(window, camera, mBox, flip);
+    if (effectSkillUnlock.checkIsEnd())
+        skill.setUnlock();
 }
 
-void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector<Door> &doors, SecretArea &secretArea, Key &key, Chest &chest)
+void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector<Door> &doors, SecretArea &secretArea, Key &key, Chest &chest, Mix_Chunk *sound[])
 {
     // render hud
     HP.render(window);
     if (skill.getIsUnlock())
         MP.render(window);
     ATKP.render(window);
-    // effectHPBuff.render(window, camera, mBox, flip);
+
+    // play sound effect
+    if (isLand == 1)
+    {
+        isLand = 2;
+        Mix_PlayChannel(-1, sound[LAND_SOUND], 0);
+    }
 
     SDL_Rect tmpBox = {mBox.x + mBox.w / 2 - PLAYER_RENDER_WIDTH / 2, mBox.y, PLAYER_RENDER_WIDTH, PLAYER_RENDER_HEIGHT};
     // SDL_Rect tmpBox2 = tmpBox;
@@ -309,6 +352,9 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
     // window.renderBox(tmpBox2);
     if (isTakeHit)
     {
+        if (cntTakeHitFrames == 0)
+            Mix_PlayChannel(-1, sound[TAKE_HIT_SOUND], 0);
+
         window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gPlayerTakeHitClips[cntTakeHitFrames / 8], 0.0, NULL, flip);
 
         // render take hit screen
@@ -363,19 +409,21 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
                 MP.addPoint(cntEnemyAttack);
                 for (int i = 0; i < doors.size(); i++)
                     doors[i].setOpen(tmpBox);
-                for(int i = 0; i < doorToAddHP.size(); i++)
-                    while(i < doorToAddHP.size() && doors[doorToAddHP[i]].isOpen())
+                for (int i = 0; i < doorToAddHP.size(); i++)
+                    while (i < doorToAddHP.size() && doors[doorToAddHP[i]].isOpen())
                     {
-                        HP.addTotalPoint(1);
+                        // HP.addTotalPoint(1);
                         doorToAddHP.erase(doorToAddHP.begin() + i);
                         effectHPBuff.setIsBuff();
+                        Mix_PlayChannel(-1, sound[HP_BUFF_SOUND], 0);
                     }
-                for(int i = 0; i < doorToAddATK.size(); i++)
-                    while(i < doorToAddATK.size() && doors[doorToAddATK[i]].isOpen())
+                for (int i = 0; i < doorToAddATK.size(); i++)
+                    while (i < doorToAddATK.size() && doors[doorToAddATK[i]].isOpen())
                     {
-                        ATKP.addTotalPoint(1);
+                        // ATKP.addTotalPoint(1);
                         doorToAddATK.erase(doorToAddATK.begin() + i);
                         effectATKBuff.setIsBuff();
+                        Mix_PlayChannel(-1, sound[ATK_BUFF_SOUND], 0);
                     }
                 secretArea.setOpen(tmpBox);
                 if (key.isPick())
@@ -383,8 +431,9 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
                     if (chest.setOpen(tmpBox))
                     {
                         key.setUsed();
-                        skill.setUnlock();
+                        // skill.setUnlock();
                         effectSkillUnlock.setIsBuff();
+                        Mix_PlayChannel(-1, sound[ATK_BUFF_SOUND], 0);
                     }
                 }
             }
@@ -410,8 +459,8 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
         if (cntAttackFrames == 36)
         {
             int cntEnemyAttack = 0;
-            cntEnemyAttack += skeletonFamily.attacked(tmpBox, ATKP.getPoint());
-            cntEnemyAttack += boss.attacked(tmpBox, ATKP.getPoint());
+            cntEnemyAttack += skeletonFamily.attacked(tmpBox, 2 * ATKP.getPoint());
+            cntEnemyAttack += boss.attacked(tmpBox, 2 * ATKP.getPoint());
             MP.addPoint(cntEnemyAttack);
             for (int i = 0; i < doors.size(); i++)
                 doors[i].setOpen(tmpBox);
@@ -467,6 +516,8 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
     }
     else
     {
+        if (cntWalkFrames % 12 == 0)
+            Mix_PlayChannel(-1, sound[WALK_SOUND], 0);
         window.renderPlayer(getTexture(), tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox, &gPlayerWalkClips[cntWalkFrames / 6], 0.0, NULL, flip);
         cntWalkFrames++;
         if (cntWalkFrames >= TOTAL_PLAYER_WALK_SPRITES * 6)
@@ -530,4 +581,18 @@ int Player::getHP()
 SDL_Rect Player::getBox()
 {
     return mBox;
+}
+
+void Player::setPressButton()
+{
+    if (pressButtonA)
+    {
+        mVelX += PLAYER_VEL / 1.5;
+        pressButtonA = false;
+    }
+    if (pressButtonD)
+    {
+        mVelX -= PLAYER_VEL / 1.5;
+        pressButtonD = false;
+    }
 }

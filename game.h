@@ -40,6 +40,8 @@ private:
     SecretArea secretArea;
     Key key;
     Chest chest;
+    Mix_Chunk *menuSound[TOTAL_MENU_SOUND_EFFECT];
+    Mix_Chunk *playerSound[TOTAL_PLAYER_SOUND_EFFECT];
 
 public:
     bool init();
@@ -52,6 +54,8 @@ public:
     bool setSecretArea();
     bool setDynamicObject();
     void setCursor();
+    bool loadTexture();
+    bool loadSound();
     bool loadMedia();
     bool isRunning();
     int getState();

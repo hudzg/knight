@@ -48,6 +48,26 @@ enum TextureID
     TOTAL_TEXTURE
 };
 
+enum MenuSoundEffect
+{
+    SELECT_BUTTON_SOUND,
+    TOTAL_MENU_SOUND_EFFECT
+};
+
+enum PlayerSoundEffect
+{
+    ATTACK_SOUND,
+    DASH_SOUND,
+    JUMP_SOUND,
+    LAND_SOUND,
+    WALK_SOUND,
+    TAKE_HIT_SOUND,
+    HP_BUFF_SOUND,
+    ATK_BUFF_SOUND,
+    PAUSE_SOUND,
+    TOTAL_PLAYER_SOUND_EFFECT
+};
+
 enum TileSprites
 {
     TILE_TRAP = 242,

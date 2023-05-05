@@ -5,7 +5,8 @@ bool Game::init()
     camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
     running = true;
 
-    if(!window.initSDL()) return false;
+    if (!window.initSDL())
+        return false;
     state = STATE_MENU;
     return true;
 }
@@ -15,18 +16,18 @@ bool Game::setTiles(Tile *tiles)
     // printf("%d\n", (gRenderer != NULL));
     bool success = true;
 
-    std::set <int> wallID;
+    std::set<int> wallID;
 
     std::ifstream wall("images/map/wall.txt");
 
-    if(wall.fail())
+    if (wall.fail())
     {
         printf("Failed to load wall \n");
         success = false;
     }
     else
     {
-        for(int i = 0; i < TOTAL_WALL_TILES; i++)
+        for (int i = 0; i < TOTAL_WALL_TILES; i++)
         {
             int x;
             wall >> x;
@@ -47,7 +48,8 @@ bool Game::setTiles(Tile *tiles)
         }
     }
 
-    if(!success) return false;
+    if (!success)
+        return false;
 
     int x = 0, y = 0;
     std::ifstream map("images/map/map2/map.map");
@@ -72,7 +74,7 @@ bool Game::setTiles(Tile *tiles)
             if (tileType >= 0 && tileType < TOTAL_TILE_SPRITES)
             {
                 tiles[i] = Tile(x, y, gTexture[TILE_TEXTURE], tileType, wallID.count(tileType));
-                if(tileType == TILE_TRAP)
+                if (tileType == TILE_TRAP)
                     traps.push_back(tiles[i].getBox());
             }
             else
@@ -89,10 +91,10 @@ bool Game::setTiles(Tile *tiles)
             }
         }
     }
-    if(success)
+    if (success)
     {
         int x = 0, y = 0;
-        for(int i = 0; i < TOTAL_TILE_SPRITES; i++)
+        for (int i = 0; i < TOTAL_TILE_SPRITES; i++)
         {
             gTileClips[i] = {x, y, TILE_TEXTURE_WIDTH, TILE_TEXTURE_HEIGHT};
             x += TILE_TEXTURE_WIDTH;
@@ -161,22 +163,22 @@ bool Game::setDynamicObject()
         printf("Failed to set player\n");
         return false;
     }
-    if(!setDoor())
+    if (!setDoor())
     {
         printf("Failed to set door\n");
         return false;
     }
-    if(!setSkeleton())
+    if (!setSkeleton())
     {
         printf("Failed to set skeleton\n");
         return false;
     }
-    if(!setBoss())
+    if (!setBoss())
     {
         printf("Failed to set boss\n");
         return false;
     }
-    if(!setSecretArea())
+    if (!setSecretArea())
     {
         printf("Failed to set secret area\n");
         return false;
@@ -186,17 +188,17 @@ bool Game::setDynamicObject()
 
 void Game::setCursor()
 {
-    SDL_Surface* cursorSurface = IMG_Load("images/gui/cursor/cursor.png");
+    SDL_Surface *cursorSurface = IMG_Load("images/gui/cursor/cursor.png");
 
     // Tạo con trỏ chuột mới từ biểu tượng chuột tải lên
-    if(cursorSurface == NULL)
+    if (cursorSurface == NULL)
     {
         printf("h\n");
     }
     // Thiết lập biểu tượng chuột mới
     cursor = SDL_CreateColorCursor(cursorSurface, 0, 0);
     SDL_SetCursor(cursor);
-    if(cursor == NULL)
+    if (cursor == NULL)
     {
         printf("h\n");
     }
@@ -206,7 +208,7 @@ void Game::setCursor()
     SDL_FreeSurface(cursorSurface);
 }
 
-bool Game::loadMedia()
+bool Game::loadTexture()
 {
     bool success = true;
     // gTexture[PLAYER_TEXTURE] = window.loadFromFile("images/knight2.png");
@@ -349,13 +351,109 @@ bool Game::loadMedia()
         printf("Failed to load skill unlock texture\n");
         success = false;
     }
+    return success;
+}
+
+bool Game::loadSound()
+{
+    bool success = true;
     
+    // menu
+    menuSound[SELECT_BUTTON_SOUND] = Mix_LoadWAV("sounds/select-button.wav");
+    if (menuSound[SELECT_BUTTON_SOUND] == NULL)
+    {
+        printf("Failed to load select button sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    // player
+    playerSound[ATTACK_SOUND] = Mix_LoadWAV("sounds/player/attack.wav");
+    if (playerSound[ATTACK_SOUND] == NULL)
+    {
+        printf("Failed to load player attack sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    playerSound[DASH_SOUND] = Mix_LoadWAV("sounds/player/dash.wav");
+    if (playerSound[DASH_SOUND] == NULL)
+    {
+        printf("Failed to load player DASH sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    playerSound[JUMP_SOUND] = Mix_LoadWAV("sounds/player/jump.wav");
+    if (playerSound[JUMP_SOUND] == NULL)
+    {
+        printf("Failed to load player jump sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    playerSound[LAND_SOUND] = Mix_LoadWAV("sounds/player/land.wav");
+    if (playerSound[LAND_SOUND] == NULL)
+    {
+        printf("Failed to load player land sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    playerSound[TAKE_HIT_SOUND] = Mix_LoadWAV("sounds/player/take-hit.wav");
+    if (playerSound[TAKE_HIT_SOUND] == NULL)
+    {
+        printf("Failed to load player take hit sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    playerSound[WALK_SOUND] = Mix_LoadWAV("sounds/player/walk2.wav");
+    if (playerSound[WALK_SOUND] == NULL)
+    {
+        printf("Failed to load player walk sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    playerSound[HP_BUFF_SOUND] = Mix_LoadWAV("sounds/player/hp-buff.wav");
+    if (playerSound[HP_BUFF_SOUND] == NULL)
+    {
+        printf("Failed to load player hp buff sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    playerSound[ATK_BUFF_SOUND] = Mix_LoadWAV("sounds/player/atk-buff.wav");
+    if (playerSound[ATK_BUFF_SOUND] == NULL)
+    {
+        printf("Failed to load player atk buff sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    playerSound[PAUSE_SOUND] = Mix_LoadWAV("sounds/player/pause.wav");
+    if (playerSound[PAUSE_SOUND] == NULL)
+    {
+        printf("Failed to load player pause sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    return success;
+}
+
+bool Game::loadMedia()
+{
+    bool success = true;
+    if (!loadTexture())
+    {
+        printf("Failed to load texture!\n");
+        success = false;
+    }
+
+    if (!loadSound())
+    {
+        printf("Failed to load sound!\n");
+        success = false;
+    }
+
     if (!setTiles(tiles))
     {
         printf("Failed to load tile set\n");
         success = false;
     }
-    if(!setMenu())
+    if (!setMenu())
     {
         printf("Failed to set menu\n");
         success = false;
@@ -365,7 +463,7 @@ bool Game::loadMedia()
     //     printf("Failed to set door\n");
     //     success = false;
     // }
-    if(!setDynamicObject())
+    if (!setDynamicObject())
     {
         printf("Failed to set dynamic object\n");
         success = false;
@@ -383,8 +481,8 @@ void Game::handleMenuEvent(SDL_Event &event)
 {
     if (event.type == SDL_QUIT)
         running = false;
-    menu.handleEvent(event, state);
-    if(state == STATE_PLAY)
+    menu.handleEvent(event, state, menuSound);
+    if (state == STATE_PLAY)
     {
         setDynamicObject();
     }
@@ -400,8 +498,8 @@ void Game::handlePauseMenuEvent(SDL_Event &event)
 {
     if (event.type == SDL_QUIT)
         running = false;
-    pauseMenu.handleEvent(event, state);
-    if(state == STATE_AGAIN)
+    pauseMenu.handleEvent(event, state, menuSound);
+    if (state == STATE_AGAIN)
     {
         state = STATE_PLAY;
         setDynamicObject();
@@ -419,8 +517,8 @@ void Game::handleGameOverMenuEvent(SDL_Event &event)
 {
     if (event.type == SDL_QUIT)
         running = false;
-    gameOverMenu.handleEvent(event, state);
-    if(state == STATE_AGAIN)
+    gameOverMenu.handleEvent(event, state, menuSound);
+    if (state == STATE_AGAIN)
     {
         state = STATE_PLAY;
         setDynamicObject();
@@ -438,7 +536,7 @@ void Game::handleGameEvent(SDL_Event &event)
 {
     if (event.type == SDL_QUIT)
         running = false;
-    player.handleEvent(event, state);
+    player.handleEvent(event, state, playerSound);
 }
 
 void Game::renderGame()
@@ -446,7 +544,6 @@ void Game::renderGame()
     window.clearRenderer();
     player.move(tiles, doors, secretArea);
     player.setCamera(camera);
-
 
     for (int i = 0; i < TOTAL_TILES; i++)
         tiles[i].render(window, camera, &gTileClips[tiles[i].getType()]);
@@ -457,7 +554,7 @@ void Game::renderGame()
         doors[i].render(window, camera);
     }
 
-    if(doors.back().isOpen()) 
+    if (doors.back().isOpen())
     {
         secretArea.setCanOpen();
         key.setNotPick();
@@ -481,11 +578,12 @@ void Game::renderGame()
     player.attacked(skeletonFamily.getCountAttack(player.getBox()));
     player.attacked(boss.getAttack(player.getBox()));
     player.checkCollisionTrap(traps);
-    player.render(window, camera, skeletonFamily, boss, doors, secretArea, key, chest);
+    player.render(window, camera, skeletonFamily, boss, doors, secretArea, key, chest, playerSound);
     player.renderEffect(window, camera);
 
-    if(player.getHP() == 0) state = STATE_GAME_OVER_MENU;
-    
+    if (player.getHP() == 0)
+        state = STATE_GAME_OVER_MENU;
+
     window.renderPresent();
 }
 
@@ -502,5 +600,15 @@ void Game::close()
     {
         SDL_DestroyTexture(mTexture);
         mTexture = NULL;
+    }
+    for (Mix_Chunk *mSound : menuSound)
+    {
+        Mix_FreeChunk(mSound);
+        mSound = NULL;
+    }
+    for (Mix_Chunk *mSound : playerSound)
+    {
+        Mix_FreeChunk(mSound);
+        mSound = NULL;
     }
 }

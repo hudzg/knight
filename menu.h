@@ -45,7 +45,7 @@ public:
 
 
     Menu(SDL_Texture *backgroundTexture = NULL, SDL_Texture *buttonTexture = NULL, SDL_Texture *titleTexture = NULL);
-    void handleEvent(SDL_Event &e, GameState &state);
+    void handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *gSound[]);
     void render(RenderWindow &window);
 };
 
@@ -86,7 +86,7 @@ public:
 
 
     SubMenu(int y = 0, SDL_Texture *backgroundTexture = NULL, SDL_Texture *buttonTexture = NULL, SDL_Texture *titleTexture = NULL, int haveResume = 0);
-    void handleEvent(SDL_Event &e, GameState &state);
+    void handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *gSound[]);
     void render(RenderWindow &window);
 };
 

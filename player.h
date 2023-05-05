@@ -52,6 +52,8 @@ private:
     HPBuff effectHPBuff;
     ATKBuff effectATKBuff;
     SkillUnlock effectSkillUnlock;
+    int isLand;
+    bool pressButtonA, pressButtonD;
 
 public:
     static const int PLAYER_WIDTH = 64;
@@ -74,9 +76,9 @@ public:
     bool checkCollisionWall(SDL_Rect &a, Tile *b);
     bool checkCollisionDoor(vector<Door> &doors);
     void checkCollisionTrap(const vector<SDL_Rect> &b);
-    void handleEvent(SDL_Event &e, GameState &state);
+    void handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *sound[]);
     void move(Tile *tiles, vector<Door> &doors, SecretArea &secretArea, double timeStep = 1.0 / 60);
-    void render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector<Door> &doors, SecretArea &secretArea, Key &key, Chest &chest);
+    void render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector<Door> &doors, SecretArea &secretArea, Key &key, Chest &chest, Mix_Chunk *sound[]);
     void renderEffect(RenderWindow &window, SDL_Rect &camera);
     void attacked(std::pair<int, int> value);
     void setCamera(SDL_Rect &camera);
@@ -84,6 +86,7 @@ public:
     int getPosY();
     int getHP();
     SDL_Rect getBox();
+    void setPressButton();
 };
 
 #endif // DOT_H

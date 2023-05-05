@@ -24,7 +24,7 @@ Menu::Menu(SDL_Texture *backgroundTexture, SDL_Texture *buttonTexture, SDL_Textu
     cntTitleFrames = 0;
 }
 
-void Menu::handleEvent(SDL_Event &e, GameState &state)
+void Menu::handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *gSound[])
 {
     // for (int i = 0; i < TOTAL_BUTTON; i++)
     //     mouseover[i] = 0;
@@ -48,6 +48,7 @@ void Menu::handleEvent(SDL_Event &e, GameState &state)
                 case SDL_MOUSEBUTTONDOWN:
                     if (e.button.button == SDL_BUTTON_LEFT)
                     {
+                        Mix_PlayChannel(-1, gSound[SELECT_BUTTON_SOUND], 0);
                         if (i == PLAY)
                             state = STATE_PLAY;
                     }
@@ -107,7 +108,7 @@ SubMenu::SubMenu(int y, SDL_Texture *backgroundTexture, SDL_Texture *buttonTextu
     this->haveResume = haveResume;
 }
 
-void SubMenu::handleEvent(SDL_Event &e, GameState &state)
+void SubMenu::handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *gSound[])
 {
     // for (int i = 0; i < TOTAL_BUTTON; i++)
     //     mouseover[i] = 0;
@@ -133,6 +134,7 @@ void SubMenu::handleEvent(SDL_Event &e, GameState &state)
                 case SDL_MOUSEBUTTONDOWN:
                     if (e.button.button == SDL_BUTTON_LEFT)
                     {
+                        Mix_PlayChannel(-1, gSound[SELECT_BUTTON_SOUND], 0);
                         if (i == RESUME)
                             state = STATE_PLAY;
                         if (i == AGAIN)

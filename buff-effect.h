@@ -10,11 +10,13 @@ protected:
     int cntFrames;
     vector<SDL_Rect> gClips;
     bool isBuff;
+    bool isEnd;
 
 public:
-    // BuffEffect();
+    BuffEffect();
     void render(RenderWindow &window, SDL_Rect &camera, SDL_Rect &playerBox, SDL_RendererFlip flip);
     void setIsBuff();
+    bool checkIsEnd();
 };
 
 class HPBuff : public BuffEffect
