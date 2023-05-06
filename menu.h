@@ -90,4 +90,57 @@ public:
     void render(RenderWindow &window);
 };
 
+class GuideMenu
+{
+private:
+    enum MenuTexture
+    {
+        BACKGROUND_TEXTURE,
+        BUTTON_IMAGES_TEXTURE,
+        BUTTON_TEXTURE,
+        TOTAL_TEXTURE
+    };
+
+    enum MenuButtonImages
+    {
+        BUTTON_A,
+        BUTTON_D,
+        BUTTON_SHIFT,
+        BUTTON_SPACE,
+        BUTTON_LEFT_CLICK,
+        BUTTON_RIGHT_CLICK,
+        BUTTON_ESCAPE,
+        TOTAL_BUTTON_IMAGES
+    };
+
+    enum MenuButton
+    {
+        BACK,
+        TOTAL_BUTTON
+    };
+
+    SDL_Texture *gTexture[TOTAL_TEXTURE];
+    SDL_Rect backgroundBox, buttonImagesBox[TOTAL_BUTTON_IMAGES], buttonBox[TOTAL_BUTTON];
+    SDL_Rect buttonImagesClips[TOTAL_BUTTON_IMAGES], buttonClips[TOTAL_BUTTON][2];
+    int mouseover[TOTAL_BUTTON];
+    string buttonText[TOTAL_BUTTON_IMAGES];
+
+public:
+
+    static const int MENU_BUTTON_IMAGES_WIDTH = 128;
+    static const int MENU_BUTTON_IMAGES_HEIGHT = 64;
+    static const int MENU_BUTTON_IMAGES_TEXTURE_WIDTH = 128;
+    static const int MENU_BUTTON_IMAGES_TEXTURE_HEIGHT = 64;
+
+    static const int MENU_BUTTON_WIDTH = 256;
+    static const int MENU_BUTTON_HEIGHT = 64;
+    static const int MENU_BUTTON_TEXTURE_WIDTH = 1024;
+    static const int MENU_BUTTON_TEXTURE_HEIGHT = 256;
+
+
+    GuideMenu(SDL_Texture *backgroundTexture = NULL, SDL_Texture *buttonImagesTexture = NULL, SDL_Texture *buttonTexture = NULL);
+    void handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *gSound[]);
+    void render(RenderWindow &window, TTF_Font *font[]);
+};
+
 #endif

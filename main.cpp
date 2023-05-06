@@ -30,6 +30,12 @@ int main(int argc, char *argv[])
                     game.renderMenu();
                     break;
 
+                case STATE_GUIDE_MENU:
+                    while (SDL_PollEvent(&event))
+                        game.handleGuideMenuEvent(event);
+                    game.renderGuideMenu();
+                    break;
+
                 case STATE_PAUSE_MENU:
                     while (SDL_PollEvent(&event))
                         game.handlePauseMenuEvent(event);

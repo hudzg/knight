@@ -132,6 +132,7 @@ bool Game::setBoss()
 bool Game::setMenu()
 {
     menu = Menu(gTexture[MENU_BACKGROUND_TEXTURE], gTexture[MENU_BUTTON_TEXTURE], gTexture[MENU_TITLE_TEXTURE]);
+    guideMenu = GuideMenu(gTexture[MENU_BACKGROUND_TEXTURE], gTexture[GUIDE_MENU_BUTTON_IMAGES_TEXTURE], gTexture[GUIDE_MENU_BUTTON_TEXTURE]);
     pauseMenu = SubMenu(0, gTexture[SUBMENU_BACKGROUND_TEXTURE], gTexture[SUBMENU_BUTTON_TEXTURE], gTexture[SUBMENU_TITLE_TEXTURE], 1);
     winMenu = SubMenu(160, gTexture[SUBMENU_BACKGROUND_TEXTURE], gTexture[SUBMENU_BUTTON_TEXTURE], gTexture[SUBMENU_TITLE_TEXTURE]);
     gameOverMenu = SubMenu(320, gTexture[SUBMENU_BACKGROUND_TEXTURE], gTexture[SUBMENU_BUTTON_TEXTURE], gTexture[SUBMENU_TITLE_TEXTURE]);
@@ -290,6 +291,18 @@ bool Game::loadTexture()
     if (gTexture[MENU_TITLE_TEXTURE] == NULL)
     {
         printf("Failed to load menu title texture\n");
+        success = false;
+    }
+    gTexture[GUIDE_MENU_BUTTON_IMAGES_TEXTURE] = window.loadFromFile("images/gui/guide-menu/button-images.png");
+    if (gTexture[GUIDE_MENU_BUTTON_IMAGES_TEXTURE] == NULL)
+    {
+        printf("Failed to load guide button images title texture\n");
+        success = false;
+    }
+    gTexture[GUIDE_MENU_BUTTON_TEXTURE] = window.loadFromFile("images/gui/guide-menu/button.png");
+    if (gTexture[GUIDE_MENU_BUTTON_TEXTURE] == NULL)
+    {
+        printf("Failed to load guide button title texture\n");
         success = false;
     }
     gTexture[SUBMENU_BACKGROUND_TEXTURE] = window.loadFromFile("images/gui/sub-menu/background.png");
@@ -479,16 +492,22 @@ bool Game::loadSound()
 bool Game::loadFont()
 {
     bool success = true;
-    font[FONT_16] = TTF_OpenFont("fonts/Pixel-UniCode.ttf", 40);
-    if (font[FONT_16] == NULL)
+    font[FONT_40] = TTF_OpenFont("fonts/Pixel-UniCode.ttf", 40);
+    if (font[FONT_40] == NULL)
     {
-        printf("Failed to load font 16, error: %s\n", TTF_GetError());
+        printf("Failed to load font 40, error: %s\n", TTF_GetError());
         success = false;
     }
-    font[FONT_32] = TTF_OpenFont("fonts/Pixel-UniCode.ttf", 32);
-    if (font[FONT_32] == NULL)
+    font[FONT_80] = TTF_OpenFont("fonts/Pixel-UniCode.ttf", 80);
+    if (font[FONT_80] == NULL)
     {
-        printf("Failed to load font 32, error: %s\n", TTF_GetError());
+        printf("Failed to load font 80, error: %s\n", TTF_GetError());
+        success = false;
+    }
+    font[FONT2_40] = TTF_OpenFont("fonts/PressStart2P-Regular.ttf", 40);
+    if (font[FONT2_40] == NULL)
+    {
+        printf("Failed to load font 2 40, error: %s\n", TTF_GetError());
         success = false;
     }
     return success;
@@ -542,6 +561,7 @@ bool Game::loadMedia()
 bool Game::isRunning()
 {
     return running;
+    // return state != STATE_QUIT;
 }
 
 void Game::handleMenuEvent(SDL_Event &event)
@@ -559,12 +579,27 @@ void Game::handleMenuEvent(SDL_Event &event)
         setDynamicObject();
         Mix_HaltMusic();
     }
+    if (state == STATE_QUIT)
+        running = false;
 }
 void Game::renderMenu()
 {
     window.clearRenderer();
     menu.render(window);
-    window.renderText("hung dep trai", font[FONT_16], 32, 0, 0);
+    window.renderText("hung dep trai", font[FONT_40], 32, 0, 0);
+    window.renderPresent();
+}
+
+void Game::handleGuideMenuEvent(SDL_Event &event)
+{
+    if (event.type == SDL_QUIT)
+        running = false;
+    guideMenu.handleEvent(event, state, menuSound);
+}
+void Game::renderGuideMenu()
+{
+    window.clearRenderer();
+    guideMenu.render(window, font);
     window.renderPresent();
 }
 
@@ -680,7 +715,7 @@ void Game::renderScore()
 {
     scoreText.str("");
     scoreText << "Score: " << score;
-    window.renderText(scoreText.str().c_str(), font[FONT_16], 1200, 20);
+    window.renderText(scoreText.str().c_str(), font[FONT_40], 1200, 20);
 }
 
 int Game::getState()

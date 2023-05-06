@@ -34,6 +34,7 @@ private:
     GameState state;
     Menu menu;
     SubMenu pauseMenu, gameOverMenu, winMenu;
+    GuideMenu guideMenu;
     SDL_Cursor* cursor;
     vector <SDL_Rect> traps;
     vector <Door> doors;
@@ -68,6 +69,8 @@ public:
     void renderScore();
     void handleMenuEvent(SDL_Event &event);
     void renderMenu();
+    void handleGuideMenuEvent(SDL_Event &event);
+    void renderGuideMenu();
     void handlePauseMenuEvent(SDL_Event &event);
     void renderPauseMenu();
     void handleGameOverMenuEvent(SDL_Event &event);
