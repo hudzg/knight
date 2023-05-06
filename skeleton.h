@@ -48,6 +48,7 @@ public:
     static const int MAX_ATTACK_WIDTH = 4;
 
     static const int SKELETON_INITIAL_HP = 8;
+    // static const int SKELETON_INITIAL_HP = 1;
 
     static const int SKELETON_IS_WALL = 240;
 

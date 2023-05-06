@@ -146,6 +146,7 @@ bool Game::setDoor()
     doors.push_back(Door(60 * 64, 13 * 64, gTexture[DOOR_TEXTURE], 7 + 13));
     doors.push_back(Door(107 * 64, 0 * 64, gTexture[DOOR_TEXTURE], 7 + 13 + 11));
     doors.push_back(Door(146 * 64, 0 * 64, gTexture[DOOR_TEXTURE], 7 + 13 + 11 + 8));
+    doors.push_back(Door(158 * 64, 15 * 64, gTexture[DOOR_TEXTURE], 160804));
     return true;
 }
 
@@ -649,6 +650,29 @@ void Game::renderGameOverMenu()
     window.renderPresent();
 }
 
+void Game::handleWinMenuEvent(SDL_Event &event)
+{
+    if (event.type == SDL_QUIT)
+        running = false;
+    winMenu.handleEvent(event, state, menuSound);
+    if (state == STATE_AGAIN)
+    {
+        state = STATE_PLAY;
+        setDynamicObject();
+    }
+    if(state == STATE_MENU)
+    {
+        Mix_HaltMusic();
+    }
+}
+
+void Game::renderWinMenu()
+{
+    window.clearRenderer();
+    winMenu.render(window);
+    window.renderPresent();
+}
+
 void Game::handleGameEvent(SDL_Event &event)
 {
     if(Mix_PlayingMusic() == 0)
@@ -664,19 +688,21 @@ void Game::handleGameEvent(SDL_Event &event)
 void Game::renderGame()
 {
     window.clearRenderer();
-    player.move(tiles, doors, secretArea);
+    player.move(tiles, doors, secretArea, state);
     player.setCamera(camera);
 
     for (int i = 0; i < TOTAL_TILES; i++)
         tiles[i].render(window, camera, &gTileClips[tiles[i].getType()]);
 
+    if(boss.getDied()) doors.back().setCanOpen(160804);
     for (int i = 0; i < doors.size(); i++)
     {
         doors[i].setCanOpen(skeletonFamily.getCntSkeletonDied());
         doors[i].render(window, camera);
     }
 
-    if (doors.back().isOpen())
+
+    if (doors[3].isOpen())
     {
         secretArea.setCanOpen();
         key.setNotPick();

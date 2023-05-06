@@ -69,6 +69,7 @@ public:
     static const int MAX_ATTACK_WIDTH = 64;
 
     static const int BOSS_INITIAL_HP = 200;
+    // static const int BOSS_INITIAL_HP = 20;
 
     static const int GRAVITY_SPEED = 30;
     static const int MAX_FALL_SPEED = 1200;
@@ -82,6 +83,7 @@ public:
     std::pair<int, int> getAttack(SDL_Rect playerBox);
     int getPosX();
     int getPosY();
+    bool getDied();
 };
 
 #endif

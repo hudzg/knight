@@ -48,6 +48,12 @@ int main(int argc, char *argv[])
                     game.renderGameOverMenu();
                     break;
 
+                case STATE_WIN_MENU:
+                    while (SDL_PollEvent(&event))
+                        game.handleWinMenuEvent(event);
+                    game.renderWinMenu();
+                    break;
+
                 case STATE_PLAY:
                     while (SDL_PollEvent(&event))
                         game.handleGameEvent(event);

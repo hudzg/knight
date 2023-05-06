@@ -208,7 +208,7 @@ void Player::handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *sound[])
     }
 }
 
-void Player::move(Tile *tiles, vector<Door> &doors, SecretArea &secretArea, double timeStep)
+void Player::move(Tile *tiles, vector<Door> &doors, SecretArea &secretArea, GameState &state, double timeStep)
 {
     // if (mVelY < 0)
     // {
@@ -244,6 +244,7 @@ void Player::move(Tile *tiles, vector<Door> &doors, SecretArea &secretArea, doub
         mBox.x = mPosX;
         if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors) || (!secretArea.isOpen() && checkCollision(mBox, secretArea.getBox())))
         {
+            if(mPosX + PLAYER_WIDTH > LEVEL_WIDTH) state = STATE_WIN_MENU;
             mPosX -= 0.5 * direction * PLAYER_VEL * timeStep;
             mBox.x = mPosX;
         }
@@ -276,6 +277,7 @@ void Player::move(Tile *tiles, vector<Door> &doors, SecretArea &secretArea, doub
             mBox.x = mPosX;
             if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors) || (!secretArea.isOpen() && checkCollision(mBox, secretArea.getBox())))
             {
+                if(mPosX + PLAYER_WIDTH > LEVEL_WIDTH) state = STATE_WIN_MENU;
                 mPosX -= mDashVelX * timeStep;
                 mBox.x = mPosX;
             }
@@ -286,6 +288,7 @@ void Player::move(Tile *tiles, vector<Door> &doors, SecretArea &secretArea, doub
             mBox.x = mPosX;
             if (mPosX < 0 || mPosX + PLAYER_WIDTH > LEVEL_WIDTH || checkCollisionWall(mBox, tiles) || checkCollisionDoor(doors) || (!secretArea.isOpen() && checkCollision(mBox, secretArea.getBox())))
             {
+                if(mPosX + PLAYER_WIDTH > LEVEL_WIDTH) state = STATE_WIN_MENU;
                 // printf("h\n");
                 mPosX -= mVelX * timeStep;
                 mBox.x = mPosX;

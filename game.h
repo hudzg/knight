@@ -75,6 +75,8 @@ public:
     void renderPauseMenu();
     void handleGameOverMenuEvent(SDL_Event &event);
     void renderGameOverMenu();
+    void handleWinMenuEvent(SDL_Event &event);
+    void renderWinMenu();
     void handleGameEvent(SDL_Event &event);
     void renderGame();
     void close();

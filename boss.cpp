@@ -441,3 +441,8 @@ int Boss::getPosY()
 {
     return mPosY;
 }
+
+bool Boss::getDied()
+{
+    return isDied;
+}
