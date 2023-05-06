@@ -24,11 +24,11 @@ void Tile::render(RenderWindow &window, SDL_Rect &camera, SDL_Rect *clip)
     if (Tile::checkCollision(camera, mBox))
     {
         window.renderTile(getTexture(), mBox.x - camera.x, mBox.y - camera.y, mBox, clip);
-        if(mType == 240) 
-        {
-            SDL_Rect tmpBox = {mBox.x - camera.x, mBox.y - camera.y, TILE_WIDTH, TILE_HEIGHT};
-            window.renderBox(tmpBox);
-        }
+        // if(mType == 240) 
+        // {
+        //     SDL_Rect tmpBox = {mBox.x - camera.x, mBox.y - camera.y, TILE_WIDTH, TILE_HEIGHT};
+        //     window.renderBox(tmpBox);
+        // }
     }
 }
 

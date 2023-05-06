@@ -44,6 +44,9 @@ private:
     Mix_Chunk *playerSound[TOTAL_PLAYER_SOUND_EFFECT];
     Mix_Chunk *bossSound[TOTAL_BOSS_SOUND_EFFECT];
     Mix_Music *menuTheme, *gameTheme;
+    TTF_Font *font[TOTAL_FONT];
+    int score;
+    stringstream scoreText;
 
 public:
     bool init();
@@ -58,9 +61,11 @@ public:
     void setCursor();
     bool loadTexture();
     bool loadSound();
+    bool loadFont();
     bool loadMedia();
     bool isRunning();
     int getState();
+    void renderScore();
     void handleMenuEvent(SDL_Event &event);
     void renderMenu();
     void handlePauseMenuEvent(SDL_Event &event);

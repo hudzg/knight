@@ -68,7 +68,7 @@ public:
     static const int MAX_IDLE_FRAMES = 4;
     static const int MAX_ATTACK_WIDTH = 64;
 
-    static const int BOSS_INITIAL_HP = 40;
+    static const int BOSS_INITIAL_HP = 200;
 
     static const int GRAVITY_SPEED = 30;
     static const int MAX_FALL_SPEED = 1200;
@@ -78,7 +78,7 @@ public:
     bool checkCollisionWall(SDL_Rect &a, Tile *b);
     void move(Tile *tiles, const SDL_Rect &playerBox, double timeStep = 1.0 / 60);
     void render(RenderWindow &window, SDL_Rect &camera, Mix_Chunk *sound[]);
-    int attacked(const SDL_Rect &playerAttackRect, int damage);
+    int attacked(const SDL_Rect &playerAttackRect, int damage, int &score);
     std::pair<int, int> getAttack(SDL_Rect playerBox);
     int getPosX();
     int getPosY();

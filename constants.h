@@ -16,9 +16,16 @@ const int TILE_TEXTURE_HEIGHT = 64;
 const int TOTAL_TILES = 1600 * 2;
 const int TILE_SET_WIDTH = 960;
 const int TOTAL_WALL_TILES = 16;
+
+
 const double PI = 3.1415926535897932384626433832795;
+
 const int SCREEN_FPS = 60;
 const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
+
+const int SCORE_SKELETON = 100;
+const int SCORE_BOSS = 2000;
+const int SCORE_UNLOCK_SKILL = 2000;
 
 enum TextureID
 {
@@ -57,6 +64,7 @@ enum MenuSoundEffect
 enum PlayerSoundEffect
 {
     PLAYER_ATTACK_SOUND,
+    PLAYER_BOOM_SOUND,
     PLAYER_DASH_SOUND,
     PLAYER_JUMP_SOUND,
     PLAYER_LAND_SOUND,
@@ -74,6 +82,13 @@ enum BossSoundEffect
     BOSS_FIRE_SOUND,
     BOSS_BOOM_SOUND,
     TOTAL_BOSS_SOUND_EFFECT
+};
+
+enum Font
+{
+    FONT_16,
+    FONT_32,
+    TOTAL_FONT
 };
 
 enum TileSprites

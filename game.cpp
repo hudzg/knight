@@ -111,9 +111,9 @@ bool Game::setTiles(Tile *tiles)
 
 bool Game::setPlayer()
 {
-    // player = Player(0.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE], gTexture[ATKP_TEXTURE], gTexture[HP_BUFF_TEXTURE], gTexture[ATK_BUFF_TEXTURE], gTexture[SKILL_UNLOCK_TEXTURE]);
+    player = Player(0.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE], gTexture[ATKP_TEXTURE], gTexture[HP_BUFF_TEXTURE], gTexture[ATK_BUFF_TEXTURE], gTexture[SKILL_UNLOCK_TEXTURE]);
     // player = Player(75 * 64, 0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE], gTexture[ATKP_TEXTURE], gTexture[HP_BUFF_TEXTURE], gTexture[ATK_BUFF_TEXTURE], gTexture[SKILL_UNLOCK_TEXTURE]);
-    player = Player(9300.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE], gTexture[ATKP_TEXTURE], gTexture[HP_BUFF_TEXTURE], gTexture[ATK_BUFF_TEXTURE], gTexture[SKILL_UNLOCK_TEXTURE]);
+    // player = Player(9300.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE], gTexture[ATKP_TEXTURE], gTexture[HP_BUFF_TEXTURE], gTexture[ATK_BUFF_TEXTURE], gTexture[SKILL_UNLOCK_TEXTURE]);
     return true;
 }
 
@@ -183,6 +183,7 @@ bool Game::setDynamicObject()
         printf("Failed to set secret area\n");
         return false;
     }
+    score = 0;
     return true;
 }
 
@@ -374,6 +375,13 @@ bool Game::loadSound()
         success = false;
     }
 
+    playerSound[PLAYER_BOOM_SOUND] = Mix_LoadWAV("sounds/player/boom.mp3");
+    if (playerSound[PLAYER_BOOM_SOUND] == NULL)
+    {
+        printf("Failed to load player boom sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
     playerSound[PLAYER_DASH_SOUND] = Mix_LoadWAV("sounds/player/dash.wav");
     if (playerSound[PLAYER_DASH_SOUND] == NULL)
     {
@@ -468,6 +476,24 @@ bool Game::loadSound()
     return success;
 }
 
+bool Game::loadFont()
+{
+    bool success = true;
+    font[FONT_16] = TTF_OpenFont("fonts/Pixel-UniCode.ttf", 40);
+    if (font[FONT_16] == NULL)
+    {
+        printf("Failed to load font 16, error: %s\n", TTF_GetError());
+        success = false;
+    }
+    font[FONT_32] = TTF_OpenFont("fonts/Pixel-UniCode.ttf", 32);
+    if (font[FONT_32] == NULL)
+    {
+        printf("Failed to load font 32, error: %s\n", TTF_GetError());
+        success = false;
+    }
+    return success;
+}
+
 bool Game::loadMedia()
 {
     bool success = true;
@@ -480,6 +506,12 @@ bool Game::loadMedia()
     if (!loadSound())
     {
         printf("Failed to load sound!\n");
+        success = false;
+    }
+
+    if(!loadFont())
+    {
+        printf("Failed to load font!\n");
         success = false;
     }
 
@@ -532,6 +564,7 @@ void Game::renderMenu()
 {
     window.clearRenderer();
     menu.render(window);
+    window.renderText("hung dep trai", font[FONT_16], 32, 0, 0);
     window.renderPresent();
 }
 
@@ -629,16 +662,25 @@ void Game::renderGame()
     boss.move(tiles, player.getBox());
     boss.render(window, camera, bossSound);
 
-    player.attacked(skeletonFamily.getCountAttack(player.getBox()));
-    player.attacked(boss.getAttack(player.getBox()));
-    player.checkCollisionTrap(traps);
-    player.render(window, camera, skeletonFamily, boss, doors, secretArea, key, chest, playerSound);
+    player.attacked(skeletonFamily.getCountAttack(player.getBox()), score);
+    player.attacked(boss.getAttack(player.getBox()), score);
+    player.checkCollisionTrap(traps, score);
+    player.render(window, camera, skeletonFamily, boss, doors, secretArea, key, chest, playerSound, score);
     player.renderEffect(window, camera);
 
     if (player.getHP() == 0)
         state = STATE_GAME_OVER_MENU;
 
+    renderScore();
+
     window.renderPresent();
+}
+
+void Game::renderScore()
+{
+    scoreText.str("");
+    scoreText << "Score: " << score;
+    window.renderText(scoreText.str().c_str(), font[FONT_16], 1200, 20);
 }
 
 int Game::getState()
@@ -670,6 +712,11 @@ void Game::close()
     {
         Mix_FreeChunk(mSound);
         mSound = NULL;
+    }
+    for(TTF_Font *mFont : font)
+    {
+        TTF_CloseFont(mFont);
+        mFont = NULL;
     }
     Mix_FreeMusic(menuTheme);
     menuTheme = NULL;

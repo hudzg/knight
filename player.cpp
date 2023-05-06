@@ -94,7 +94,7 @@ bool Player::checkCollisionWall(SDL_Rect &a, Tile *b)
     return false;
 }
 
-void Player::checkCollisionTrap(const vector<SDL_Rect> &b)
+void Player::checkCollisionTrap(const vector<SDL_Rect> &b, int &score)
 {
     if (isTakeTrap)
         return;
@@ -103,7 +103,7 @@ void Player::checkCollisionTrap(const vector<SDL_Rect> &b)
         {
             isTakeTrap = true;
             cntTimeTakeTrap = 0;
-            attacked(make_pair(1, 0));
+            attacked(make_pair(1, 0), score);
             return;
         }
     return;
@@ -118,7 +118,7 @@ void Player::handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *sound[])
         switch (e.key.keysym.sym)
         {
         case SDLK_LSHIFT:
-            if (!isTakeHit)
+            if (!isTakeHit && !isDashing)
             {
                 Mix_PlayChannel(-1, sound[PLAYER_DASH_SOUND], 0);
                 isDashing = true;
@@ -189,6 +189,7 @@ void Player::handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *sound[])
                     useSkill = true;
                     skill.Reset();
                     MP.addPoint(-MP.getPoint());
+                    // Mix_PlayChannel(-1, sound[PLAYER_BOOM_SOUND], 0);
                 }
                 break;
             default:
@@ -330,7 +331,7 @@ void Player::renderEffect(RenderWindow &window, SDL_Rect &camera)
         skill.setUnlock();
 }
 
-void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector<Door> &doors, SecretArea &secretArea, Key &key, Chest &chest, Mix_Chunk *sound[])
+void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skeletonFamily, Boss &boss, vector<Door> &doors, SecretArea &secretArea, Key &key, Chest &chest, Mix_Chunk *sound[], int &score)
 {
     // render hud
     HP.render(window);
@@ -399,13 +400,13 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
             tmpBox.y = mBox.y + mBox.h / 2 - FireAttack::FIRE_ATTACK_REAL_HEIGHT / 2;
             tmpBox.w = FireAttack::FIRE_ATTACK_REAL_WIDTH;
             tmpBox.h = FireAttack::FIRE_ATTACK_REAL_HEIGHT;
-            SDL_Rect tmpBox2 = {tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox.w, tmpBox.h};
-            window.renderBox(tmpBox2);
+            // SDL_Rect tmpBox2 = {tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox.w, tmpBox.h};
+            // window.renderBox(tmpBox2);
             if (cntAttackFrames == 0)
             {
                 int cntEnemyAttack = 0;
-                cntEnemyAttack += skeletonFamily.attacked(tmpBox, ATKP.getPoint());
-                cntEnemyAttack += boss.attacked(tmpBox, ATKP.getPoint());
+                cntEnemyAttack += skeletonFamily.attacked(tmpBox, ATKP.getPoint(), score);
+                cntEnemyAttack += boss.attacked(tmpBox, ATKP.getPoint(), score);
                 MP.addPoint(cntEnemyAttack);
                 for (int i = 0; i < doors.size(); i++)
                     doors[i].setOpen(tmpBox);
@@ -430,8 +431,8 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
                 {
                     if (chest.setOpen(tmpBox))
                     {
+                        score += SCORE_UNLOCK_SKILL;
                         key.setUsed();
-                        // skill.setUnlock();
                         effectSkillUnlock.setIsBuff();
                         Mix_PlayChannel(-1, sound[PLAYER_ATK_BUFF_SOUND], 0);
                     }
@@ -459,12 +460,14 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
         if (cntAttackFrames == 36)
         {
             int cntEnemyAttack = 0;
-            cntEnemyAttack += skeletonFamily.attacked(tmpBox, 2 * ATKP.getPoint());
-            cntEnemyAttack += boss.attacked(tmpBox, 2 * ATKP.getPoint());
+            cntEnemyAttack += skeletonFamily.attacked(tmpBox, 2 * ATKP.getPoint(), score);
+            cntEnemyAttack += boss.attacked(tmpBox, 2 * ATKP.getPoint(), score);
             MP.addPoint(cntEnemyAttack);
             for (int i = 0; i < doors.size(); i++)
                 doors[i].setOpen(tmpBox);
             secretArea.setOpen(tmpBox);
+
+            Mix_PlayChannel(-1, sound[PLAYER_BOOM_SOUND], 0);
         }
         cntAttackFrames++;
         if (cntAttackFrames >= TOTAL_PLAYER_ATTACK_SPRITES * 8)
@@ -526,12 +529,19 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
     }
 }
 
-void Player::attacked(std::pair<int, int> value)
+void Player::attacked(std::pair<int, int> value, int &score)
 {
+    if(useSkill) return;
     HP.addPoint(-value.first);
     if (value.first > 0)
     {
         // printf("h\n");
+        for(int i = 0; i < value.first; i++)
+        {
+            int x = max(SCORE_SKELETON, score / 10);
+            score -= x;
+            if(score < 0) score = 0;
+        }
         cntTakeHitFrames = 0;
         isTakeHit = true;
         mVelY = -750;

@@ -146,3 +146,54 @@ void RenderWindow::renderFillBox(SDL_Rect rect, Uint8 r, Uint8 g, Uint8 b, Uint8
     SDL_SetRenderDrawColor(gRenderer, r, g, b, a);
     SDL_RenderFillRect(gRenderer, &rect);
 }
+
+void RenderWindow::renderTextNoFont(const char *text, const char *fontPath, int fontSize, int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+    TTF_Font *font = TTF_OpenFont(fontPath, fontSize);
+    if (font == NULL)
+    {
+        printf("Failed to load font, error: %s\n", TTF_GetError());
+        return;
+    }
+    SDL_Color textColor = {r, g, b, a};
+    SDL_Surface *textSurface = TTF_RenderText_Solid(font, text, textColor);
+    if (textSurface == NULL)
+    {
+        printf("Failed to create text surface, error: %s\n", TTF_GetError());
+        return;
+    }
+    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(gRenderer, textSurface);
+    if (textTexture == NULL)
+    {
+        printf("Failed to create texture, error: %s\n", SDL_GetError());
+        return;
+    }
+    SDL_Rect textRect = {x, y, 0, 0};
+    SDL_QueryTexture(textTexture, NULL, NULL, &textRect.w, &textRect.h); // lấy kích thước của texture
+    SDL_RenderCopy(gRenderer, textTexture, NULL, &textRect);
+    SDL_FreeSurface(textSurface);
+    TTF_CloseFont(font);
+    SDL_DestroyTexture(textTexture);
+}
+
+void RenderWindow::renderText(const char *text, TTF_Font *font, int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+    SDL_Color textColor = {r, g, b, a};
+    SDL_Surface *textSurface = TTF_RenderText_Solid(font, text, textColor);
+    if (textSurface == NULL)
+    {
+        printf("Failed to create text surface, error: %s\n", TTF_GetError());
+        return;
+    }
+    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(gRenderer, textSurface);
+    if (textTexture == NULL)
+    {
+        printf("Failed to create texture, error: %s\n", SDL_GetError());
+        return;
+    }
+    SDL_Rect textRect = {x, y, 0, 0};
+    SDL_QueryTexture(textTexture, NULL, NULL, &textRect.w, &textRect.h); // lấy kích thước của texture
+    SDL_RenderCopy(gRenderer, textTexture, NULL, &textRect);
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+}

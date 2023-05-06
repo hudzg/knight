@@ -8,6 +8,8 @@ Door::Door(int x, int y, SDL_Texture *mTexture, int cntSkeletonToOpenDoor) : Ent
     for(int i = 0, x = 0; i < TOTAL_STATE; i++, x += DOOR_TEXTURE_WIDTH)
         clips[i] = {x, 0, DOOR_TEXTURE_WIDTH, DOOR_TEXTURE_HEIGHT};
     this->cntSkeletonToOpenDoor = cntSkeletonToOpenDoor;
+
+
     // state = OPEN;
 }
 

@@ -11,6 +11,7 @@
 #include <string>
 #include <random>
 #include <chrono>
+#include <sstream>
 
 
 using namespace std;
@@ -37,6 +38,8 @@ public:
     void renderHitbox(SDL_Texture *mTexture, int x, int y, SDL_Rect rect, SDL_Rect *clip = NULL, double angle = 0.0, SDL_Point *center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
     void renderBox(SDL_Rect rect);
     void renderFillBox(SDL_Rect rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255);
+    void renderTextNoFont(const char *text, const char *fontPath, int fontSize, int x, int y, Uint8 r = 255, Uint8 g = 255, Uint8 b = 255, Uint8 a = 255);
+    void renderText(const char *text, TTF_Font *font, int x, int y, Uint8 r = 255, Uint8 g = 255, Uint8 b = 255, Uint8 a = 255);
     void close();
     void clearRenderer();
     void renderPresent();

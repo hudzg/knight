@@ -403,7 +403,7 @@ std::pair<int, int> Boss::getAttack(SDL_Rect playerBox)
     return res;
 }
 
-int Boss::attacked(const SDL_Rect &playerAttackRect, int damage)
+int Boss::attacked(const SDL_Rect &playerAttackRect, int damage, int &score)
 {
     if (isDeath || isDied || notTakeHit || isSmashing)
         return 0;
@@ -420,6 +420,7 @@ int Boss::attacked(const SDL_Rect &playerAttackRect, int damage)
         if (HP <= 0)
         {
             isDeath = true;
+            score += SCORE_BOSS;
         }
         isTakeHit = true;
         if ((playerAttackRect.x * 2 + playerAttackRect.w) / 2 >= (mBox.x * 2 + mBox.w) / 2)

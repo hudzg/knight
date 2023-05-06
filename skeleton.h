@@ -57,7 +57,7 @@ public:
     bool checkCollisionDoor(vector <Door> &doors);
     void move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors, SecretArea &secretArea, double timeStep = 1.0 / 60);
     void render(RenderWindow &window, SDL_Rect &camera);
-    int attacked(const SDL_Rect &playerAttackRect, int damage);
+    int attacked(const SDL_Rect &playerAttackRect, int damage, int &score);
     std::pair <int, int> getAttack(SDL_Rect playerBox);
     int getPosX();
     int getPosY();
@@ -74,7 +74,7 @@ class SkeletonFamily
     SkeletonFamily(SDL_Texture *mTexture = NULL);
     void move(Tile *tiles, const SDL_Rect &playerBox, vector <Door> &doors, SecretArea &secretArea);
     void render(RenderWindow &window, SDL_Rect &camera);
-    int attacked(const SDL_Rect &playerAttackRect, int damage);
+    int attacked(const SDL_Rect &playerAttackRect, int damage, int &score);
     void checkDied();
     std::pair <int, int> getCountAttack(SDL_Rect playerBox);
     int getCntSkeletonDied();
