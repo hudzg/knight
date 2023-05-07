@@ -28,3 +28,11 @@ mingw32-make
 ```bash
 main
 ```
+## Chi tiết về game
+### Gameplay
+Xem gameplay [tại đây](https://youtu.be/C2Q8dkf2o7w)
+### Nhân vật
+![knight](https://user-images.githubusercontent.com/106372669/236669112-f0188ad7-90e8-44da-bc9e-c9622da7d66e.gif)
+Tấn công
+![attack3](https://user-images.githubusercontent.com/106372669/236669287-3c047eb0-2119-4071-ac6a-c4b648fd2f84.gif)
+
