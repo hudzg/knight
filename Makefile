@@ -6,13 +6,13 @@
 OBJS = skeleton.cpp boss.cpp menu.cpp door.cpp timer.cpp fire-ball.cpp player-skill.cpp secret-area.cpp hud.cpp buff-effect.cpp tile.cpp entity.cpp player.cpp utils.cpp game.cpp main.cpp
 
 #CC specifies which compiler we're using
-CC = g++
+CC = MinGW\bin\g++
 
 #INCLUDE_PATHS specifies the additional include paths we'll need
-INCLUDE_PATHS = -IC:\mingw_dev_lib\include\SDL2
+INCLUDE_PATHS = -Imingw_dev_lib\include\SDL2
 
 #LIBRARY_PATHS specifies the additional library paths we'll need
-LIBRARY_PATHS = -LC:\mingw_dev_lib\lib
+LIBRARY_PATHS = -Lmingw_dev_lib\lib
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -w suppresses all warnings

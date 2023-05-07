@@ -26,6 +26,7 @@ HammerGodSkill::HammerGodSkill(SDL_Texture *mTexture) : Entity(0, 0, mTexture)
         gClips[i] = {x, 0, HAMMER_GOD_SKILL_TEXTURE_WIDTH, HAMMER_GOD_SKILL_TEXTURE_HEIGHT};
     mBox = {0, 0, HAMMER_GOD_SKILL_RENDER_WIDTH, HAMMER_GOD_SKILL_RENDER_HEIGHT};
     isUnlock = false;
+    // isUnlock = true;
 }
 
 // void HammerGodSkill::render(RenderWindow &window, int x, int y, SDL_Rect mBox, SDL_RendererFlip flip)
