@@ -15,3 +15,16 @@ Trong game Dark Knight, người chơi sẽ được trải nghiệm các tính 
 Với đồ họa 2D tuyệt đẹp và âm thanh sống động, Dark Knight hứa hẹn sẽ mang đến cho người chơi những trải nghiệm thú vị và đầy cảm xúc.
 
 ## Cách cài đặt game
+* Bước 1: Clone game về máy bằng lệnh git clone hoặc tải về [tại đây](https://github.com/hudzg/knight/archive/refs/heads/main.zip)
+* Bước 2: Giải nén và click vào `main.exe` để bắt đầu chơi game thôi nàoooo!!!!!!!
+
+Nếu muốn biên dịch game bằng Makefile thì thực hiện các bước sau:
+* Bước 1: Mở cmd và cd đến thư mục của game
+* Bước 2: Dùng lệnh sau để bắt đầu Makefile: 
+```bash
+mingw32-make
+```
+* Bước 3: Dùng lệnh sau để khởi động game:
+```bash
+main
+```
