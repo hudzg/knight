@@ -66,6 +66,15 @@ Mỗi khi mở cửa nhân vật sẽ được tăng sức mạnh
 * Tìm đường thoát và tiêu diệt quái vật.
 * Giết boss và cứu lấy thế giới.
 
+### Một số hình ảnh trong game
+![Screenshot 2023-05-07 173340](https://user-images.githubusercontent.com/106372669/236672645-0fcd1303-c462-4d18-a670-79bc4abf9048.png)
+![Screenshot 2023-05-07 173402](https://user-images.githubusercontent.com/106372669/236672652-7d16a364-2277-44b6-8db7-81751a0ec491.png)
+![Screenshot 2023-05-07 173417](https://user-images.githubusercontent.com/106372669/236672654-7cfa0f1d-e402-47ec-bc7d-cc1bfae65cad.png)
+![Screenshot 2023-05-07 173525](https://user-images.githubusercontent.com/106372669/236672656-7f4c07aa-2027-47da-9d06-cd6da026d879.png)
+![Screenshot 2023-05-07 173555](https://user-images.githubusercontent.com/106372669/236672659-b4854c5e-7b10-41d5-8b50-a39c8d45e44a.png)
+![Screenshot 2023-05-07 173841](https://user-images.githubusercontent.com/106372669/236672661-e3f8e67b-d2dc-4ded-be4f-8d22a9e0b9f0.png)
+
+
 ## Các kĩ thuật lập trình đã sử dụng
 * Struct và Class
 * Con trỏ
