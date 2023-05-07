@@ -40,6 +40,8 @@ public:
     void renderFillBox(SDL_Rect rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255);
     void renderTextNoFont(const char *text, const char *fontPath, int fontSize, int x, int y, Uint8 r = 255, Uint8 g = 255, Uint8 b = 255, Uint8 a = 255);
     void renderText(const char *text, TTF_Font *font, int x, int y, Uint8 r = 255, Uint8 g = 255, Uint8 b = 255, Uint8 a = 255);
+    void renderTextRight(const char *text, TTF_Font *font, int x, int y, Uint8 r = 255, Uint8 g = 255, Uint8 b = 255, Uint8 a = 255);
+    void renderTextCenterScreen(const char *text, TTF_Font *font, Uint8 r = 255, Uint8 g = 255, Uint8 b = 255, Uint8 a = 255);
     void close();
     void clearRenderer();
     void renderPresent();

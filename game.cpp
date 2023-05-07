@@ -109,6 +109,29 @@ bool Game::setTiles(Tile *tiles)
     return success;
 }
 
+bool Game::setHighScores()
+{
+    bool success = true;
+    std::ifstream readFile("high-scores/high-scores.txt");
+    if (readFile.fail())
+    {
+        printf("Failed to load high scores \n");
+        success = false;
+    }
+    else
+    {
+        highScores.clear();
+        for (int i = 0; i < TOTAL_HIGH_SCORES; i++)
+        {
+            int x;
+            readFile >> x;
+            highScores.push_back(x);
+        }
+    }
+    readFile.close();
+    return success;
+}
+
 bool Game::setPlayer()
 {
     player = Player(0.0, 520.0, gTexture[PLAYER_TEXTURE], gTexture[FIRE_ATTACK_TEXTURE], gTexture[HP_TEXTURE], gTexture[HAMMER_SKILL_TEXTURE], gTexture[MP_TEXTURE], gTexture[ATKP_TEXTURE], gTexture[HP_BUFF_TEXTURE], gTexture[ATK_BUFF_TEXTURE], gTexture[SKILL_UNLOCK_TEXTURE]);
@@ -133,6 +156,7 @@ bool Game::setMenu()
 {
     menu = Menu(gTexture[MENU_BACKGROUND_TEXTURE], gTexture[MENU_BUTTON_TEXTURE], gTexture[MENU_TITLE_TEXTURE]);
     guideMenu = GuideMenu(gTexture[MENU_BACKGROUND_TEXTURE], gTexture[GUIDE_MENU_BUTTON_IMAGES_TEXTURE], gTexture[GUIDE_MENU_BUTTON_TEXTURE]);
+    highScoresMenu = HighScoresMenu(gTexture[MENU_BACKGROUND_TEXTURE], gTexture[GUIDE_MENU_BUTTON_TEXTURE]);
     pauseMenu = SubMenu(0, gTexture[SUBMENU_BACKGROUND_TEXTURE], gTexture[SUBMENU_BUTTON_TEXTURE], gTexture[SUBMENU_TITLE_TEXTURE], 1);
     winMenu = SubMenu(160, gTexture[SUBMENU_BACKGROUND_TEXTURE], gTexture[SUBMENU_BUTTON_TEXTURE], gTexture[SUBMENU_TITLE_TEXTURE]);
     gameOverMenu = SubMenu(320, gTexture[SUBMENU_BACKGROUND_TEXTURE], gTexture[SUBMENU_BUTTON_TEXTURE], gTexture[SUBMENU_TITLE_TEXTURE]);
@@ -529,7 +553,7 @@ bool Game::loadMedia()
         success = false;
     }
 
-    if(!loadFont())
+    if (!loadFont())
     {
         printf("Failed to load font!\n");
         success = false;
@@ -540,6 +564,13 @@ bool Game::loadMedia()
         printf("Failed to load tile set\n");
         success = false;
     }
+
+    if (!setHighScores())
+    {
+        printf("Failed to load high scores\n");
+        success = false;
+    }
+
     if (!setMenu())
     {
         printf("Failed to set menu\n");
@@ -567,7 +598,7 @@ bool Game::isRunning()
 
 void Game::handleMenuEvent(SDL_Event &event)
 {
-    if(Mix_PlayingMusic() == 0)
+    if (Mix_PlayingMusic() == 0)
     {
         Mix_PlayMusic(menuTheme, -1);
         Mix_VolumeMusic(32);
@@ -604,84 +635,116 @@ void Game::renderGuideMenu()
     window.renderPresent();
 }
 
-void Game::handlePauseMenuEvent(SDL_Event &event)
+void Game::handleHighScoresMenuEvent(SDL_Event &event)
 {
     if (event.type == SDL_QUIT)
         running = false;
+    highScoresMenu.handleEvent(event, state, menuSound);
+}
+
+void Game::renderHighScoresMenu()
+{
+    window.clearRenderer();
+    highScoresMenu.render(window, font, highScores);
+    window.renderPresent();
+}
+
+void Game::handlePauseMenuEvent(SDL_Event &event)
+{
+    if (event.type == SDL_QUIT)
+    {
+        running = false;
+        updateHighScores();
+    }
     pauseMenu.handleEvent(event, state, menuSound);
     if (state == STATE_AGAIN)
     {
         state = STATE_PLAY;
+        updateHighScores();
         setDynamicObject();
     }
-    if(state == STATE_MENU)
+    if (state == STATE_MENU)
     {
         Mix_HaltMusic();
+        updateHighScores();
     }
 }
 
 void Game::renderPauseMenu()
 {
     window.clearRenderer();
-    pauseMenu.render(window);
+    pauseMenu.render(window, score, font);
     window.renderPresent();
 }
 
 void Game::handleGameOverMenuEvent(SDL_Event &event)
 {
     if (event.type == SDL_QUIT)
+    {
         running = false;
+        updateHighScores();
+    }
     gameOverMenu.handleEvent(event, state, menuSound);
     if (state == STATE_AGAIN)
     {
         state = STATE_PLAY;
+        updateHighScores();
         setDynamicObject();
     }
-    if(state == STATE_MENU)
+    if (state == STATE_MENU)
     {
         Mix_HaltMusic();
+        updateHighScores();
     }
 }
 
 void Game::renderGameOverMenu()
 {
     window.clearRenderer();
-    gameOverMenu.render(window);
+    gameOverMenu.render(window, score, font);
     window.renderPresent();
 }
 
 void Game::handleWinMenuEvent(SDL_Event &event)
 {
     if (event.type == SDL_QUIT)
+    {
         running = false;
+        updateHighScores();
+    }
     winMenu.handleEvent(event, state, menuSound);
     if (state == STATE_AGAIN)
     {
         state = STATE_PLAY;
+        updateHighScores();
         setDynamicObject();
     }
-    if(state == STATE_MENU)
+    if (state == STATE_MENU)
     {
         Mix_HaltMusic();
+        updateHighScores();
     }
 }
 
 void Game::renderWinMenu()
 {
     window.clearRenderer();
-    winMenu.render(window);
+    winMenu.render(window, score, font);
     window.renderPresent();
 }
 
 void Game::handleGameEvent(SDL_Event &event)
 {
-    if(Mix_PlayingMusic() == 0)
+    if (Mix_PlayingMusic() == 0)
     {
         Mix_PlayMusic(gameTheme, -1);
         Mix_VolumeMusic(32);
     }
     if (event.type == SDL_QUIT)
+    {
         running = false;
+        updateHighScores();
+    }
     player.handleEvent(event, state, playerSound);
 }
 
@@ -694,13 +757,13 @@ void Game::renderGame()
     for (int i = 0; i < TOTAL_TILES; i++)
         tiles[i].render(window, camera, &gTileClips[tiles[i].getType()]);
 
-    if(boss.getDied()) doors.back().setCanOpen(160804);
+    if (boss.getDied())
+        doors.back().setCanOpen(160804);
     for (int i = 0; i < doors.size(); i++)
     {
         doors[i].setCanOpen(skeletonFamily.getCntSkeletonDied());
         doors[i].render(window, camera);
     }
-
 
     if (doors[3].isOpen())
     {
@@ -744,6 +807,29 @@ void Game::renderScore()
     window.renderText(scoreText.str().c_str(), font[FONT_40], 1200, 20);
 }
 
+void Game::updateHighScores()
+{
+    printf("h\n");
+    if (score > highScores.back())
+    {
+        highScores.push_back(score);
+        for (int i = (int)highScores.size() - 1; i > 1; i--)
+            if (highScores[i] > highScores[i - 1])
+                swap(highScores[i], highScores[i - 1]);
+            else
+                break;
+        highScores.pop_back();
+        ofstream outFile;
+        outFile.open("high-scores/high-scores.txt");
+        if(outFile.fail())
+            printf("Failed to load high scores (outFile) \n");
+        outFile.clear();
+        for(int x : highScores)
+            outFile << x << "\n";
+        outFile.close();
+    }
+}
+
 int Game::getState()
 {
     return state;
@@ -774,7 +860,7 @@ void Game::close()
         Mix_FreeChunk(mSound);
         mSound = NULL;
     }
-    for(TTF_Font *mFont : font)
+    for (TTF_Font *mFont : font)
     {
         TTF_CloseFont(mFont);
         mFont = NULL;
@@ -783,5 +869,4 @@ void Game::close()
     menuTheme = NULL;
     Mix_FreeMusic(gameTheme);
     gameTheme = NULL;
-
 }

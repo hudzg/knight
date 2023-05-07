@@ -27,6 +27,8 @@ const int SCORE_SKELETON = 100;
 const int SCORE_BOSS = 2000;
 const int SCORE_UNLOCK_SKILL = 2000;
 
+const int TOTAL_HIGH_SCORES = 5;
+
 enum TextureID
 {
     PLAYER_TEXTURE,
@@ -109,6 +111,7 @@ enum GameState
     STATE_GAME_OVER_MENU,
     STATE_WIN_MENU,
     STATE_GUIDE_MENU,
+    STATE_HIGH_SCORES_MENU,
     STATE_QUIT,
     TOTAL_STATE
 };

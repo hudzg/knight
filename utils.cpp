@@ -197,3 +197,50 @@ void RenderWindow::renderText(const char *text, TTF_Font *font, int x, int y, Ui
     SDL_FreeSurface(textSurface);
     SDL_DestroyTexture(textTexture);
 }
+
+void RenderWindow::renderTextRight(const char *text, TTF_Font *font, int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+    SDL_Color textColor = {r, g, b, a};
+    SDL_Surface *textSurface = TTF_RenderText_Solid(font, text, textColor);
+    if (textSurface == NULL)
+    {
+        printf("Failed to create text surface, error: %s\n", TTF_GetError());
+        return;
+    }
+    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(gRenderer, textSurface);
+    if (textTexture == NULL)
+    {
+        printf("Failed to create texture, error: %s\n", SDL_GetError());
+        return;
+    }
+    SDL_Rect textRect = {x, y, 0, 0};
+    SDL_QueryTexture(textTexture, NULL, NULL, &textRect.w, &textRect.h); // lấy kích thước của texture
+    textRect.x -= textRect.w;
+    SDL_RenderCopy(gRenderer, textTexture, NULL, &textRect);
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+}
+
+void RenderWindow::renderTextCenterScreen(const char *text, TTF_Font *font, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+    SDL_Color textColor = {r, g, b, a};
+    SDL_Surface *textSurface = TTF_RenderText_Solid(font, text, textColor);
+    if (textSurface == NULL)
+    {
+        printf("Failed to create text surface, error: %s\n", TTF_GetError());
+        return;
+    }
+    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(gRenderer, textSurface);
+    if (textTexture == NULL)
+    {
+        printf("Failed to create texture, error: %s\n", SDL_GetError());
+        return;
+    }
+    SDL_Rect textRect = {0, 0, 0, 0};
+    SDL_QueryTexture(textTexture, NULL, NULL, &textRect.w, &textRect.h); // lấy kích thước của texture
+    textRect.x = SCREEN_WIDTH / 2 - textRect.w / 2;
+    textRect.y = SCREEN_HEIGHT / 2 - textRect.h / 2;
+    SDL_RenderCopy(gRenderer, textTexture, NULL, &textRect);
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+}

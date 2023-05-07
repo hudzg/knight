@@ -87,7 +87,7 @@ public:
 
     SubMenu(int y = 0, SDL_Texture *backgroundTexture = NULL, SDL_Texture *buttonTexture = NULL, SDL_Texture *titleTexture = NULL, int haveResume = 0);
     void handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *gSound[]);
-    void render(RenderWindow &window);
+    void render(RenderWindow &window, int score, TTF_Font *font[]);
 };
 
 class GuideMenu
@@ -141,6 +141,40 @@ public:
     GuideMenu(SDL_Texture *backgroundTexture = NULL, SDL_Texture *buttonImagesTexture = NULL, SDL_Texture *buttonTexture = NULL);
     void handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *gSound[]);
     void render(RenderWindow &window, TTF_Font *font[]);
+};
+
+class HighScoresMenu
+{
+private:
+    enum MenuTexture
+    {
+        BACKGROUND_TEXTURE,
+        BUTTON_TEXTURE,
+        TOTAL_TEXTURE
+    };
+
+    enum MenuButton
+    {
+        BACK,
+        TOTAL_BUTTON
+    };
+
+    SDL_Texture *gTexture[TOTAL_TEXTURE];
+    SDL_Rect backgroundBox, buttonBox[TOTAL_BUTTON];
+    SDL_Rect buttonClips[TOTAL_BUTTON][2];
+    int mouseover[TOTAL_BUTTON];
+
+public:
+
+    static const int MENU_BUTTON_WIDTH = 256;
+    static const int MENU_BUTTON_HEIGHT = 64;
+    static const int MENU_BUTTON_TEXTURE_WIDTH = 1024;
+    static const int MENU_BUTTON_TEXTURE_HEIGHT = 256;
+
+
+    HighScoresMenu(SDL_Texture *backgroundTexture = NULL, SDL_Texture *buttonTexture = NULL);
+    void handleEvent(SDL_Event &e, GameState &state, Mix_Chunk *gSound[]);
+    void render(RenderWindow &window, TTF_Font *font[], vector <int> &highScores);
 };
 
 #endif

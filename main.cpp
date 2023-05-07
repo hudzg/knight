@@ -36,6 +36,12 @@ int main(int argc, char *argv[])
                     game.renderGuideMenu();
                     break;
 
+                case STATE_HIGH_SCORES_MENU:
+                    while (SDL_PollEvent(&event))
+                        game.handleHighScoresMenuEvent(event);
+                    game.renderHighScoresMenu();
+                    break;
+
                 case STATE_PAUSE_MENU:
                     while (SDL_PollEvent(&event))
                         game.handlePauseMenuEvent(event);
