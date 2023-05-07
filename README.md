@@ -31,7 +31,16 @@ main
 ```
 ## Chi tiết về game
 ### Gameplay
+&#x1F5D2; 
 Xem gameplay [tại đây](https://youtu.be/C2Q8dkf2o7w)
+### Control
+* <kbd>A</kbd> Đi sang trái
+* <kbd>D</kbd> Đi sang phải
+* <kbd>shift</kbd> Lướt
+* <kbd>space</kbd> Nhảy
+* <kbd>Left Mouse</kbd> Tấn công
+* <kbd>Right Mouse</kbd> Kỹ năng
+* <kbd>esc</kbd> Tạm dừng
 ### Nhân vật
 Là một hiệp sĩ tối thượng với bộ kĩ năng cực kì mạnh mẽ
 
