@@ -32,7 +32,57 @@ main
 ### Gameplay
 Xem gameplay [tại đây](https://youtu.be/C2Q8dkf2o7w)
 ### Nhân vật
+Là một hiệp sĩ tối thượng với bộ kĩ năng cực kì mạnh mẽ
+
 ![knight](https://user-images.githubusercontent.com/106372669/236669112-f0188ad7-90e8-44da-bc9e-c9622da7d66e.gif)
+
 Tấn công
+
 ![attack3](https://user-images.githubusercontent.com/106372669/236669287-3c047eb0-2119-4071-ac6a-c4b648fd2f84.gif)
+
+Kĩ năng
+
+![Sprite-0001-export](https://user-images.githubusercontent.com/106372669/236670667-3622f35a-42e4-45c2-bd36-07685a4ad31b.gif)
+### Quái vật
+Skeleton
+
+![Skeleton Attack-export](https://user-images.githubusercontent.com/106372669/236670771-f50bc349-1c49-4822-8298-066f80e7fd99.gif)
+
+Boss
+
+![boss](https://user-images.githubusercontent.com/106372669/236670883-685ff1ee-752e-4e1d-a483-fcde5eaac788.gif)
+
+### Bẫy
+
+![trap](https://user-images.githubusercontent.com/106372669/236671042-99685a0e-8787-40be-8ef2-bf2f98aad0f0.png)
+
+### Cửa
+Mỗi khi mở cửa nhân vật sẽ được tăng sức mạnh
+
+![door-export](https://user-images.githubusercontent.com/106372669/236671232-82d2a270-9efd-46ec-9241-6359a4a9bb90.png)
+
+### Battle
+* Tìm đường thoát và tiêu diệt quái vật.
+* Giết boss và cứu lấy thế giới.
+
+## Các kĩ thuật lập trình đã sử dụng
+* Struct và Class
+* Con trỏ
+* Vector, set, map,...
+* Xâu
+* Nhập/xuất file
+* Mảng tĩnh
+* Sắp xếp
+* Lập trình hướng đối tượng
+* Xử lí va chạm
+* Kĩ thuật Tile Map
+
+## Kết luận
+* Học SDL tại: https://lazyfoo.net/tutorials/SDL/
+* Hình ảnh và âm thanh được tham khảo từ nhiều nguồn khác nhau và được chỉnh sửa để phù hợp với game, nhưng đa số được tham khảo từ: https://itch.io/game-assets/free
+* Biết cách làm nên một game
+* Biết cách debug những bug "ẩn" rẩt lớn (thậm chí mất đến vài ngày)
+* Sử dụng tốt ngôn ngữ c++ kết hợp với thư viện SDL để làm game
+* Sử dụng phần mềm chỉnh sửa ảnh pixel: Aseprite
+* Biết cách chia nhỏ một project lớn thành những file nhỏ, những file nhỏ thành những class nhỏ hơn để thuận tiện trong quá trình code hay debug
 
