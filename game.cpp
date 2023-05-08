@@ -618,7 +618,7 @@ void Game::renderMenu()
 {
     window.clearRenderer();
     menu.render(window);
-    window.renderText("hung dep trai", font[FONT_40], 32, 0, 0);
+    // window.renderText("hung dep trai", font[FONT_40], 32, 0, 0);
     window.renderPresent();
 }
 

@@ -458,8 +458,8 @@ void Player::render(RenderWindow &window, SDL_Rect &camera, SkeletonFamily &skel
             skill.setPos(mBox.x + mBox.w / 2 - HammerGodSkill::HAMMER_GOD_SKILL_RENDER_WIDTH / 2, mBox.y + HammerGodSkill::HAMMER_GOD_SKILL_RENDER_HEIGHT / 20 + mBox.h - HammerGodSkill::HAMMER_GOD_SKILL_RENDER_HEIGHT, flip);
         skill.render(window, camera);
         tmpBox = skill.getAttackBox();
-        SDL_Rect tmpBox2 = {tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox.w, tmpBox.h};
-        window.renderBox(tmpBox2);
+        // SDL_Rect tmpBox2 = {tmpBox.x - camera.x, tmpBox.y - camera.y, tmpBox.w, tmpBox.h};
+        // window.renderBox(tmpBox2);
         if (cntAttackFrames == 36)
         {
             int cntEnemyAttack = 0;
