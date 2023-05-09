@@ -18,6 +18,12 @@ bool RenderWindow::initSDL()
         }
         else
         {
+            // set icon
+            SDL_Surface *icon = IMG_Load("images/icon/icon.png");
+            SDL_SetWindowIcon(gWindow, icon);
+            SDL_FreeSurface(icon);
+            // SDL_FreeSurface(resizedIcon);
+
             gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
             if (gRenderer == NULL)
             {
